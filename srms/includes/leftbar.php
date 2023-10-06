@@ -1,4 +1,4 @@
-<div class="left-sidebar bg-black-300 box-shadow">
+<div class="left-sidebar bg-black box-shadow">
     <div class="sidebar-content">
         <div class="user-info closed">
             <img src="http://placehold.it/90/c2c2c2?text=User" alt="John Doe" class="img-circle profile-img">
@@ -8,7 +8,7 @@
         <!-- /.user-info -->
 
         <div class="sidebar-nav">
-            <ul class="side-nav color-gray">
+            <ul class="side-nav color-white">
                 <!-- <li class="nav-header">
                     <span class="">Main Category</span>
                 </li> -->
