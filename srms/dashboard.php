@@ -8,7 +8,7 @@ if (strlen($_SESSION['alogin']) == "") {
     ?>
 
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="id">
 
     <head>
         <meta charset="utf-8">

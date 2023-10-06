@@ -33,7 +33,7 @@ $error="Your current password is wrong";
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
