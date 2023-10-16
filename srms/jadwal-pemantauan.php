@@ -36,6 +36,24 @@
                         </div>
                     </div>
                 </div>
+                <section class="section">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel">
+                                    <div class="panel-heading">
+                                        <div class="panel-title">
+                                                <h5>Jadwal Pemantauan</h5>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body p-20">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
          </div>
          </div>
