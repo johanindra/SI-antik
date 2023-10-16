@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Pemantauan</title>
+    <title>Admin - Jadwal Pemantauan</title>
     <link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
     <link rel="stylesheet" href="css/font-awesome.min.css" media="screen">
     <link rel="stylesheet" href="css/animate-css/animate.min.css" media="screen">
@@ -47,7 +47,7 @@
                                         </div>
                                     </div>
                                     <div class="panel-body p-20">
-                                        
+
                                     </div>
                                 </div>
                             </div>
