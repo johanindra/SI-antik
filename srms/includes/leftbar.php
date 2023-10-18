@@ -1,4 +1,4 @@
-<style>
+<!-- <style>
     .left-sidebar {
         background-color: black;
         padding: 15px;
@@ -16,7 +16,7 @@
     .sidebar-nav ul.side-nav li a:hover {
         background-color: #F90;
     }
-</style>
+</style> -->
 <div class="left-sidebar bg-black-300 box-shadow">
     <div class="sidebar-content">
         <div class="user-info closed">
