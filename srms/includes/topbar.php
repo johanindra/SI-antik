@@ -1,18 +1,18 @@
 <!-- script -->
-    <script>
-        // Menampilkan pop-up konfirmasi
-        function showLogoutConfirmation() {
-            var isConfirmed = confirm("Apakah Anda yakin ingin keluar?");
-            
-            if (isConfirmed) {
-                // Jika dikonfirmasi, arahkan ke logout.php
-                window.location.href = "logout.php";
-            } else {
-                // Jika tidak dikonfirmasi, lakukan nothing (tutup pop-up)
-				window.close();
-            }
+<script>
+    // Menampilkan pop-up konfirmasi
+    function showLogoutConfirmation() {
+        var isConfirmed = confirm("Apakah Anda yakin ingin keluar?");
+
+        if (isConfirmed) {
+            // Jika dikonfirmasi, arahkan ke logout.php
+            window.location.href = "logout.php";
+        } else {
+            // Jika tidak dikonfirmasi, lakukan nothing (tutup pop-up)
+            window.close();
         }
-    </script>
+    }
+</script>
 <!-- style -->
 <style>
     /* Tambahkan gaya untuk mengontrol ukuran logo */
@@ -22,10 +22,12 @@
     }
 
     .logo-img {
-        max-height: 30px; /* Atur ukuran logo sesuai kebutuhan */
-        margin-right: 5px; /* Sesuaikan margin jika diperlukan */
+        max-height: 30px;
+        /* Atur ukuran logo sesuai kebutuhan */
+        margin-right: 5px;
+        /* Sesuaikan margin jika diperlukan */
     }
-    </style>
+</style>
 
 <nav class="navbar top-navbar bg-white box-shadow">
     <div class="container-fluid">
