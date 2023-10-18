@@ -22,7 +22,7 @@
     }
 
     .logo-img {
-        max-height: 24px; /* Atur ukuran logo sesuai kebutuhan */
+        max-height: 30px; /* Atur ukuran logo sesuai kebutuhan */
         margin-right: 5px; /* Sesuaikan margin jika diperlukan */
     }
     </style>
