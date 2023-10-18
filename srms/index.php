@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <button type="submit" class="input-submit">Login</button>
                         </div>
                         <div class="forgot">
-                            <a href="lupa-password.php">Lupa password?</a>
+                            <a href="verifikasi-otp.php">Lupa password?</a>
                         </div>
                     </div>
                 </form>

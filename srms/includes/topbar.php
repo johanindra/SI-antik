@@ -1,16 +1,26 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+
 <!-- script -->
 <script>
-    // Menampilkan pop-up konfirmasi
+    // Menampilkan SweetAlert2 untuk konfirmasi keluar
     function showLogoutConfirmation() {
-        var isConfirmed = confirm("Apakah Anda yakin ingin keluar?");
-
-        if (isConfirmed) {
-            // Jika dikonfirmasi, arahkan ke logout.php
-            window.location.href = "logout.php";
-        } else {
-            // Jika tidak dikonfirmasi, lakukan nothing (tutup pop-up)
-            window.close();
-        }
+        Swal.fire({
+            title: 'Keluar',
+            text: 'Apakah Anda yakin ingin keluar?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya',
+            cancelButtonText: 'Tidak',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Jika dikonfirmasi, arahkan ke logout.php
+                window.location.href = "logout.php";
+            } else {
+                // Jika tidak dikonfirmasi, tutup SweetAlert2
+                Swal.close();
+            }
+        });
     }
 </script>
 <!-- style -->

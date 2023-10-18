@@ -101,7 +101,7 @@ body {
 .input-box:valid ~ label {
   top: 2px;
   font-size: 10px;
-  color: #c12828;
+  color: #1b08f2;
   font-weight: 500;
 }
 
