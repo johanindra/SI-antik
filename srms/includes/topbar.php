@@ -32,7 +32,7 @@
         <div class="row">
             <div class="navbar-header no-padding">
                 <a class="navbar-brand" href="dashboard.php">
-                    <img src="/srms/includes/Logo.png" alt="Logo" class="logo-img"> Admin Dashboard
+                    <img src="includes/Logo.png" alt="Logo" class="logo-img"> Admin Dashboard
                 </a>
                 <span class="small-nav-handle hidden-sm hidden-xs"><i class="fa fa-outdent"></i></span>
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
