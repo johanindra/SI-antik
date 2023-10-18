@@ -31,11 +31,9 @@
     <div class="container-fluid">
         <div class="row">
             <div class="navbar-header no-padding">
-                <!-- Tambahkan logo di sini -->
                 <a class="navbar-brand" href="dashboard.php">
                     <img src="Logo.png" alt="Logo" class="logo-img"> Admin Dashboard
                 </a>
-                <!-- Akhir dari tambahan logo -->
                 <span class="small-nav-handle hidden-sm hidden-xs"><i class="fa fa-outdent"></i></span>
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
                     <span class="sr-only">Toggle navigation</span>
