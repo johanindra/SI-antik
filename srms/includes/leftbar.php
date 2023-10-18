@@ -1,3 +1,21 @@
+<style>
+    .left-sidebar {
+        background-color: #111827;
+        padding: 15px;
+    }
+
+    .sidebar-nav ul.side-nav li a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+    .sidebar-nav ul.side-nav li a:hover {
+        background-color: #F90;
+    }
+</style>
 <div class="left-sidebar bg-black box-shadow">
     <div class="sidebar-content">
         <div class="user-info closed">
