@@ -19,6 +19,7 @@ if (strlen($_SESSION['alogin']) == "") {
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -30,6 +31,7 @@ if (strlen($_SESSION['alogin']) == "") {
     <link rel="stylesheet" href="css/lobipanel/lobipanel.min.css" media="screen">
     <link rel="stylesheet" href="css/prism/prism.css" media="screen">
     <link rel="stylesheet" href="css/main.css" media="screen">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
     <script src="js/modernizr/modernizr.min.js"></script>
     <style>
         /* Menengahkan gambar */
@@ -46,6 +48,7 @@ if (strlen($_SESSION['alogin']) == "") {
         }
     </style>
 </head>
+
 <body class="top-navbar-fixed">
     <div class="main-wrapper">
         <!-- ========== TOP NAVBAR ========== -->
@@ -84,54 +87,54 @@ if (strlen($_SESSION['alogin']) == "") {
                                         <div class="panel-body p-20">
                                             <?php if ($query->rowCount() > 0) { ?>
                                                 <table class="table table-bordered">
-    <tr>
-        <th>ID Laporan</th>
-        <td><?php echo htmlentities($result->id_laporan); ?></td>
-    </tr>
-    <tr>
-        <th>NIK</th>
-        <td><?php echo htmlentities($result->NIK); ?></td>
-    </tr>
-    <tr>
-        <th>Nama Lengkap</th>
-        <td><?php echo htmlentities($result->nama_lengkap); ?></td>
-    </tr>
-    <tr>
-        <th>No. Rumah</th>
-        <td><?php echo htmlentities($result->no_rumah); ?></td>
-    </tr>
-    <tr>
-        <th>Alamat</th>
-        <td><?php echo htmlentities($result->alamat); ?></td>
-    </tr>
-    <tr>
-        <th>Tanggal Laporan</th>
-        <td><?php echo htmlentities($result->tanggal_laporan); ?></td>
-    </tr>
-    <tr>
-        <th>Lokasi Laporan</th>
-        <td><?php echo htmlentities($result->lokasi_laporan); ?></td>
-    </tr>
-    <!-- Kolom lainnya sesuai dengan tabel laporan_masuk -->
-    <tr>
-    <th>Foto</th>
-    <td>
-        <?php
-        if ($result->foto) {
-            $base64Image = base64_encode($result->foto);
-            $imageType = 'image/jpeg'; 
-            $gambarURL = "data:$imageType;base64,$base64Image";
-            echo '<img src="' . $gambarURL . '" alt="Foto" width="200" height="200">';
-            echo '<br><br>';
-            echo '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFoto">lihat foto</button>';
-        } else {
-            echo 'Tidak ada foto';
-        }
-        ?>
-    </td>
-</tr>
+                                                    <tr>
+                                                        <th>ID Laporan</th>
+                                                        <td><?php echo htmlentities($result->id_laporan); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>NIK</th>
+                                                        <td><?php echo htmlentities($result->NIK); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Nama Lengkap</th>
+                                                        <td><?php echo htmlentities($result->nama_lengkap); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>No. Rumah</th>
+                                                        <td><?php echo htmlentities($result->no_rumah); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Alamat</th>
+                                                        <td><?php echo htmlentities($result->alamat); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Tanggal Laporan</th>
+                                                        <td><?php echo htmlentities($result->tanggal_laporan); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Lokasi Laporan</th>
+                                                        <td><?php echo htmlentities($result->lokasi_laporan); ?></td>
+                                                    </tr>
+                                                    <!-- Kolom lainnya sesuai dengan tabel laporan_masuk -->
+                                                    <tr>
+                                                        <th>Foto</th>
+                                                        <td>
+                                                            <?php
+                                                            if ($result->foto) {
+                                                                $base64Image = base64_encode($result->foto);
+                                                                $imageType = 'image/jpeg';
+                                                                $gambarURL = "data:$imageType;base64,$base64Image";
+                                                                echo '<img src="' . $gambarURL . '" alt="Foto" width="200" height="200">';
+                                                                echo '<br><br>';
+                                                                echo '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFoto">lihat foto</button>';
+                                                            } else {
+                                                                echo 'Tidak ada foto';
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                    </tr>
 
-</table>
+                                                </table>
 
                                             <?php } else { ?>
                                                 <div class="alert alert-danger">
@@ -139,89 +142,113 @@ if (strlen($_SESSION['alogin']) == "") {
                                                 </div>
                                             <?php } ?>
                                             <!-- Tambahkan elemen form untuk mengatur status jentik secara manual -->
-<form method="post">
-    <div class="form-group">
-        <label for="status_jentik">Status Jentik</label>
-        <select class="form-control" id="status_jentik" name="status_jentik">
-            <option value="0" <?php if ($result->status_jentik == 0) echo "selected"; ?>>Bebas Jentik</option>
-            <option value="1" <?php if ($result->status_jentik == 1) echo "selected"; ?>>Ada Jentik</option>
-        </select>
-    </div>
-    <button type="submit" name="submit" class="btn btn-primary">Simpan Status Jentik</button>
-</form>
+                                            <form method="post">
+                                                <div class="form-group">
+                                                    <label for="status_jentik">Status Jentik</label>
+                                                    <select class="form-control" id="status_jentik" name="status_jentik">
+                                                        <option value="0" <?php if ($result->status_jentik == 0) echo "selected"; ?>>Bebas Jentik</option>
+                                                        <option value="1" <?php if ($result->status_jentik == 1) echo "selected"; ?>>Ada Jentik</option>
+                                                    </select>
+                                                </div>
+                                                <button type="submit" name="submit" class="btn btn-primary">Simpan Status Jentik</button>
+                                            </form>
 
-<?php
-if (isset($_POST['submit'])) {
-    $status_jentik = $_POST['status_jentik'];
+                                            <?php
+                                            if (isset($_POST['submit'])) {
+                                                $status_jentik = $_POST['status_jentik'];
 
-    // Cek apakah NIK sudah ada dalam tabel hasil_pemantauan
-    $checkSql = "SELECT * FROM hasil_pemantauan WHERE NIK = :NIK";
-    $checkQuery = $dbh->prepare($checkSql);
-    $checkQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
-    $checkQuery->execute();
-    $existingResult = $checkQuery->fetch(PDO::FETCH_OBJ);
+                                                // Cek apakah NIK sudah ada dalam tabel hasil_pemantauan
+                                                $checkSql = "SELECT * FROM hasil_pemantauan WHERE NIK = :NIK";
+                                                $checkQuery = $dbh->prepare($checkSql);
+                                                $checkQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
+                                                $checkQuery->execute();
+                                                $existingResult = $checkQuery->fetch(PDO::FETCH_OBJ);
 
-    if ($existingResult) {
-        // Jika NIK sudah ada, lakukan UPDATE
-        $updateSql = "UPDATE hasil_pemantauan SET status_jentik = :status_jentik, tanggal_pemantauan = NOW() WHERE NIK = :NIK";
-        $updateQuery = $dbh->prepare($updateSql);
-        $updateQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
-        $updateQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
+                                                if ($existingResult) {
+                                                    // Jika NIK sudah ada, lakukan UPDATE
+                                                    $updateSql = "UPDATE hasil_pemantauan SET status_jentik = :status_jentik, tanggal_pemantauan = NOW() WHERE NIK = :NIK";
+                                                    $updateQuery = $dbh->prepare($updateSql);
+                                                    $updateQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
+                                                    $updateQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
+                                                    // pesan notifikasi
+                                                    if ($updateQuery->execute()) {
+                                                        echo '<script>';
+                                                        echo 'Swal.fire({
+                                                                    icon: "success",
+                                                                    title: "Berhasil!",
+                                                                    text: "Status Jentik berhasil diperbarui.",
+                                                                });';
+                                                        echo '</script>';
+                                                    } else {
+                                                        echo '<script>';
+                                                        echo 'Swal.fire({
+                                                                    icon: "error",
+                                                                    title: "Oops...",
+                                                                    text: "Gagal memperbarui Status Jentik.",
+                                                                });';
+                                                        echo '</script>';
+                                                    }
+                                                } else {
+                                                    // Jika NIK belum ada, lakukan INSERT
+                                                    $insertSql = "INSERT INTO hasil_pemantauan (NIK, nama_lengkap, alamat, status_jentik, tanggal_laporan, tanggal_pemantauan) VALUES (:NIK, :nama_lengkap, :alamat, :status_jentik, :tanggal_laporan, NOW())";
+                                                    $insertQuery = $dbh->prepare($insertSql);
+                                                    $insertQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
+                                                    $insertQuery->bindParam(':nama_lengkap', $result->nama_lengkap, PDO::PARAM_STR);
+                                                    $insertQuery->bindParam(':alamat', $result->alamat, PDO::PARAM_STR);
+                                                    $insertQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
+                                                    $insertQuery->bindParam(':tanggal_laporan', $result->tanggal_laporan, PDO::PARAM_STR);
+                                                    // pesan notifikasi
+                                                    if ($insertQuery->execute()) {
+                                                        echo '<script>';
+                                                        echo 'Swal.fire({
+                                                                        icon: "success",
+                                                                        title: "Berhasil!",
+                                                                        text: "Status Jentik berhasil diperbarui.",
+                                                                    });';
+                                                        echo '</script>';
+                                                    } else {
+                                                        echo '<script>';
+                                                        echo 'Swal.fire({
+                                                                        icon: "error",
+                                                                        title: "Oops...",
+                                                                        text: "Gagal memperbarui Status Jentik.",
+                                                                    });';
+                                                        echo '</script>';
+                                                    }
+                                                }
+                                            }
 
-        if ($updateQuery->execute()) {
-            echo '<div class="alert alert-success">Status Jentik berhasil diperbarui.</div>';
-        } else {
-            echo '<div class="alert alert-danger">Gagal memperbarui Status Jentik.</div>';
-        }
-    } else {
-        // Jika NIK belum ada, lakukan INSERT
-        $insertSql = "INSERT INTO hasil_pemantauan (NIK, nama_lengkap, alamat, status_jentik, tanggal_laporan, tanggal_pemantauan) VALUES (:NIK, :nama_lengkap, :alamat, :status_jentik, :tanggal_laporan, NOW())";
-        $insertQuery = $dbh->prepare($insertSql);
-        $insertQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
-        $insertQuery->bindParam(':nama_lengkap', $result->nama_lengkap, PDO::PARAM_STR);
-        $insertQuery->bindParam(':alamat', $result->alamat, PDO::PARAM_STR);
-        $insertQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
-        $insertQuery->bindParam(':tanggal_laporan', $result->tanggal_laporan, PDO::PARAM_STR);
-
-        if ($insertQuery->execute()) {
-            echo '<div class="alert alert-success">Status Jentik berhasil disimpan.</div>';
-        } else {
-            echo '<div class="alert alert-danger">Gagal menyimpan Status Jentik.</div>';
-        }
-    }
-}
-
-?>
+                                            ?>
 
 
-<!-- Modal untuk Perbesar Foto -->
-<div class="modal fade" id="modalFoto" tabindex="-1" role="dialog" aria-labelledby="modalFotoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalFotoLabel">Foto Profil</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body center-image">
-                <?php
-                if ($result->foto) {
-                    $base64Image = base64_encode($result->foto);
-                    $imageType = 'image/jpeg';
-                    $gambarURL = "data:$imageType;base64,$base64Image";
-                    echo '<img src="' . $gambarURL . '" alt="Foto Profil" class="img-fluid">';
-                } else {
-                    echo 'Tidak ada foto';
-                }
-                ?>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-            </div>
-        </div>
-    </div>
-</div>
+                                            <!-- Modal untuk Perbesar Foto -->
+                                            <div class="modal fade" id="modalFoto" tabindex="-1" role="dialog" aria-labelledby="modalFotoLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-lg" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="modalFotoLabel">Foto Profil</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body center-image">
+                                                            <?php
+                                                            if ($result->foto) {
+                                                                $base64Image = base64_encode($result->foto);
+                                                                $imageType = 'image/jpeg';
+                                                                $gambarURL = "data:$imageType;base64,$base64Image";
+                                                                echo '<img src="' . $gambarURL . '" alt="Foto Profil" class="img-fluid">';
+                                                            } else {
+                                                                echo 'Tidak ada foto';
+                                                            }
+                                                            ?>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
 
 
 
@@ -247,4 +274,5 @@ if (isset($_POST['submit'])) {
     <!-- ========== THEME JS ========== -->
     <script src="js/main.js"></script>
 </body>
+
 </html>
