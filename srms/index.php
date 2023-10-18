@@ -15,44 +15,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->execute();
 
     if ($stmt->rowCount() == 1) {
-         // Jika pengguna terdaftar, ambil data nama_lengkap
-         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-         $nama_lengkap = $result['username'];
- 
-         // Notifikasi selamat datang
-         $successMessage = "Selamat datang, " . $nama_lengkap . "!";
-         echo '<script>';
-         echo 'alert("' . $successMessage . '");';
-         echo 'window.location.href = "Dashboard.php";';
-         echo '</script>';
-         exit();
-     } else {
-       // Jika pengguna tidak terdaftar, tampilkan pesan kesalahan
-       $erorMessage = "Username atau password salah!";
-         echo '<script>';
-         echo 'alert("'.$erorMessage.'");';
-         echo 'window.location.href = "index.php";';
-         echo '</script>';
+        // Jika pengguna terdaftar, ambil data nama_lengkap
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $nama_lengkap = $result['username'];
+
+        // Notifikasi selamat datang
+        $successMessage = "Selamat datang, " . $nama_lengkap . "!";
+        echo '<script>';
+        echo 'alert("' . $successMessage . '");';
+        echo 'window.location.href = "Dashboard.php";';
+        echo '</script>';
+        exit();
+    } else {
+        // Jika pengguna tidak terdaftar, tampilkan pesan kesalahan
+        $erorMessage = "Username atau password salah!";
+        echo '<script>';
+        echo 'alert("' . $erorMessage . '");';
+        echo 'window.location.href = "index.php";';
+        echo '</script>';
     }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/style.css" />
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Admin Login SI-antik</title>
 </head>
+
 <body>
     <div class="container">
         <div class="box">
@@ -114,4 +110,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     </script>
 </body>
+
 </html>
