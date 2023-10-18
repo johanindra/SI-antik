@@ -12,7 +12,7 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <title>Form Lupa Password</title>
+    <title>Admin Lupa Password</title>
   </head>
   <body>
     <div class="container">
