@@ -1,20 +1,86 @@
 <?php
 session_start();
-error_reporting(0);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 include('../server/koneksi.php');
 
-if (strlen($_SESSION['alogin']) == "") {
-    header("Location: index.php");
-} else {
-    if (isset($_GET['NIK'])) {
-        $NIK = $_GET['NIK'];
-        $sql = "SELECT * FROM laporan_masuk WHERE NIK = :NIK";
-        $query = $dbh->prepare($sql);
-        $query->bindParam(':NIK', $NIK, PDO::PARAM_STR);
-        $query->execute();
-        $result = $query->fetch(PDO::FETCH_OBJ);
+$length = isset($_SESSION['alogin']) ? strlen($_SESSION['alogin']) : 0;
+
+$NIK = isset($_GET['NIK']) ? $_GET['NIK'] : '';
+
+$sql = "SELECT * FROM pemantauan_jentik WHERE NIK = :NIK";
+$query = $dbh->prepare($sql);
+$query->bindParam(':NIK', $NIK, PDO::PARAM_STR);
+$query->execute();
+$result = $query->fetch(PDO::FETCH_OBJ);
+
+// Fungsi untuk mengupdate status jentik dan tanggal_pemantauan
+function updateStatusJentik($dbh, $NIK, $status_jentik, $result)
+{
+    $checkSql = "SELECT * FROM hasil_pemantauan WHERE NIK = :NIK";
+    $checkQuery = $dbh->prepare($checkSql);
+    $checkQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
+    $checkQuery->execute();
+    $existingResult = $checkQuery->fetch(PDO::FETCH_OBJ);
+
+    if ($existingResult) {
+        $updateSql = "UPDATE hasil_pemantauan SET status_jentik = :status_jentik, tanggal_pemantauan = NOW() WHERE NIK = :NIK";
+        $updateQuery = $dbh->prepare($updateSql);
+        $updateQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
+        $updateQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
+        $updateQuery->execute();
+    } else {
+        $insertSql = "INSERT INTO hasil_pemantauan (NIK, status_jentik, tanggal_pemantauan) VALUES (:NIK, :status_jentik, NOW()) ON DUPLICATE KEY UPDATE status_jentik = :status_jentik, tanggal_pemantauan = NOW()";
+        $insertQuery = $dbh->prepare($insertSql);
+        $insertQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
+        $insertQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
+        $insertQuery->execute();
+    }
+
+    // Tambahan: Update juga di tabel pemantauan_jentik
+    $updatePemantauanJentikSql = "UPDATE pemantauan_jentik SET status_jentik = :status_jentik, tanggal_pemantauan = NOW() WHERE NIK = :NIK";
+    $updatePemantauanJentikQuery = $dbh->prepare($updatePemantauanJentikSql);
+    $updatePemantauanJentikQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
+    $updatePemantauanJentikQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
+    $updatePemantauanJentikQuery->execute();
+
+    return true;
+}
+
+if (isset($_POST['submit'])) {
+    $status_jentik = $_POST['status_jentik'];
+
+    if (updateStatusJentik($dbh, $NIK, $status_jentik, $result)) {
+        // echo '<script>';
+        // echo 'Swal.fire({
+        //                 icon: "success",
+        //                 title: "Berhasil!",
+        //                 text: "Status Jentik berhasil diperbarui.",
+        //             });';
+        // echo '</script>';
+        echo '<script>';
+        echo 'Swal.fire({
+                    icon: "success",
+                    title: "Berhasil!",
+                    text: "Status Jentik berhasil diperbarui.",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "laporan-masuk.php";
+                    }
+                });';
+        echo '</script>';
+    } else {
+        echo '<script>';
+        echo 'Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Gagal memperbarui Status Jentik.",
+                    });';
+        echo '</script>';
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -89,7 +155,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                 <table class="table table-bordered">
                                                     <tr>
                                                         <th>ID Laporan</th>
-                                                        <td><?php echo htmlentities($result->id_laporan); ?></td>
+                                                        <td><?php echo htmlentities($result->id_pemantauan); ?></td>
                                                     </tr>
                                                     <tr>
                                                         <th>NIK</th>
@@ -104,18 +170,17 @@ if (strlen($_SESSION['alogin']) == "") {
                                                         <td><?php echo htmlentities($result->no_rumah); ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <th>Alamat</th>
-                                                        <td><?php echo htmlentities($result->alamat); ?></td>
+                                                        <th>RT/RW</th>
+                                                        <td><?php echo htmlentities($result->rt_rw); ?></td>
                                                     </tr>
                                                     <tr>
                                                         <th>Tanggal Laporan</th>
                                                         <td><?php echo htmlentities($result->tanggal_laporan); ?></td>
                                                     </tr>
                                                     <tr>
-                                                        <th>Lokasi Laporan</th>
-                                                        <td><?php echo htmlentities($result->lokasi_laporan); ?></td>
+                                                        <th>Deskripsi Keadaan</th>
+                                                        <td><?php echo htmlentities($result->deskripsi); ?></td>
                                                     </tr>
-                                                    <!-- Kolom lainnya sesuai dengan tabel laporan_masuk -->
                                                     <tr>
                                                         <th>Foto</th>
                                                         <td>
@@ -157,68 +222,26 @@ if (strlen($_SESSION['alogin']) == "") {
                                             if (isset($_POST['submit'])) {
                                                 $status_jentik = $_POST['status_jentik'];
 
-                                                // Cek apakah NIK sudah ada dalam tabel hasil_pemantauan
-                                                $checkSql = "SELECT * FROM hasil_pemantauan WHERE NIK = :NIK";
-                                                $checkQuery = $dbh->prepare($checkSql);
-                                                $checkQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
-                                                $checkQuery->execute();
-                                                $existingResult = $checkQuery->fetch(PDO::FETCH_OBJ);
-
-                                                if ($existingResult) {
-                                                    // Jika NIK sudah ada, lakukan UPDATE
-                                                    $updateSql = "UPDATE hasil_pemantauan SET status_jentik = :status_jentik, tanggal_pemantauan = NOW() WHERE NIK = :NIK";
-                                                    $updateQuery = $dbh->prepare($updateSql);
-                                                    $updateQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
-                                                    $updateQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
-                                                    // pesan notifikasi
-                                                    if ($updateQuery->execute()) {
-                                                        echo '<script>';
-                                                        echo 'Swal.fire({
-                                                                    icon: "success",
-                                                                    title: "Berhasil!",
-                                                                    text: "Status Jentik berhasil diperbarui.",
-                                                                });';
-                                                        echo '</script>';
-                                                    } else {
-                                                        echo '<script>';
-                                                        echo 'Swal.fire({
-                                                                    icon: "error",
-                                                                    title: "Oops...",
-                                                                    text: "Gagal memperbarui Status Jentik.",
-                                                                });';
-                                                        echo '</script>';
-                                                    }
+                                                if (updateStatusJentik($dbh, $NIK, $status_jentik, $result)) {
+                                                    echo '<script>';
+                                                    echo 'Swal.fire({
+                                                                icon: "success",
+                                                                title: "Berhasil!",
+                                                                text: "Status Jentik berhasil diperbarui.",
+                                                            });';
+                                                    echo '</script>';
                                                 } else {
-                                                    // Jika NIK belum ada, lakukan INSERT
-                                                    $insertSql = "INSERT INTO hasil_pemantauan (NIK, nama_lengkap, alamat, status_jentik, tanggal_laporan, tanggal_pemantauan) VALUES (:NIK, :nama_lengkap, :alamat, :status_jentik, :tanggal_laporan, NOW())";
-                                                    $insertQuery = $dbh->prepare($insertSql);
-                                                    $insertQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
-                                                    $insertQuery->bindParam(':nama_lengkap', $result->nama_lengkap, PDO::PARAM_STR);
-                                                    $insertQuery->bindParam(':alamat', $result->alamat, PDO::PARAM_STR);
-                                                    $insertQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
-                                                    $insertQuery->bindParam(':tanggal_laporan', $result->tanggal_laporan, PDO::PARAM_STR);
-                                                    // pesan notifikasi
-                                                    if ($insertQuery->execute()) {
-                                                        echo '<script>';
-                                                        echo 'Swal.fire({
-                                                                        icon: "success",
-                                                                        title: "Berhasil!",
-                                                                        text: "Status Jentik berhasil diperbarui.",
-                                                                    });';
-                                                        echo '</script>';
-                                                    } else {
-                                                        echo '<script>';
-                                                        echo 'Swal.fire({
-                                                                        icon: "error",
-                                                                        title: "Oops...",
-                                                                        text: "Gagal memperbarui Status Jentik.",
-                                                                    });';
-                                                        echo '</script>';
-                                                    }
+                                                    echo '<script>';
+                                                    echo 'Swal.fire({
+                                                                icon: "error",
+                                                                title: "Oops...",
+                                                                text: "Gagal memperbarui Status Jentik.",
+                                                            });';
+                                                    echo '</script>';
                                                 }
                                             }
-
                                             ?>
+
 
 
                                             <!-- Modal untuk Perbesar Foto -->

@@ -5,7 +5,7 @@ include('../server/koneksi.php');
 if (strlen($_SESSION['alogin']) == "") {
     header("Location: index.php");
 } else {
-    ?>
+?>
 
     <!DOCTYPE html>
     <html lang="id">
@@ -52,45 +52,42 @@ if (strlen($_SESSION['alogin']) == "") {
                         <section class="section">
                             <div class="container-fluid">
                                 <div class="row">
-                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%;">
-    <a class="dashboard-stat bg-warning" href="laporan-masuk.php">
-        <?php
-        $sql = "SELECT COUNT(*) as total FROM laporan_masuk"; // Menghitung jumlah baris dalam tabel laporan_masuk
-        $query = $dbh->prepare($sql);
-        $query->execute();
-        $result = $query->fetch(PDO::FETCH_ASSOC);
-        $totalLaporanMasuk = $result['total'];
-        ?>
-        <span class="number counter">
-            <?php echo htmlentities($totalLaporanMasuk); ?>
-        </span>
-        <span class="name">Laporan Masuk</span>
-        <span class="bg-icon"><i class="fa fa-bank"></i></span>
-    </a>
-    <!-- /.dashboard-stat -->
-</div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%;">
+                                        <a class="dashboard-stat bg-warning" href="laporan-masuk.php">
+                                            <?php
+                                            $sql = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NULL"; // Menghitung jumlah baris dalam tabel laporan_masuk dengan status_jentik kosong
+                                            $query = $dbh->prepare($sql);
+                                            $query->execute();
+                                            $result = $query->fetch(PDO::FETCH_ASSOC);
+                                            $totalLaporanMasuk = $result['total'];
+                                            ?>
+                                            <span class="number counter">
+                                                <?php echo htmlentities($totalLaporanMasuk); ?>
+                                            </span>
+                                            <span class="name">Laporan Masuk</span>
+                                            <span class="bg-icon"><i class="fa fa-bank"></i></span>
+                                        </a>
+                                        <!-- /.dashboard-stat -->
+                                    </div>
 
-<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%">
-    <a class="dashboard-stat bg-success" href="hasil-pemantauan.php">
-        <?php
-        $sql = "SELECT COUNT(*) as total FROM hasil_pemantauan"; // Menghitung jumlah data unik dalam kolom StudentId pada tabel hasil_pemantauan
-        $query = $dbh->prepare($sql);
-        $query->execute();
-        $result = $query->fetch(PDO::FETCH_ASSOC);
-        $totalHasilPemantauan = $result['total'];
-        ?>
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%">
+                                        <a class="dashboard-stat bg-success" href="hasil-pemantauan.php">
+                                            <?php
+                                            $sql = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NOT NULL"; // Menghitung jumlah data unik dalam kolom status_jentik pada tabel hasil_pemantauan yang tidak kosong
+                                            $query = $dbh->prepare($sql);
+                                            $query->execute();
+                                            $result = $query->fetch(PDO::FETCH_ASSOC);
+                                            $totalHasilPemantauan = $result['total'];
+                                            ?>
 
-        <span class="number counter">
-            <?php echo htmlentities($totalHasilPemantauan); ?>
-        </span>
-        <span class="name">Hasil Pemantauan</span>
-        <span class="bg-icon"><i class="fa fa-file-text"></i></span>
-    </a>
-    <!-- /.dashboard-stat -->
-</div>
-
-                                    <!-- /.col-lg-3 col-md-3 col-sm-6 col-xs-12 -->
-
+                                            <span class="number counter">
+                                                <?php echo htmlentities($totalHasilPemantauan); ?>
+                                            </span>
+                                            <span class="name">Hasil Pemantauan</span>
+                                            <span class="bg-icon"><i class="fa fa-file-text"></i></span>
+                                        </a>
+                                        <!-- /.dashboard-stat -->
+                                    </div>
                                 </div>
                                 <!-- /.row -->
                             </div>
@@ -109,6 +106,7 @@ if (strlen($_SESSION['alogin']) == "") {
 
         </div>
         <!-- /.main-wrapper -->
+
 
         <!-- ========== COMMON JS FILES ========== -->
         <script src="js/jquery/jquery-2.2.4.min.js"></script>
@@ -136,7 +134,7 @@ if (strlen($_SESSION['alogin']) == "") {
         <script src="js/traffic-chart.js"></script>
         <script src="js/task-list.js"></script>
         <script>
-            $(function () {
+            $(function() {
 
                 // Counter for dashboard stats
                 $('.counter').counterUp({
