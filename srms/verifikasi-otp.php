@@ -1,3 +1,6 @@
+<?php
+include("verifikasi.php");
+?>
 <!DOCTYPE html>
 <html lang="id">
 
