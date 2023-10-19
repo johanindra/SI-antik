@@ -22,7 +22,6 @@ if (strlen($_SESSION['alogin']) == "") {
         <link rel="stylesheet" href="css/toastr/toastr.min.css" media="screen">
         <link rel="stylesheet" href="css/icheck/skins/line/blue.css">
         <link rel="stylesheet" href="css/icheck/skins/line/red.css">
-        <link rel="stylesheet" href="css/icheck/skins/line/green.css">
         <link rel="stylesheet" href="css/main.css" media="screen">
         <script src="js/modernizr/modernizr.min.js"></script>
     </head>
@@ -40,7 +39,6 @@ if (strlen($_SESSION['alogin']) == "") {
                             <div class="row page-title-div">
                                 <div class="col-sm-6">
                                     <h2 class="title">Dashboard</h2>
-
                                 </div>
                                 <!-- /.col-sm-6 -->
                             </div>
@@ -55,7 +53,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%;">
                                         <a class="dashboard-stat bg-warning" href="laporan-masuk.php">
                                             <?php
-                                            $sql = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NULL"; // Menghitung jumlah baris dalam tabel laporan_masuk dengan status_jentik kosong
+                                            $sql = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NULL";
                                             $query = $dbh->prepare($sql);
                                             $query->execute();
                                             $result = $query->fetch(PDO::FETCH_ASSOC);
@@ -73,7 +71,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%">
                                         <a class="dashboard-stat bg-success" href="hasil-pemantauan.php">
                                             <?php
-                                            $sql = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NOT NULL"; // Menghitung jumlah data unik dalam kolom status_jentik pada tabel hasil_pemantauan yang tidak kosong
+                                            $sql = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NOT NULL";
                                             $query = $dbh->prepare($sql);
                                             $query->execute();
                                             $result = $query->fetch(PDO::FETCH_ASSOC);
@@ -87,6 +85,21 @@ if (strlen($_SESSION['alogin']) == "") {
                                             <span class="bg-icon"><i class="fa fa-file-text"></i></span>
                                         </a>
                                         <!-- /.dashboard-stat -->
+                                    </div>
+                                </div>
+                                <!-- /.row -->
+
+                                <!-- Bagian Grafik Batang -->
+                                <div class="row" style="margin-top: 2%;">
+                                    <div class="col-lg-12">
+                                        <div class="panel" style="margin-top:2%;">
+                                            <div class="panel-body" style="text-align: center; margin-bottom: 20px;">
+                                                <h4 class="mt-0" style="font-family: 'Arial', sans-serif; font-size: 24px; font-weight: bold; color: #8D00FF;">Grafik Pemantauan</h4>
+                                                <canvas id="bar-chart" style="height: 300px;"></canvas>
+                                                <p style="font-family: 'Arial', sans-serif; font-size: 13px; color: #333; margin-top: 5px;">Grafik di atas merupakan grafik pemantauan jentik nyamuk di desa Bulusari.</p>
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- /.row -->
@@ -107,7 +120,6 @@ if (strlen($_SESSION['alogin']) == "") {
         </div>
         <!-- /.main-wrapper -->
 
-
         <!-- ========== COMMON JS FILES ========== -->
         <script src="js/jquery/jquery-2.2.4.min.js"></script>
         <script src="js/jquery-ui/jquery-ui.min.js"></script>
@@ -120,22 +132,14 @@ if (strlen($_SESSION['alogin']) == "") {
         <script src="js/prism/prism.js"></script>
         <script src="js/waypoint/waypoints.min.js"></script>
         <script src="js/counterUp/jquery.counterup.min.js"></script>
-        <script src="js/amcharts/amcharts.js"></script>
-        <script src="js/amcharts/serial.js"></script>
-        <script src="js/amcharts/plugins/export/export.min.js"></script>
-        <link rel="stylesheet" href="js/amcharts/plugins/export/export.css" type="text/css" media="all" />
-        <script src="js/amcharts/themes/light.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="js/toastr/toastr.min.js"></script>
         <script src="js/icheck/icheck.min.js"></script>
 
         <!-- ========== THEME JS ========== -->
         <script src="js/main.js"></script>
-        <script src="js/production-chart.js"></script>
-        <script src="js/traffic-chart.js"></script>
-        <script src="js/task-list.js"></script>
         <script>
             $(function() {
-
                 // Counter for dashboard stats
                 $('.counter').counterUp({
                     delay: 10,
@@ -161,8 +165,107 @@ if (strlen($_SESSION['alogin']) == "") {
                     "hideMethod": "fadeOut"
                 }
                 toastr["success"]("ADMIN Dashboard");
-
             });
+
+            $(function() {
+                // Bar Chart Script
+                var ctx = document.getElementById('bar-chart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Grafik Pemantauan Jentik Nyamuk'],
+                        datasets: [{
+                                label: 'Bebas Jentik',
+                                data: [
+                                    <?php
+                                    $sqlTidakAdaJentik = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 0";
+                                    $queryTidakAdaJentik = $dbh->prepare($sqlTidakAdaJentik);
+                                    $queryTidakAdaJentik->execute();
+                                    $resultTidakAdaJentik = $queryTidakAdaJentik->fetch(PDO::FETCH_ASSOC);
+                                    echo htmlentities($resultTidakAdaJentik['total']);
+                                    ?>
+                                ],
+                                backgroundColor: '#3498db',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Ada Jentik',
+                                data: [
+                                    <?php
+                                    $sqlTerdapatJentik = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 1";
+                                    $queryTerdapatJentik = $dbh->prepare($sqlTerdapatJentik);
+                                    $queryTerdapatJentik->execute();
+                                    $resultTerdapatJentik = $queryTerdapatJentik->fetch(PDO::FETCH_ASSOC);
+                                    echo htmlentities($resultTerdapatJentik['total']);
+                                    ?>
+                                ],
+                                backgroundColor: '#FF4141',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Belum Terpantau',
+                                data: [
+                                    <?php
+                                    $sqlBelumTerpantau = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NULL OR status_jentik = ''";
+                                    $queryBelumTerpantau = $dbh->prepare($sqlBelumTerpantau);
+                                    $queryBelumTerpantau->execute();
+                                    $resultBelumTerpantau = $queryBelumTerpantau->fetch(PDO::FETCH_ASSOC);
+                                    echo htmlentities($resultBelumTerpantau['total']);
+                                    ?>
+                                ],
+                                backgroundColor: '#F90',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    // options: {
+                    //     scales: {
+                    //         y: {
+                    //             beginAtZero: true,
+                    //             ticks: {
+                    //                 stepSize: 1,
+                    //                 callback: function(value) {
+                    //                     return value.toFixed(0) + ' Rumah';
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    // }
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                    callback: function(value) {
+                                        return value.toFixed(0) + ' Rumah';
+                                    }
+                                }
+                            }
+                        },
+                        layout: {
+                            padding: {
+                                left: 20,
+                                right: 20,
+                                top: 0,
+                                bottom: 0
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 20,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            })
         </script>
     </body>
 

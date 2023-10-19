@@ -135,7 +135,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                     <?php $cnt = $cnt + 1;
                                                         }
                                                     } else {
-                                                        echo '<tr><td colspan="8" class="text-center">Tidak ada laporan jentik masuk</td></tr>';
+                                                        echo '<tr><td colspan="8" class="text-center">Tidak ada data laporan jentik masuk</td></tr>';
                                                     }
                                                     ?>
                                                 </tbody>
