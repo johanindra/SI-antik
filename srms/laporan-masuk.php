@@ -92,9 +92,44 @@ if (strlen($_SESSION['alogin']) == "") {
                                 <!-- Panel tabel -->
                                 <div class="panel">
                                     <div class="panel-heading">
-                                        <div class="panel-title">
-                                            <h5>Data Laporan Jentik Nyamuk</h5>
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="panel-title">
+                                                        <h5>Data Laporan Jentik Nyamuk</h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-md-12 text-right">
+                                                    <form method="post" class="form-inline">
+                                                        <label>Pilih Bulan dan Tahun: </label>
+                                                        <select name="filter_month" id="filter_month" class="form-control">
+                                                            <?php
+                                                            $currentMonth = date('m');
+                                                            $currentYear = date('Y');
+
+                                                            for ($i = 1; $i <= 12; $i++) {
+                                                                $selected = ($i == $currentMonth) ? "selected" : "";
+                                                                echo "<option value='$i' $selected>" . date("F", mktime(0, 0, 0, $i, 1)) . "</option>";
+                                                            }
+                                                            ?>
+                                                        </select>
+                                                        <select name="filter_year" id="filter_year" class="form-control">
+                                                            <?php
+                                                            for ($i = $currentYear; $i >= ($currentYear - 5); $i--) {
+                                                                $selected = ($i == $currentYear) ? "selected" : "";
+                                                                echo "<option value='$i' $selected>$i</option>";
+                                                            }
+                                                            ?>
+                                                        </select>
+                                                        <input type="submit" name="lihat" value="Lihat" class="btn btn-primary"><br>
+                                                        <small>Filter untuk melihat laporan</small>
+                                                    </form>
+                                                </div>
+                                            </div>
                                         </div>
+
                                     </div>
                                     <div class="panel-body p-20">
                                         <div class="table-responsive">
@@ -112,8 +147,12 @@ if (strlen($_SESSION['alogin']) == "") {
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                    // Query SQL untuk mengambil data jika status_jentik kosong
-                                                    $sql = "SELECT NIK, nama_lengkap, rt_rw, tanggal_laporan FROM pemantauan_jentik WHERE status_jentik is null";
+                                                    // Filter berdasarkan bulan dan tahun
+                                                    $filterMonth = isset($_POST['filter_month']) ? $_POST['filter_month'] : $currentMonth;
+                                                    $filterYear = isset($_POST['filter_year']) ? $_POST['filter_year'] : $currentYear;
+
+                                                    // Query SQL untuk mengambil data jika status_jentik kosong dan sesuai dengan filter
+                                                    $sql = "SELECT NIK, nama_lengkap, rt_rw, tanggal_laporan FROM pemantauan_jentik WHERE status_jentik IS NULL AND MONTH(tanggal_laporan) = $filterMonth AND YEAR(tanggal_laporan) = $filterYear";
                                                     $query = $dbh->prepare($sql);
                                                     $query->execute();
                                                     $results = $query->fetchAll(PDO::FETCH_OBJ);
@@ -135,7 +174,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                     <?php $cnt = $cnt + 1;
                                                         }
                                                     } else {
-                                                        echo '<tr><td colspan="8" class="text-center">Tidak ada data laporan jentik masuk</td></tr>';
+                                                        echo '<tr><td colspan="8" class="text-center">Tidak ada data laporan jentik masuk pada bulan ' . date("F", mktime(0, 0, 0, $filterMonth, 1)) . ' tahun ' . $filterYear . '</td></tr>';
                                                     }
                                                     ?>
                                                 </tbody>
@@ -172,7 +211,6 @@ if (strlen($_SESSION['alogin']) == "") {
                 });
             });
         </script>
-
         <!-- ... -->
     </body>
 

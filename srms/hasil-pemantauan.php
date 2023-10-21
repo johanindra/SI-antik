@@ -2,19 +2,23 @@
 session_start();
 error_reporting(0);
 include('../server/koneksi.php');
+
+// Periksa apakah pengguna telah login
 if (strlen($_SESSION['alogin']) == "") {
     header("Location: index.php");
 } else {
-?>
 
+?>
     <!DOCTYPE html>
     <html lang="id">
 
     <head>
+        <!-- Bagian head HTML disini -->
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Admin - Hasil Pemantauan</title>
+        <!-- Sisipkan file CSS yang diperlukan -->
         <link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
         <link rel="stylesheet" href="css/font-awesome.min.css" media="screen">
         <link rel="stylesheet" href="css/animate-css/animate.min.css" media="screen">
@@ -23,6 +27,7 @@ if (strlen($_SESSION['alogin']) == "") {
         <link rel="stylesheet" href="css/main.css" media="screen">
         <script src="js/modernizr/modernizr.min.js"></script>
         <style>
+            /* Gaya khusus */
             .errorWrap {
                 padding: 10px;
                 margin: 0 0 20px 0;
@@ -44,15 +49,19 @@ if (strlen($_SESSION['alogin']) == "") {
     </head>
 
     <body class="top-navbar-fixed">
+        <!-- Wrapper utama -->
         <div class="main-wrapper">
-            <!-- ========== TOP NAVBAR ========== -->
+            <!-- Navbar -->
             <?php include('includes/topbar.php'); ?>
-            <!-- ========== WRAPPER FOR BOTH SIDEBARS & MAIN CONTENT ========== -->
+            <!-- Wrapper untuk sidebar dan konten utama -->
             <div class="content-wrapper">
                 <div class="content-container">
                     <?php include('includes/leftbar.php'); ?>
+
+                    <!-- Konten utama -->
                     <div class="main-page">
                         <div class="container-fluid">
+                            <!-- Judul halaman dan breadcrumb -->
                             <div class="row page-title-div">
                                 <div class="col-md-6">
                                     <h2 class="title">Hasil Pemantauan</h2>
@@ -67,84 +76,123 @@ if (strlen($_SESSION['alogin']) == "") {
                                 </div>
                             </div>
                         </div>
-
+                        <!-- Bagian tabel -->
                         <section class="section">
                             <div class="container-fluid">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="panel">
-                                            <div class="panel-heading">
-                                                <div class="panel-title">
-                                                    <h5>Data Hasil Pemantauan Jentik</h5>
+                                <!-- Menampilkan pesan sukses atau error -->
+                                <?php if ($msg) { ?>
+                                    <div class="alert alert-success left-icon-alert" role="alert">
+                                        <strong>Sukses!</strong><?php echo htmlentities($msg); ?>
+                                    </div>
+                                <?php } else if ($error) { ?>
+                                    <div class="alert alert-danger left-icon-alert" role="alert">
+                                        <strong>Error!</strong> <?php echo htmlentities($error); ?>
+                                    </div>
+                                <?php } ?>
+                                <!-- Panel tabel -->
+                                <div class="panel">
+                                    <div class="panel-heading">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="panel-title">
+                                                        <h5>Data Hasil Pemantauan Jentik</h5>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <?php if ($msg) { ?>
-                                                <div class="alert alert-success left-icon-alert" role="alert">
-                                                    <strong>uwaw!</strong><?php echo htmlentities($msg); ?>
-                                                </div>
-                                            <?php } else if ($error) { ?>
-                                                <div class="alert alert-danger left-icon-alert" role="alert">
-                                                    <strong>uwaw!</strong> <?php echo htmlentities($error); ?>
-                                                </div>
-                                            <?php } ?>
-                                            <div class="panel-body p-20">
-                                                <table id="example" class="display table table-striped table-bordered" cellspacing="0" width="100%">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>#</th>
-                                                            <th>NIK</th>
-                                                            <th>Nama Lengkap</th>
-                                                            <th>RT/RW</th>
-                                                            <th>Tanggal Laporan</th>
-                                                            <th>Tanggal Pemantauan</th>
-                                                            <th>Status</th>
-                                                            <th>Detail</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php
-                                                        // Mengambil data hanya jika status_jentik tidak kosong
-                                                        $sql = "SELECT * FROM pemantauan_jentik WHERE status_jentik IS NOT NULL ";
-                                                        $query = $dbh->prepare($sql);
-                                                        $query->execute();
-                                                        $results = $query->fetchAll(PDO::FETCH_OBJ);
-                                                        $cnt = 1;
-                                                        if ($query->rowCount() > 0) {
-                                                            foreach ($results as $result) {
-                                                        ?>
-                                                                <tr>
-                                                                    <td><?php echo htmlentities($cnt); ?></td>
-                                                                    <td><?php echo htmlentities($result->NIK); ?></td>
-                                                                    <td><?php echo htmlentities($result->nama_lengkap); ?></td>
-                                                                    <td><?php echo htmlentities($result->rt_rw); ?></td>
-                                                                    <td><?php echo htmlentities($result->tanggal_laporan); ?></td>
-                                                                    <td><?php echo htmlentities($result->tanggal_pemantauan); ?></td>
-                                                                    <td><?php
-                                                                        if ($result->status_jentik == 0) {
-                                                                            echo htmlentities('Bebas Jentik');
-                                                                        } elseif ($result->status_jentik == 1) {
-                                                                            echo htmlentities('Ada Jentik');
-                                                                        } else {
-                                                                            echo htmlentities('Tidak Ada');
-                                                                        }
-                                                                        ?></td>
-                                                                    <td>
-                                                                        <!-- Tautan ke halaman detail-pemantauan.php -->
-                                                                        <a href="detail-pemantauan.php?NIK=<?php echo htmlentities($result->NIK); ?>" title="Lihat Detail">
-                                                                            <i class="fa fa-eye"></i>
-                                                                        </a>
-                                                                    </td>
-                                                                </tr>
-                                                        <?php
-                                                                $cnt = $cnt + 1;
+                                            <div class="row mt-3">
+                                                <div class="col-md-12 text-right">
+                                                    <form method="post" class="form-inline">
+                                                        <label>Pilih Bulan dan Tahun: </label>
+                                                        <select name="filter_month" id="filter_month" class="form-control">
+                                                            <?php
+                                                            $currentMonth = date('m');
+                                                            $currentYear = date('Y');
+
+                                                            for ($i = 1; $i <= 12; $i++) {
+                                                                $selected = ($i == $currentMonth) ? "selected" : "";
+                                                                echo "<option value='$i' $selected>" . date("F", mktime(0, 0, 0, $i, 1)) . "</option>";
                                                             }
-                                                        } else {
-                                                            echo '<tr><td colspan="8" class="text-center">Tidak ada data hasil pemantauan</td></tr>';
-                                                        }
-                                                        ?>
-                                                    </tbody>
-                                                </table>
+                                                            ?>
+                                                        </select>
+                                                        <select name="filter_year" id="filter_year" class="form-control">
+                                                            <?php
+                                                            for ($i = $currentYear; $i >= ($currentYear - 5); $i--) {
+                                                                $selected = ($i == $currentYear) ? "selected" : "";
+                                                                echo "<option value='$i' $selected>$i</option>";
+                                                            }
+                                                            ?>
+                                                        </select>
+                                                        <input type="submit" name="lihat" value="Lihat" class="btn btn-primary"><br>
+                                                        <small>Filter untuk melihat hasil pemantauan</small>
+                                                    </form>
+                                                </div>
                                             </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="panel-body p-20">
+                                        <div class="table-responsive">
+                                            <!-- Tabel menggunakan DataTables -->
+                                            <table id="example" class="display table table-striped table-bordered" cellspacing="0" width="100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>NIK</th>
+                                                        <th>Nama Lengkap</th>
+                                                        <th>RT/RW</th>
+                                                        <th>Tanggal Laporan</th>
+                                                        <th>Tanggal Pemantauan</th>
+                                                        <th>Status</th>
+                                                        <!-- <th>Detail</th> -->
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php
+                                                    // Filter berdasarkan bulan dan tahun
+                                                    $filterMonth = isset($_POST['filter_month']) ? $_POST['filter_month'] : $currentMonth;
+                                                    $filterYear = isset($_POST['filter_year']) ? $_POST['filter_year'] : $currentYear;
+
+                                                    // Query SQL untuk mengambil data jika status_jentik tidak kosong dan sesuai dengan filter
+                                                    $sql = "SELECT * FROM pemantauan_jentik WHERE status_jentik IS NOT NULL AND MONTH(tanggal_pemantauan) = $filterMonth AND YEAR(tanggal_pemantauan) = $filterYear";
+                                                    $query = $dbh->prepare($sql);
+                                                    $query->execute();
+                                                    $results = $query->fetchAll(PDO::FETCH_OBJ);
+                                                    $cnt = 1;
+                                                    if ($query->rowCount() > 0) {
+                                                        foreach ($results as $result) { ?>
+                                                            <tr>
+                                                                <td><?php echo htmlentities($cnt); ?></td>
+                                                                <td><?php echo htmlentities($result->NIK); ?></td>
+                                                                <td><?php echo htmlentities($result->nama_lengkap); ?></td>
+                                                                <td><?php echo htmlentities($result->rt_rw); ?></td>
+                                                                <td><?php echo htmlentities($result->tanggal_laporan); ?></td>
+                                                                <td><?php echo htmlentities(date('d F Y', strtotime($result->tanggal_pemantauan))); ?></td>
+                                                                <td><?php
+                                                                    if ($result->status_jentik == 0) {
+                                                                        echo htmlentities('Bebas Jentik');
+                                                                    } elseif ($result->status_jentik == 1) {
+                                                                        echo htmlentities('Ada Jentik');
+                                                                    } else {
+                                                                        echo htmlentities('Tidak Ada');
+                                                                    }
+                                                                    ?></td>
+                                                                <!-- <td> -->
+                                                                <!-- Tautan ke halaman detail-pemantauan.php -->
+                                                                <!-- <a href="detail-pemantauan.php?NIK=<?php echo htmlentities($result->NIK); ?>" title="Lihat Detail">
+                                                                        <i class="fa fa-eye"></i>
+                                                                    </a>
+                                                                </td> -->
+                                                            </tr>
+                                                    <?php $cnt = $cnt + 1;
+                                                        }
+                                                    } else {
+                                                        echo '<tr><td colspan="8" class="text-center">Tidak ada data hasil pemantauan pada bulan ' . date("F", mktime(0, 0, 0, $filterMonth, 1)) . ' tahun ' . $filterYear . '</td></tr>';
+                                                    }
+
+                                                    ?>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
@@ -154,7 +202,7 @@ if (strlen($_SESSION['alogin']) == "") {
                 </div>
             </div>
         </div>
-
+        <!-- Bagian skrip JS dan penutup HTML disini -->
         <!-- ========== COMMON JS FILES ========== -->
         <script src="js/jquery/jquery-2.2.4.min.js"></script>
         <script src="js/bootstrap/bootstrap.min.js"></script>
@@ -168,6 +216,7 @@ if (strlen($_SESSION['alogin']) == "") {
 
         <!-- ========== THEME JS ========== -->
         <script src="js/main.js"></script>
+        <!-- ========== CUSTOM SCRIPT ========== -->
         <script>
             $(document).ready(function() {
                 $('#example').DataTable({
@@ -175,6 +224,7 @@ if (strlen($_SESSION['alogin']) == "") {
                 });
             });
         </script>
+        <!-- ... -->
     </body>
 
     </html>

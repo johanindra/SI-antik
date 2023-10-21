@@ -53,8 +53,18 @@ if (strlen($_SESSION['alogin']) == "") {
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%;">
                                         <a class="dashboard-stat bg-warning" href="laporan-masuk.php">
                                             <?php
+                                            // Kueri untuk menghitung total laporan masuk per bulan
                                             $sql = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NULL";
+
+                                            // Tambahkan filter berdasarkan bulan dan tahun
+                                            $sql .= " AND MONTH(tanggal_laporan) = :filterMonth AND YEAR(tanggal_laporan) = :filterYear";
+
                                             $query = $dbh->prepare($sql);
+
+                                            // Bind nilai parameter
+                                            $query->bindParam(':filterMonth', date('m'), PDO::PARAM_INT);
+                                            $query->bindParam(':filterYear', date('Y'), PDO::PARAM_INT);
+
                                             $query->execute();
                                             $result = $query->fetch(PDO::FETCH_ASSOC);
                                             $totalLaporanMasuk = $result['total'];
@@ -62,17 +72,28 @@ if (strlen($_SESSION['alogin']) == "") {
                                             <span class="number counter">
                                                 <?php echo htmlentities($totalLaporanMasuk); ?>
                                             </span>
-                                            <span class="name">Laporan Masuk</span>
+                                            <span class="name"><small>Laporan Masuk Bulan <?php echo date("F Y", mktime(0, 0, 0, $filterMonth, 1, $filterYear)); ?></small></span>
                                             <span class="bg-icon"><i class="fa fa-bank"></i></span>
                                         </a>
+
                                         <!-- /.dashboard-stat -->
                                     </div>
-
+                                    <!-- hasil pemantauan -->
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%">
                                         <a class="dashboard-stat bg-success" href="hasil-pemantauan.php">
                                             <?php
+                                            // Kueri untuk menghitung total hasil pemantauan per bulan
                                             $sql = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NOT NULL";
+
+                                            // Tambahkan filter berdasarkan bulan dan tahun
+                                            $sql .= " AND MONTH(tanggal_pemantauan) = :filterMonth AND YEAR(tanggal_pemantauan) = :filterYear";
+
                                             $query = $dbh->prepare($sql);
+
+                                            // Bind nilai parameter
+                                            $query->bindParam(':filterMonth', date('m'), PDO::PARAM_INT);
+                                            $query->bindParam(':filterYear', date('Y'), PDO::PARAM_INT);
+
                                             $query->execute();
                                             $result = $query->fetch(PDO::FETCH_ASSOC);
                                             $totalHasilPemantauan = $result['total'];
@@ -81,9 +102,10 @@ if (strlen($_SESSION['alogin']) == "") {
                                             <span class="number counter">
                                                 <?php echo htmlentities($totalHasilPemantauan); ?>
                                             </span>
-                                            <span class="name">Hasil Pemantauan</span>
+                                            <span class="name"><small>Hasil Pemantauan Bulan <?php echo date("F Y", mktime(0, 0, 0, $filterMonth, 1, $filterYear)); ?></small></span>
                                             <span class="bg-icon"><i class="fa fa-file-text"></i></span>
                                         </a>
+
                                         <!-- /.dashboard-stat -->
                                     </div>
                                 </div>
@@ -94,9 +116,13 @@ if (strlen($_SESSION['alogin']) == "") {
                                     <div class="col-lg-12">
                                         <div class="panel" style="margin-top:2%;">
                                             <div class="panel-body" style="text-align: center; margin-bottom: 20px;">
-                                                <h4 class="mt-0" style="font-family: 'Arial', sans-serif; font-size: 24px; font-weight: bold; color: #8D00FF;">Grafik Pemantauan</h4>
+                                                <h4 class="mt-0" style="font-family: 'Arial', sans-serif; font-size: 24px; font-weight: bold; color: #8D00FF;">Grafik Pemantauan Bulan <?php echo date('F Y'); ?></h4>
                                                 <canvas id="bar-chart" style="height: 300px;"></canvas>
-                                                <p style="font-family: 'Arial', sans-serif; font-size: 13px; color: #333; margin-top: 5px;">Grafik di atas merupakan grafik pemantauan jentik nyamuk di desa Bulusari.</p>
+                                                <small style="font-family: 'Arial', sans-serif; color: #333; margin-top: 5px;">
+                                                    Grafik di atas merupakan grafik pemantauan jentik nyamuk di desa Bulusari pada
+                                                    <?php echo date('F Y'); ?>.
+                                                </small>
+
                                             </div>
 
                                         </div>
@@ -167,6 +193,33 @@ if (strlen($_SESSION['alogin']) == "") {
                 toastr["success"]("ADMIN Dashboard");
             });
 
+            <?php
+            // Ambil bulan dan tahun saat ini
+            $currentMonth = date('m');
+            $currentYear = date('Y');
+
+            // Query untuk jumlah data Bebas Jentik bulan ini
+            $sqlTidakAdaJentik = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 0 AND MONTH(tanggal_pemantauan) = $currentMonth AND YEAR(tanggal_pemantauan) = $currentYear";
+            $queryTidakAdaJentik = $dbh->prepare($sqlTidakAdaJentik);
+            $queryTidakAdaJentik->execute();
+            $resultTidakAdaJentik = $queryTidakAdaJentik->fetch(PDO::FETCH_ASSOC);
+            $totalTidakAdaJentik = htmlentities($resultTidakAdaJentik['total']);
+
+            // Query untuk jumlah data Ada Jentik bulan ini
+            $sqlTerdapatJentik = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 1 AND MONTH(tanggal_pemantauan) = $currentMonth AND YEAR(tanggal_pemantauan) = $currentYear";
+            $queryTerdapatJentik = $dbh->prepare($sqlTerdapatJentik);
+            $queryTerdapatJentik->execute();
+            $resultTerdapatJentik = $queryTerdapatJentik->fetch(PDO::FETCH_ASSOC);
+            $totalTerdapatJentik = htmlentities($resultTerdapatJentik['total']);
+
+            // Query untuk jumlah data Belum Terpantau bulan ini
+            $sqlBelumTerpantau = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NULL AND tanggal_pemantauan IS NULL AND MONTH(tanggal_laporan) = $currentMonth AND YEAR(tanggal_laporan) = $currentYear";
+            $queryBelumTerpantau = $dbh->prepare($sqlBelumTerpantau);
+            $queryBelumTerpantau->execute();
+            $resultBelumTerpantau = $queryBelumTerpantau->fetch(PDO::FETCH_ASSOC);
+            $totalBelumTerpantau = htmlentities($resultBelumTerpantau['total']);
+            ?>
+
             $(function() {
                 // Bar Chart Script
                 var ctx = document.getElementById('bar-chart').getContext('2d');
@@ -176,61 +229,24 @@ if (strlen($_SESSION['alogin']) == "") {
                         labels: ['Grafik Pemantauan Jentik Nyamuk'],
                         datasets: [{
                                 label: 'Bebas Jentik',
-                                data: [
-                                    <?php
-                                    $sqlTidakAdaJentik = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 0";
-                                    $queryTidakAdaJentik = $dbh->prepare($sqlTidakAdaJentik);
-                                    $queryTidakAdaJentik->execute();
-                                    $resultTidakAdaJentik = $queryTidakAdaJentik->fetch(PDO::FETCH_ASSOC);
-                                    echo htmlentities($resultTidakAdaJentik['total']);
-                                    ?>
-                                ],
+                                data: [<?php echo $totalTidakAdaJentik; ?>],
                                 backgroundColor: '#3498db',
                                 borderWidth: 1
                             },
                             {
                                 label: 'Ada Jentik',
-                                data: [
-                                    <?php
-                                    $sqlTerdapatJentik = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 1";
-                                    $queryTerdapatJentik = $dbh->prepare($sqlTerdapatJentik);
-                                    $queryTerdapatJentik->execute();
-                                    $resultTerdapatJentik = $queryTerdapatJentik->fetch(PDO::FETCH_ASSOC);
-                                    echo htmlentities($resultTerdapatJentik['total']);
-                                    ?>
-                                ],
+                                data: [<?php echo $totalTerdapatJentik; ?>],
                                 backgroundColor: '#FF4141',
                                 borderWidth: 1
                             },
                             {
                                 label: 'Belum Terpantau',
-                                data: [
-                                    <?php
-                                    $sqlBelumTerpantau = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NULL OR status_jentik = ''";
-                                    $queryBelumTerpantau = $dbh->prepare($sqlBelumTerpantau);
-                                    $queryBelumTerpantau->execute();
-                                    $resultBelumTerpantau = $queryBelumTerpantau->fetch(PDO::FETCH_ASSOC);
-                                    echo htmlentities($resultBelumTerpantau['total']);
-                                    ?>
-                                ],
+                                data: [<?php echo $totalBelumTerpantau; ?>],
                                 backgroundColor: '#F90',
                                 borderWidth: 1
                             }
                         ]
                     },
-                    // options: {
-                    //     scales: {
-                    //         y: {
-                    //             beginAtZero: true,
-                    //             ticks: {
-                    //                 stepSize: 1,
-                    //                 callback: function(value) {
-                    //                     return value.toFixed(0) + ' Rumah';
-                    //                 }
-                    //             }
-                    //         }
-                    //     }
-                    // }
                     options: {
                         scales: {
                             y: {
@@ -265,7 +281,7 @@ if (strlen($_SESSION['alogin']) == "") {
                         }
                     }
                 });
-            })
+            });
         </script>
     </body>
 
