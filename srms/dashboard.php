@@ -218,6 +218,14 @@ if (strlen($_SESSION['alogin']) == "") {
             $queryBelumTerpantau->execute();
             $resultBelumTerpantau = $queryBelumTerpantau->fetch(PDO::FETCH_ASSOC);
             $totalBelumTerpantau = htmlentities($resultBelumTerpantau['total']);
+
+
+            // Query untuk jumlah total pemantauan bulan ini
+            // $sqlTotalPemantauan = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NOT NULL AND MONTH(tanggal_pemantauan) = $currentMonth AND YEAR(tanggal_pemantauan) = $currentYear";
+            // $queryTotalPemantauan = $dbh->prepare($sqlTotalPemantauan);
+            // $queryTotalPemantauan->execute();
+            // $resultTotalPemantauan = $queryTotalPemantauan->fetch(PDO::FETCH_ASSOC);
+            // $totalTotalPemantauan = htmlentities($resultTotalPemantauan['total']);
             ?>
 
             $(function() {
@@ -230,13 +238,13 @@ if (strlen($_SESSION['alogin']) == "") {
                         datasets: [{
                                 label: 'Bebas Jentik',
                                 data: [<?php echo $totalTidakAdaJentik; ?>],
-                                backgroundColor: '#3498db',
+                                backgroundColor: '#0047FF',
                                 borderWidth: 1
                             },
                             {
                                 label: 'Ada Jentik',
                                 data: [<?php echo $totalTerdapatJentik; ?>],
-                                backgroundColor: '#FF4141',
+                                backgroundColor: '#F00',
                                 borderWidth: 1
                             },
                             {
@@ -245,6 +253,14 @@ if (strlen($_SESSION['alogin']) == "") {
                                 backgroundColor: '#F90',
                                 borderWidth: 1
                             }
+                            // ,
+                            // ini untuk total seluruh pemantauan
+                            // {
+                            // label: 'Total Pemantauan', 
+                            //     data: [<?php echo $totalTotalPemantauan; ?>],
+                            //     backgroundColor: '#4CAF50',
+                            //     borderWidth: 1
+                            // }
                         ]
                     },
                     options: {

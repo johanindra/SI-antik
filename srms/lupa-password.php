@@ -1,3 +1,59 @@
+<?php
+// Sisipkan file koneksi.php untuk menghubungkan ke database
+include("../server/koneksi.php");
+
+// Periksa apakah form dikirimkan
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Tangkap nilai dari formulir
+  $username = $_POST['logUsername'];
+  $newPassword = $_POST['logPassword'];
+  $confirmedPassword = $_POST['logPasswordkonfirm'];
+
+  // Validasi apakah nama pengguna ada dalam tabel admin
+  $stmt = $dbh->prepare("SELECT * FROM admin WHERE username = :username");
+  $stmt->bindParam(':username', $username);
+  $stmt->execute();
+
+  if ($stmt->rowCount() > 0) {
+    // Nama pengguna ada, perbarui kata sandi
+    if ($newPassword === $confirmedPassword) {
+      $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+      // Perbarui password dan tanggal_update_password
+      $updateSql = "UPDATE admin SET password = :password, tanggal_update_password = NOW() WHERE username = :username";
+      $updateStmt = $dbh->prepare($updateSql);
+      $updateStmt->bindParam(':password', $hashedPassword);
+      $updateStmt->bindParam(':username', $username);
+
+      if ($updateStmt->execute()) {
+        // Kata sandi berhasil diperbarui, arahkan ke index.php
+        $successMessage = "Password Berhasil diperbarui!";
+        echo '<script>';
+        echo 'alert("' . $successMessage . '");';
+        echo 'window.location.href = "index.php";';
+        echo '</script>';
+        exit(); // Pastikan tidak ada kode lain yang dieksekusi setelah pengalihan
+      } else {
+        echo "Error updating password: " . $updateStmt->errorInfo()[2];
+      }
+    } else {
+      $errorMessage = "Password Baru dan Konfirmasi Password tidak cocok";
+      echo '<script>';
+      echo 'alert("' . $errorMessage . '");';
+      echo 'window.location.href = "lupa-password.php";';
+      echo '</script>';
+    }
+  } else {
+    $errorMessage = "Username salah!";
+    echo '<script>';
+    echo 'alert("' . $errorMessage . '");';
+    echo 'window.location.href = "lupa-password.php";';
+    echo '</script>';
+  }
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -18,14 +74,15 @@
         <div class="top-header">
           <h3>Lupa Password</h3>
         </div>
-        <form action="index.php" method="POST">
+        <!-- Mengubah action ke diri sendiri -->
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
           <div class="input-group">
             <div class="input-field">
-              <input type="text" class="input-box" id="logUsername" required />
+              <input type="text" class="input-box" id="logUsername" name="logUsername" required />
               <label for="logUsername">Username</label>
             </div>
             <div class="input-field">
-              <input type="password" class="input-box" id="logPassword" required />
+              <input type="password" class="input-box" id="logPassword" name="logPassword" required />
               <label for="logPassword">Password Baru</label>
               <div class="eye-area">
                 <div class="eye-box" onclick="myLogPassword()">
@@ -35,7 +92,7 @@
               </div>
             </div>
             <div class="input-field">
-              <input type="password" class="input-box" id="logPasswordkonfirm" required />
+              <input type="password" class="input-box" id="logPasswordkonfirm" name="logPasswordkonfirm" required />
               <label for="logPasswordkonfirm">Konfirmasi Password</label>
               <div class="eye-area">
                 <div class="eye-box" onclick="myLogPasswordkonfirm()">
@@ -44,10 +101,8 @@
                 </div>
               </div>
             </div>
-            <!-- <div class="remember">
-              <input type="checkbox" id="formCheck" class="check" />
-              <label for="formCheck"> Remember Me</label>
-            </div> -->
+            <!-- Menambahkan input hidden untuk menentukan bahwa ini lupa password -->
+            <input type="hidden" name="forgotPassword" value="1" />
             <div class="input-field-bt">
               <input type="submit" class="input-submit" value="Simpan" />
             </div>
@@ -55,6 +110,7 @@
               <a href="verifikasi-otp.php">Kembali</a>
             </div>
           </div>
+        </form>
       </div>
       <!-- <small class="text-si-antik">-- SI-antik --</small> -->
     </div>
