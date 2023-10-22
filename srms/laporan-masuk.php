@@ -167,7 +167,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                 <td><?php echo htmlentities($result->tanggal_laporan); ?></td>
                                                                 <td style="text-align: center;">
                                                                     <a href="detail-laporan.php?NIK=<?php echo htmlentities($result->NIK); ?>">
-                                                                        <img src="btn-edit.png" alt="Detail" title="Detail" class="btn-edit-img">
+                                                                        <img src="btn-view.png" alt="Detail" title="Detail Laporan" class="btn-edit-img">
                                                                     </a>
                                                                 </td>
                                                             </tr>

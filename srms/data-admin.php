@@ -46,7 +46,7 @@ if (strlen($_SESSION['alogin']) == "") {
     <body class="top-navbar-fixed">
         <div class="main-wrapper">
             <!-- ========== TOP NAVBAR ========== -->
-            <?php include('includes/topbar.php'); ?>
+            <?php include('includes/topbar-admin.php'); ?>
             <!-- ========== WRAPPER FOR BOTH SIDEBARS & MAIN CONTENT ========== -->
             <div class="content-wrapper">
                 <div class="content-container">
@@ -61,7 +61,7 @@ if (strlen($_SESSION['alogin']) == "") {
                             <div class="row breadcrumb-div">
                                 <div class="col-md-6">
                                     <ul class="breadcrumb">
-                                        <li><a href="dashboard.php"><i class="fa fa-home"></i> Home</a></li>
+                                        <li><a href="dashboard-admin.php"><i class="fa fa-home"></i> Home</a></li>
                                         <li> Data Admin</li>
                                     </ul>
                                 </div>
@@ -153,17 +153,19 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                         <td><?php echo htmlentities($result->username); ?></td>
                                                                         <td><?php echo htmlentities($result->tanggal_masuk); ?></td>
                                                                         <td><?php echo htmlentities($result->tanggal_update_password); ?></td>
-                                                                        <td>
-                                                                            <a href="detail-laporan.php?NIK=<?php echo htmlentities($result->id_admin); ?>">
+                                                                        <td style="text-align: center;">
+                                                                            <!-- <a href="detail-laporan.php?NIK=<?php echo htmlentities($result->id_admin); ?>">
                                                                                 <img src="btn-edit.png" alt="Detail" title="Detail" class="btn-edit-img">
-                                                                            </a>
-                                                                            <a href="#" onclick="confirmDelete('<?php echo htmlentities($result->id_admin); ?>', this)" title="Hapus">
-                                                                                <img src="btn-delete.png" alt="Hapus" class="btn-delete-img"></a>
+                                                                            </a> -->
+                                                                            <a href="#" onclick="confirmDelete('<?php echo htmlentities($result->id_admin); ?>', this)" title="Hapus Data">
+                                                                                <img src="btn-delet.png" alt="Hapus Data" class="btn-delete-img"></a>
                                                                         </td>
                                                                     </tr>
                                                             <?php
                                                                     $cnt = $cnt + 1;
                                                                 }
+                                                            } else {
+                                                                echo '<tr><td colspan="8" class="text-center">Tidak ada data admin</td></tr>';
                                                             }
                                                             ?>
                                                         </tbody>

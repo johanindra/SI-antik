@@ -2,8 +2,8 @@
   <div class="sidebar-content">
     <div class="user-info closed">
       <img src="http://placehold.it/90/c2c2c2?text=User" alt="John Doe" class="img-circle profile-img" />
-      <h6 class="title">Admin</h6>
-      <small class="info">Admin SI-antik</small>
+      <h6 class="title">Admin Desa</h6>
+      <small class="info">Admin Desa Bulusari</small>
     </div>
     <!-- /.user-info -->
 
