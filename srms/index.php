@@ -24,17 +24,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Memeriksa apakah password sesuai dengan password terenkripsi di database
         if (password_verify($password, $result['password']) || $password == $result['password']) {
-            $nama_lengkap = $result['username'];
+            // $nama_lengkap = $result['username'];
 
             // Periksa peran pengguna
             if ($result['role'] == 'super_admin') {
                 // Jika super_admin, arahkan ke dashboard-admin.php
-                $successMessage = "Selamat datang, " . $nama_lengkap . " (Super Admin)!";
+                // $successMessage = "Selamat datang, " . $nama_lengkap . " (Super Admin)!";
                 header("Location: dashboard-admin.php?message=" . urlencode($successMessage));
                 exit();
             } else {
                 // Jika admin, arahkan ke dashboard.php
-                $successMessage = "Selamat datang, " . $nama_lengkap . "!";
+                // $successMessage = "Selamat datang, " . $nama_lengkap . "!";
                 header("Location: dashboard.php?message=" . urlencode($successMessage));
                 exit();
             }
@@ -49,9 +49,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Memeriksa apakah password sesuai dengan password terenkripsi di database
         if (password_verify($password, $result['password']) || $password == $result['password']) {
             // Asumsikan tidak ada kolom 'role' di tabel super_admin
-            $nama_lengkap = $result['username'];
+            // $nama_lengkap = $result['username'];
 
-            $successMessage = "Selamat datang, " . $nama_lengkap . " (Super Admin)!";
+            // $successMessage = "Selamat datang, " . $nama_lengkap . " (Super Admin)!";
             header("Location: dashboard-admin.php?message=" . urlencode($successMessage));
             exit();
         } else {
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } else {
         // Username salah
-        $errorMessage = "Username dan password salah!";
+        $errorMessage = "Admin tidak terdaftar!";
     }
 
     // Tampilkan pesan kesalahan
