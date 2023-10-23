@@ -174,7 +174,8 @@ if (strlen($_SESSION['alogin']) == "") {
                                                     <?php $cnt = $cnt + 1;
                                                         }
                                                     } else {
-                                                        echo '<tr><td colspan="8" class="text-center">Tidak ada data laporan jentik masuk pada bulan ' . date("F", mktime(0, 0, 0, $filterMonth, 1)) . ' tahun ' . $filterYear . '</td></tr>';
+                                                        // echo '<tr><td colspan="8" class="text-center">Tidak ada data laporan jentik masuk pada bulan ' . date("F", mktime(0, 0, 0, $filterMonth, 1)) . ' tahun ' . $filterYear . '</td></tr>';
+                                                        echo '<tr><td colspan="8" class="text-center">Tidak ada data laporan masuk</td></tr>';
                                                     }
                                                     ?>
                                                 </tbody>
