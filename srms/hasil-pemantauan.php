@@ -18,6 +18,8 @@ if (strlen($_SESSION['alogin']) == "") {
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Admin - Hasil Pemantauan</title>
+        <!-- logo -->
+        <link href="img/Logo.png" rel="shorcut icon">
         <!-- Sisipkan file CSS yang diperlukan -->
         <link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
         <link rel="stylesheet" href="css/font-awesome.min.css" media="screen">
@@ -143,7 +145,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                         <th>RT/RW</th>
                                                         <th>Tanggal Laporan</th>
                                                         <th>Tanggal Pemantauan</th>
-                                                        <th>Status</th>
+                                                        <th>Status Jentik</th>
                                                         <!-- <th>Detail</th> -->
                                                     </tr>
                                                 </thead>
@@ -166,7 +168,8 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                 <td><?php echo htmlentities($result->NIK); ?></td>
                                                                 <td><?php echo htmlentities($result->nama_lengkap); ?></td>
                                                                 <td><?php echo htmlentities($result->rt_rw); ?></td>
-                                                                <td><?php echo htmlentities($result->tanggal_laporan); ?></td>
+                                                                <!-- <td><?php echo htmlentities($result->tanggal_laporan); ?></td> -->
+                                                                <td><?php echo htmlentities(date('d F Y', strtotime($result->tanggal_laporan))); ?></td>
                                                                 <td><?php echo htmlentities(date('d F Y', strtotime($result->tanggal_pemantauan))); ?></td>
                                                                 <td><?php
                                                                     if ($result->status_jentik == 0) {

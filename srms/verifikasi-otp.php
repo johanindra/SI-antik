@@ -13,6 +13,8 @@ include("verifikasi.php");
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
     <title>Verifikasi Kode OTP - SI-antik</title>
+    <!-- logo -->
+    <link href="img/Logo.png" rel="shorcut icon">
 </head>
 
 <body>

@@ -15,6 +15,9 @@ if (strlen($_SESSION['alogin']) == "") {
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Data Admin</title>
+        <!-- logo -->
+        <link href="img/Logo.png" rel="shorcut icon">
+        <!-- style -->
         <link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
         <link rel="stylesheet" href="css/font-awesome.min.css" media="screen">
         <link rel="stylesheet" href="css/animate-css/animate.min.css" media="screen">
@@ -55,14 +58,14 @@ if (strlen($_SESSION['alogin']) == "") {
                         <div class="container-fluid">
                             <div class="row page-title-div">
                                 <div class="col-md-6">
-                                    <h2 class="title">Data Admin</h2>
+                                    <h2 class="title">Data Admin Kader</h2>
                                 </div>
                             </div>
                             <div class="row breadcrumb-div">
                                 <div class="col-md-6">
                                     <ul class="breadcrumb">
                                         <li><a href="dashboard-admin.php"><i class="fa fa-home"></i> Home</a></li>
-                                        <li> Data Admin</li>
+                                        <li> Data Admin Kader</li>
                                     </ul>
                                 </div>
                             </div>
@@ -74,7 +77,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                         <div class="panel">
                                             <div class="panel-heading">
                                                 <div class="panel-title">
-                                                    <h5>Tabel Data Admin</h5>
+                                                    <h5>Tabel Data Admin Kader</h5>
                                                 </div>
                                             </div>
                                             <?php if ($msg) { ?>
@@ -93,7 +96,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                     <div class="modal-dialog" role="document">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h5 class="modal-title" id="addAdminModalLabel">Tambah Admin</h5>
+                                                                <h5 class="modal-title" id="addAdminModalLabel">Tambah Admin Kader Jumantik</h5>
                                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                     <span aria-hidden="true">&times;</span>
                                                                 </button>
@@ -124,7 +127,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                     </div>
                                                 </div>
 
-                                                <div class="table-responsive">
+                                                <div class="table-responsive" style="margin-top: 10px;">
                                                     <table id="example" class="display table table-striped table-bordered" cellspacing="0" width="100%">
                                                         <!-- Tabel Anda di sini -->
                                                         <thead>
@@ -158,7 +161,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                                 <img src="btn-edit.png" alt="Detail" title="Detail" class="btn-edit-img">
                                                                             </a> -->
                                                                             <a href="#" onclick="confirmDelete('<?php echo htmlentities($result->id_admin); ?>', this)" title="Hapus Data">
-                                                                                <img src="btn-delet.png" alt="Hapus Data" class="btn-delete-img"></a>
+                                                                                <img src="img/btn-delet.png" alt="Hapus Data" class="btn-delete-img"></a>
                                                                         </td>
                                                                     </tr>
                                                             <?php
@@ -273,7 +276,13 @@ if (strlen($_SESSION['alogin']) == "") {
                                             updateAdminTable();
                                         } else {
                                             // Jika gagal, tampilkan pesan error
-                                            Swal.fire('Error', 'Gagal menambahkan admin', 'error');
+                                            if (response.message === "Username sudah digunakan") {
+                                                // Tampilkan pesan spesifik jika username sudah ada
+                                                Swal.fire('Error', 'Username sudah ada. Silakan pilih username lain.', 'error');
+                                            } else {
+                                                // Tampilkan pesan error umum
+                                                Swal.fire('Error', 'Gagal menambahkan admin', 'error');
+                                            }
                                         }
                                     },
                                     error: function() {
@@ -282,6 +291,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                     }
                                 });
                             });
+
                         });
 
                         function updateAdminTable() {

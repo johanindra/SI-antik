@@ -15,6 +15,9 @@ if (strlen($_SESSION['alogin']) == "") {
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Data User</title>
+        <!-- logo -->
+        <link href="img/Logo.png" rel="shorcut icon">
+        <!-- style -->
         <link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
         <link rel="stylesheet" href="css/font-awesome.min.css" media="screen">
         <link rel="stylesheet" href="css/animate-css/animate.min.css" media="screen">
@@ -111,7 +114,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                         <td><?php echo htmlentities($result->tanggal_masuk); ?></td>
                                                                         <td style="text-align: center;">
                                                                             <a href="#" onclick="confirmDelete('<?php echo htmlentities($result->id_user); ?>', this)" title="Hapus Data">
-                                                                                <img src="btn-delet.png" alt="Hapus Data" class="btn-delete-img"></a>
+                                                                                <img src="img/btn-delet.png" alt="Hapus Data" class="btn-delete-img"></a>
                                                                         </td>
                                                                     </tr>
                                                             <?php

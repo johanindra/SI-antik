@@ -15,7 +15,7 @@
         </li>
 
         <li>
-          <a href="data-admin.php"><i class="fa fa-user"></i> <span>Data Admin</span>
+          <a href="data-admin.php"><i class="fa fa-user"></i> <span>Data Admin Kader</span>
           </a>
         </li>
         <li>

@@ -18,20 +18,20 @@ $result = $query->fetch(PDO::FETCH_OBJ);
 // Fungsi untuk mengupdate status jentik dan tanggal_pemantauan
 function updateStatusJentik($dbh, $NIK, $status_jentik, $result)
 {
-    $checkSql = "SELECT * FROM hasil_pemantauan WHERE NIK = :NIK";
+    $checkSql = "SELECT * FROM pemantauan_jentik WHERE NIK = :NIK";
     $checkQuery = $dbh->prepare($checkSql);
     $checkQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
     $checkQuery->execute();
     $existingResult = $checkQuery->fetch(PDO::FETCH_OBJ);
 
     if ($existingResult) {
-        $updateSql = "UPDATE hasil_pemantauan SET status_jentik = :status_jentik, tanggal_pemantauan = NOW() WHERE NIK = :NIK";
+        $updateSql = "UPDATE pemantauan_jentik SET status_jentik = :status_jentik, tanggal_pemantauan = NOW() WHERE NIK = :NIK";
         $updateQuery = $dbh->prepare($updateSql);
         $updateQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
         $updateQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
         $updateQuery->execute();
     } else {
-        $insertSql = "INSERT INTO hasil_pemantauan (NIK, status_jentik, tanggal_pemantauan) VALUES (:NIK, :status_jentik, NOW()) ON DUPLICATE KEY UPDATE status_jentik = :status_jentik, tanggal_pemantauan = NOW()";
+        $insertSql = "INSERT INTO pemantauan_jentik (NIK, status_jentik, tanggal_pemantauan) VALUES (:NIK, :status_jentik, NOW()) ON DUPLICATE KEY UPDATE status_jentik = :status_jentik, tanggal_pemantauan = NOW()";
         $insertQuery = $dbh->prepare($insertSql);
         $insertQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
         $insertQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
@@ -91,6 +91,8 @@ if (isset($_POST['submit'])) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin - Detail Laporan Masuk</title>
+    <!-- logo -->
+    <link href="img/Logo.png" rel="shorcut icon">
     <link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
     <link rel="stylesheet" href="css/font-awesome.min.css" media="screen">
     <link rel="stylesheet" href="css/animate-css/animate.min.css" media="screen">
@@ -175,7 +177,8 @@ if (isset($_POST['submit'])) {
                                                     </tr>
                                                     <tr>
                                                         <th>Tanggal Laporan</th>
-                                                        <td><?php echo htmlentities($result->tanggal_laporan); ?></td>
+                                                        <!-- <td><?php echo htmlentities($result->tanggal_laporan); ?></td> -->
+                                                        <td><?php echo htmlentities(date('d F Y', strtotime($result->tanggal_laporan))); ?></td>
                                                     </tr>
                                                     <tr>
                                                         <th>Deskripsi Keadaan</th>
