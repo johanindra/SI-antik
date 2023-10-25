@@ -47,6 +47,36 @@ if (strlen($_SESSION['alogin']) == "") {
                 -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
                 box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
             }
+
+            /* Gaya khusus untuk tabel */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            th,
+            td {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+            }
+
+            th {
+                background-color: #4CAF50;
+                /* Warna hijau untuk header */
+                color: white;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+                /* Warna abu-abu muda untuk baris genap */
+            }
+
+            tr:nth-child(odd) {
+                background-color: #ffffff;
+                /* Warna putih untuk baris ganjil */
+            }
         </style>
     </head>
 

@@ -7,7 +7,6 @@ include('../server/koneksi.php');
 if (strlen($_SESSION['alogin']) == "") {
     header("Location: index.php");
 } else {
-
 ?>
     <!DOCTYPE html>
     <html lang="id">
@@ -47,6 +46,36 @@ if (strlen($_SESSION['alogin']) == "") {
                 -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
                 box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
             }
+
+            /* Gaya khusus untuk tabel */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            th,
+            td {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+            }
+
+            th {
+                background-color: #4CAF50;
+                /* Warna hijau untuk header */
+                color: white;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+                /* Warna abu-abu muda untuk baris genap */
+            }
+
+            tr:nth-child(odd) {
+                background-color: #ffffff;
+                /* Warna putih untuk baris ganjil */
+            }
         </style>
     </head>
 
@@ -59,7 +88,6 @@ if (strlen($_SESSION['alogin']) == "") {
             <div class="content-wrapper">
                 <div class="content-container">
                     <?php include('includes/leftbar.php'); ?>
-
                     <!-- Konten utama -->
                     <div class="main-page">
                         <div class="container-fluid">
@@ -131,7 +159,6 @@ if (strlen($_SESSION['alogin']) == "") {
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
                                     <div class="panel-body p-20">
                                         <div class="table-responsive">
@@ -146,7 +173,6 @@ if (strlen($_SESSION['alogin']) == "") {
                                                         <th>Tanggal Laporan</th>
                                                         <th>Tanggal Pemantauan</th>
                                                         <th>Status Jentik</th>
-                                                        <!-- <th>Detail</th> -->
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -168,7 +194,6 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                 <td><?php echo htmlentities($result->NIK); ?></td>
                                                                 <td><?php echo htmlentities($result->nama_lengkap); ?></td>
                                                                 <td><?php echo htmlentities($result->rt_rw); ?></td>
-                                                                <!-- <td><?php echo htmlentities($result->tanggal_laporan); ?></td> -->
                                                                 <td><?php echo htmlentities(date('d F Y', strtotime($result->tanggal_laporan))); ?></td>
                                                                 <td><?php echo htmlentities(date('d F Y', strtotime($result->tanggal_pemantauan))); ?></td>
                                                                 <td><?php
@@ -180,12 +205,6 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                         echo htmlentities('Tidak Ada');
                                                                     }
                                                                     ?></td>
-                                                                <!-- <td> -->
-                                                                <!-- Tautan ke halaman detail-pemantauan.php -->
-                                                                <!-- <a href="detail-pemantauan.php?NIK=<?php echo htmlentities($result->NIK); ?>" title="Lihat Detail">
-                                                                        <i class="fa fa-eye"></i>
-                                                                    </a>
-                                                                </td> -->
                                                             </tr>
                                                     <?php $cnt = $cnt + 1;
                                                         }
@@ -197,6 +216,12 @@ if (strlen($_SESSION['alogin']) == "") {
                                                 </tbody>
                                             </table>
                                         </div>
+                                        <!-- Tombol Cetak di bawah tabel -->
+                                        <div class="text-right mt-3">
+                                            <?php if ($query->rowCount() > 0) { ?>
+                                                <button type="button" class="btn btn-success" id="printBtn">Cetak</button>
+                                            <?php } ?>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -206,7 +231,7 @@ if (strlen($_SESSION['alogin']) == "") {
             </div>
         </div>
         <!-- Bagian skrip JS dan penutup HTML disini -->
-        <!-- ========== COMMON JS FILES ========== -->
+
         <script src="js/jquery/jquery-2.2.4.min.js"></script>
         <script src="js/bootstrap/bootstrap.min.js"></script>
         <script src="js/pace/pace.min.js"></script>
@@ -226,8 +251,58 @@ if (strlen($_SESSION['alogin']) == "") {
                     "scrollX": true // Menambahkan fungsi gulir horizontal
                 });
             });
+
+            // Fungsi untuk menangani klik tombol cetak
+            document.getElementById('printBtn').addEventListener('click', function() {
+                // Panggil fungsi cetak
+                printTable();
+            });
+
+            // Fungsi untuk mencetak tabel
+            function printTable() {
+                // Mendapatkan bulan dan tahun dari filter
+                var selectedMonth = document.getElementById('filter_month').value;
+                var selectedYear = document.getElementById('filter_year').value;
+
+                // Buat jendela cetak
+                var newWin = window.open('', 'Print-Window');
+
+                // Gaya khusus untuk cetak
+                newWin.document.open();
+                newWin.document.write('<html><head><title>Cetak Tabel</title>');
+                newWin.document.write('</head><body onload="window.print();">');
+                newWin.document.write('<h3 style="text-align:center; margin-top:20px;">Data Hasil Pemantauan Jentik<br>Desa Bulusari Kecamatan Tarokan<br>Pada bulan ' + '<?php echo date("F", mktime(0, 0, 0, $filterMonth, 1)); ?>' + ' tahun <?php echo $filterYear; ?></h3>');
+
+                // Tambahkan data tabel
+                newWin.document.write('<table border="1" cellspacing="0" width="100%">');
+                newWin.document.write('<thead><tr><th>No</th><th>NIK</th><th>Nama Lengkap</th><th>RT/RW</th><th>Tanggal Laporan</th><th>Tanggal Pemantauan</th><th>Status Jentik</th></tr></thead>');
+                newWin.document.write('<tbody>');
+
+                // Ambil semua baris dari tabel
+                var rows = document.querySelectorAll('#example tbody tr');
+
+                // Tambahkan setiap baris ke jendela cetak
+                rows.forEach(function(row, index) {
+                    newWin.document.write('<tr>');
+                    newWin.document.write('<td>' + (index + 1) + '</td>');
+
+                    // Ambil sel dari setiap kolom kecuali nomor urut
+                    var cells = row.querySelectorAll('td:not(:first-child)');
+
+                    // Tambahkan isi setiap sel ke jendela cetak
+                    cells.forEach(function(cell) {
+                        newWin.document.write('<td>' + cell.innerText + '</td>');
+                    });
+
+                    newWin.document.write('</tr>');
+                });
+
+                newWin.document.write('</tbody></table>');
+                newWin.document.write('</body></html>');
+
+                newWin.document.close();
+            }
         </script>
-        <!-- ... -->
     </body>
 
     </html>

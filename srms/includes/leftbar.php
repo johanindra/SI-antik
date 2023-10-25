@@ -48,9 +48,9 @@
                 <li>
                     <a href="jadwal-pemantauan.php"><i class="fa fa-calendar"></i> <span>Jadwal Pemantauan</span></a>
                 </li>
-                <li>
+                <!-- <li>
                     <a href="change-password.php"><i class="fa fa fa-server"></i> <span>Ubah Kata Sandi Admin</span></a>
-                </li>
+                </li> -->
             </ul>
         </div>
         <!-- /.sidebar-nav -->
