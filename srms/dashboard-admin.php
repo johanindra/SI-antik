@@ -146,7 +146,7 @@ if (strlen($_SESSION['alogin']) == "") {
                     "debug": false,
                     "newestOnTop": false,
                     "progressBar": false,
-                    "positionClass": "toast-top-right",
+                    "positionClass": "toast-top-center",
                     "preventDuplicates": false,
                     "onclick": null,
                     "showDuration": "300",
@@ -158,7 +158,7 @@ if (strlen($_SESSION['alogin']) == "") {
                     "showMethod": "fadeIn",
                     "hideMethod": "fadeOut"
                 }
-                toastr["success"]("ADMIN Dashboard Super");
+                toastr["success"]("ADMIN Dashboard");
 
             });
         </script>
