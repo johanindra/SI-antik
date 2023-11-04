@@ -40,7 +40,7 @@
                     <span class="">Appearance</span>
                 </li> -->
                 <li>
-                    <a href="laporan-masuk.php"><i class="fa fa-bank"></i> <span>Laporan Masuk</span> </a>
+                    <a href="laporan-masuk.php"><i class="fa fa-envelope"></i> <span>Laporan Masuk</span> </a>
                 </li>
                 <li>
                     <a href="hasil-pemantauan.php"><i class="fa fa-file-text"></i> <span>Hasil Pemantauan</span> </a>

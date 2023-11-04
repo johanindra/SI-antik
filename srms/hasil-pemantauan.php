@@ -126,7 +126,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="panel-title">
-                                                        <h5>Data Hasil Pemantauan Jentik</h5>
+                                                        <h5>Data Hasil Pemantauan Jentik Nyamuk</h5>
                                                     </div>
                                                 </div>
                                             </div>
@@ -136,8 +136,8 @@ if (strlen($_SESSION['alogin']) == "") {
                                                         <label>Pilih Bulan dan Tahun: </label>
                                                         <select name="filter_month" id="filter_month" class="form-control">
                                                             <?php
-                                                            $currentMonth = date('m');
-                                                            $currentYear = date('Y');
+                                                            $currentMonth = isset($_POST['filter_month']) ? $_POST['filter_month'] : date('m');
+                                                            $currentYear = isset($_POST['filter_year']) ? $_POST['filter_year'] : date('Y');
 
                                                             for ($i = 1; $i <= 12; $i++) {
                                                                 $selected = ($i == $currentMonth) ? "selected" : "";
@@ -198,9 +198,9 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                 <td><?php echo htmlentities(date('d F Y', strtotime($result->tanggal_pemantauan))); ?></td>
                                                                 <td><?php
                                                                     if ($result->status_jentik == 0) {
-                                                                        echo htmlentities('Bebas Jentik');
+                                                                        echo htmlentities('Bebas Jentik') . ' (-)';
                                                                     } elseif ($result->status_jentik == 1) {
-                                                                        echo htmlentities('Ada Jentik');
+                                                                        echo htmlentities('Ada Jentik') . ' (&#10003;)';
                                                                     } else {
                                                                         echo htmlentities('Tidak Ada');
                                                                     }
@@ -219,6 +219,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                         <!-- Tombol Cetak di bawah tabel -->
                                         <div class="text-right mt-3">
                                             <?php if ($query->rowCount() > 0) { ?>
+                                                <button type="button" class="btn btn-warning" id="previewBtn">Preview</button>
                                                 <button type="button" class="btn btn-success" id="printBtn">Cetak</button>
                                             <?php } ?>
                                         </div>
@@ -247,9 +248,43 @@ if (strlen($_SESSION['alogin']) == "") {
         <!-- ========== CUSTOM SCRIPT ========== -->
         <script>
             $(document).ready(function() {
-                $('#example').DataTable({
-                    "scrollX": true // Menambahkan fungsi gulir horizontal
+                // Inisialisasi DataTables dengan konfigurasi kolom pencarian
+                var table = $('#example').DataTable({
+                    "scrollX": true, // Menambahkan fungsi gulir horizontal
+                    "columns": [
+                        null, // Kolom nomor urut
+                        {
+                            "searchable": true
+                        }, // Kolom NIK
+                        {
+                            "searchable": true
+                        }, // Kolom Nama Lengkap
+                        {
+                            "searchable": false
+                        }, // Kolom RT/RW
+                        {
+                            "searchable": false
+                        }, // Kolom Tanggal Laporan
+                        {
+                            "searchable": false
+                        }, // Kolom Tanggal Pemantauan
+                        {
+                            "searchable": true
+                        } // Kolom Status Jentik
+                    ]
                 });
+                $('#example_filter label').contents().filter(function() {
+                    return this.nodeType === 3;
+                }).replaceWith('Cari: ');
+
+
+                // Tambahkan fungsi pencarian
+                $('#searchInput').on('keyup', function() {
+                    table.search(this.value).draw();
+                });
+                // Tambahkan teks di bawah kolom pencarian
+                $('.dataTables_filter').before('<div class="search-text"><small>Cari berdasarkan NIK, Nama Lengkap dan Status</small></div>');
+                $('.search-text').css('text-align', 'right');
             });
 
             // Fungsi untuk menangani klik tombol cetak
@@ -264,43 +299,130 @@ if (strlen($_SESSION['alogin']) == "") {
                 var selectedMonth = document.getElementById('filter_month').value;
                 var selectedYear = document.getElementById('filter_year').value;
 
-                // Buat jendela cetak
-                var newWin = window.open('', 'Print-Window');
-
                 // Gaya khusus untuk cetak
-                newWin.document.open();
-                newWin.document.write('<html><head><title>Cetak Tabel</title>');
-                newWin.document.write('</head><body onload="window.print();">');
-                newWin.document.write('<h3 style="text-align:center; margin-top:20px;">Data Hasil Pemantauan Jentik<br>Desa Bulusari Kecamatan Tarokan<br>Pada bulan ' + '<?php echo date("F", mktime(0, 0, 0, $filterMonth, 1)); ?>' + ' tahun <?php echo $filterYear; ?></h3>');
+                var printContent = '<html><head><title>Cetak Tabel Hasil pemantauan</title>';
+                printContent += '<style>@media print { body { margin: 0; } }</style>';
+                printContent += '</head><body>';
+                printContent += '<h3 style="text-align:center; margin-top:20px;">Data Hasil Pemantauan Jentik<br>Desa Bulusari Kecamatan Tarokan<br>Pada bulan ' + '<?php echo date("F", mktime(0, 0, 0, $filterMonth, 1)); ?>' + ' tahun <?php echo $filterYear; ?></h3>';
 
                 // Tambahkan data tabel
-                newWin.document.write('<table border="1" cellspacing="0" width="100%">');
-                newWin.document.write('<thead><tr><th>No</th><th>NIK</th><th>Nama Lengkap</th><th>RT/RW</th><th>Tanggal Laporan</th><th>Tanggal Pemantauan</th><th>Status Jentik</th></tr></thead>');
-                newWin.document.write('<tbody>');
+                printContent += '<table border="1" cellspacing="0" width="100%">';
+                printContent += '<thead style="text-align: left;"><tr><th>No</th><th>NIK</th><th>Nama Lengkap</th><th>RT/RW</th><th>Tanggal Laporan</th><th>Tanggal Pemantauan</th><th>Status Jentik</th></tr></thead>';
+                printContent += '<tbody>';
 
                 // Ambil semua baris dari tabel
                 var rows = document.querySelectorAll('#example tbody tr');
 
-                // Tambahkan setiap baris ke jendela cetak
+                // Tambahkan setiap baris ke konten cetak
                 rows.forEach(function(row, index) {
-                    newWin.document.write('<tr>');
-                    newWin.document.write('<td>' + (index + 1) + '</td>');
+                    printContent += '<tr>';
+                    printContent += '<td>' + (index + 1) + '</td>';
 
                     // Ambil sel dari setiap kolom kecuali nomor urut
                     var cells = row.querySelectorAll('td:not(:first-child)');
 
-                    // Tambahkan isi setiap sel ke jendela cetak
+                    // Tambahkan isi setiap sel ke konten cetak
                     cells.forEach(function(cell) {
-                        newWin.document.write('<td>' + cell.innerText + '</td>');
+                        printContent += '<td>' + cell.innerText + '</td>';
                     });
 
-                    newWin.document.write('</tr>');
+                    printContent += '</tr>';
                 });
 
-                newWin.document.write('</tbody></table>');
-                newWin.document.write('</body></html>');
+                printContent += '</tbody></table>';
+                printContent += '</body></html>';
 
-                newWin.document.close();
+                // Buka jendela cetak di halaman yang sama
+                var screenWidth = window.screen.width;
+                var screenHeight = window.screen.height;
+                // Mengurangi 200 dari lebar dan tinggi layar
+                var printWindowWidth = screenWidth - 200;
+                var printWindowHeight = screenHeight - 200;
+                // Membuat jendela cetak
+                var printWindow = window.open('', '_blank', 'width=' + printWindowWidth + ',height=' + printWindowHeight);
+                // Posisikan jendela cetak di tengah
+                printWindow.moveTo((screenWidth - printWindowWidth) / 2, (screenHeight - printWindowHeight) / 2);
+                printWindow.document.open();
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+
+                // Panggil fungsi cetak setelah konten dimuat
+                printWindow.onload = function() {
+                    printWindow.print();
+                    printWindow.onafterprint = function() {
+                        printWindow.close();
+                    };
+                };
+
+                // // Buka jendela cetak di halaman yang sama
+                // var printWindow = window.open('', '_self');
+                // printWindow.document.open();
+                // printWindow.document.write(printContent);
+                // printWindow.document.close();
+
+                // // Panggil fungsi cetak setelah konten dimuat
+                // printWindow.onload = function() {
+                //     printWindow.print();
+                //     printWindow.onafterprint = function() {
+                //         printWindow.close();
+                //     };
+                // };
+            }
+
+            // Fungsi untuk menangani klik tombol preview
+            document.getElementById('previewBtn').addEventListener('click', function() {
+                // Panggil fungsi preview
+                previewTable();
+            });
+
+            // Fungsi untuk menampilkan preview tabel
+            function previewTable() {
+                var selectedMonth = document.getElementById('filter_month').value;
+                var selectedYear = document.getElementById('filter_year').value;
+
+                var previewContent = '<html><head><title>Preview Tabel</title>';
+                previewContent += '</head><body>';
+                previewContent += '<h3 style="text-align:center; margin-top:20px;">Data Hasil Pemantauan Jentik<br>Desa Bulusari Kecamatan Tarokan<br>Pada bulan ' + '<?php echo date("F", mktime(0, 0, 0, $filterMonth, 1)); ?>' + ' tahun <?php echo $filterYear; ?></h3>';
+
+                previewContent += '<table border="1" cellspacing="0" width="100%">';
+                //textnya berada di kiri jika mau di tengah hapus saja (style="text-align: left;")
+                previewContent += '<thead style="text-align: left;"><tr><th>No</th><th>NIK</th><th>Nama Lengkap</th><th>RT/RW</th><th>Tanggal Laporan</th><th>Tanggal Pemantauan</th><th>Status Jentik</th></tr></thead>';
+                previewContent += '<tbody>';
+
+                var rows = document.querySelectorAll('#example tbody tr');
+
+                rows.forEach(function(row, index) {
+                    previewContent += '<tr>';
+                    previewContent += '<td>' + (index + 1) + '</td>';
+
+                    var cells = row.querySelectorAll('td:not(:first-child)');
+
+                    cells.forEach(function(cell) {
+                        previewContent += '<td>' + cell.innerText + '</td>';
+                    });
+
+                    previewContent += '</tr>';
+                });
+
+                previewContent += '</tbody></table>';
+
+                // Tambahkan tombol "Back" untuk kembali dan mereset halaman
+                // previewContent += '<button onclick="window.history.back(); window.location.reload();">Back</button>';
+
+                previewContent += '</body></html>';
+
+                // Buka jendela preview di halaman yang sama
+                var screenWidth = window.screen.width;
+                var screenHeight = window.screen.height;
+                var previewWindowWidth = screenWidth - 200;
+                var previewWindowHeight = screenHeight - 200;
+
+                var previewWindow = window.open('', '_blank', 'width=' + previewWindowWidth + ',height=' + previewWindowHeight);
+                previewWindow.moveTo((screenWidth - previewWindowWidth) / 2, (screenHeight - previewWindowHeight) / 2);
+
+                previewWindow.document.open();
+                previewWindow.document.write(previewContent);
+                previewWindow.document.close();
             }
         </script>
     </body>

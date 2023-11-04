@@ -75,7 +75,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                 <?php echo htmlentities($totalLaporanMasuk); ?>
                                             </span>
                                             <span class="name"><small>Laporan Masuk Bulan <?php echo date("F Y", mktime(0, 0, 0, $filterMonth, 1, $filterYear)); ?></small></span>
-                                            <span class="bg-icon"><i class="fa fa-bank"></i></span>
+                                            <span class="bg-icon"><i class="fa fa-envelope"></i></span>
                                         </a>
 
                                         <!-- /.dashboard-stat -->
@@ -113,23 +113,91 @@ if (strlen($_SESSION['alogin']) == "") {
                                 </div>
                                 <!-- /.row -->
 
-                                <!-- Bagian Grafik Batang -->
+                                <!-- grafik -->
                                 <div class="row" style="margin-top: 2%;">
-                                    <div class="col-lg-12">
-                                        <div class="panel" style="margin-top:2%;">
-                                            <div class="panel-body" style="text-align: center; margin-bottom: 20px;">
-                                                <h4 class="mt-0" style="font-family: 'Arial', sans-serif; font-size: 24px; font-weight: bold; color: #8D00FF;">Grafik Pemantauan Bulan <?php echo date('F Y'); ?></h4>
-                                                <canvas id="bar-chart" style="height: 300px;"></canvas>
-                                                <small style="font-family: 'Arial', sans-serif; color: #333; margin-top: 5px;">
-                                                    Grafik di atas merupakan grafik pemantauan jentik nyamuk di desa Bulusari pada
-                                                    <?php echo date('F Y'); ?>.
-                                                </small>
-
+                                    <div class="col-lg-12 text-center">
+                                        <!-- Button Switch dan Konten Grafik -->
+                                        <div class="panel" id="chart-container" style="margin-top:2%; background-color: #fff; padding: 20px;">
+                                            <!-- Button Switch -->
+                                            <div class="btn-group" role="group" aria-label="Switch Chart">
+                                                <label>Lihat Grafik</label>
+                                                <button type="button" class="btn btn-chart btn-custom btn-selected" onclick="switchChart('bar', this)">Bulan Ini</button>
+                                                <button type="button" class="btn btn-chart btn-custom" onclick="switchChart('line', this)">Tahun Ini</button>
                                             </div>
 
+                                            <!-- Grafik Batang -->
+                                            <div id="bar-chart-panel" style="display: block;">
+                                                <div class="panel-body" style="text-align: center; margin-bottom: 20px;">
+                                                    <h4 class="mt-0" style="font-family: 'Arial', sans-serif; font-size: 24px; font-weight: bold; color: #013DA0;">Grafik Pemantauan Jentik Nyamuk Bulan <?php echo date('F Y'); ?></h4>
+                                                    <canvas id="bar-chart" style="height: 200px;"></canvas>
+                                                    <small style="font-family: 'Arial', sans-serif; color: #333; margin-top: 5px;">
+                                                        Grafik di atas merupakan grafik pemantauan jentik nyamuk di desa Bulusari pada
+                                                        <?php echo date('F Y'); ?>.
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Grafik Garis -->
+                                            <div id="line-chart-panel" style="display: none;">
+                                                <div class="panel-body" style="text-align: center; margin-bottom: 20px;">
+                                                    <h4 class="mt-0" style="font-family: 'Arial', sans-serif; font-size: 24px; font-weight: bold; color: #013DA0;">Grafik Pemantauan Jentik Nyamuk Tahun <?php echo date('Y'); ?></h4>
+                                                    <canvas id="line-chart" style="height: 200px;"></canvas>
+                                                    <small style="font-family: 'Arial', sans-serif; color: #333; margin-top: 5px;">
+                                                        Grafik di atas merupakan hasil pemantauan jentik nyamuk di desa bulusari tahun <?php echo date('Y'); ?>.
+                                                    </small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+
+                                <style>
+                                    .btn-custom {
+                                        background-color: #fff;
+                                        border-color: #002890;
+                                        color: #9E9FA1;
+                                    }
+
+                                    .btn-selected {
+                                        background-color: #002890 !important;
+                                        border-color: #002890 !important;
+                                        color: #fff !important;
+                                    }
+                                </style>
+
+                                <!-- Script to switch between charts -->
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        // Set styles for the selected button on page load
+                                        document.querySelector('.btn-selected').classList.remove('btn-custom');
+                                    });
+
+                                    function switchChart(chartType, button) {
+                                        // Reset styles for all buttons
+                                        document.querySelectorAll('.btn-chart').forEach(btn => {
+                                            btn.classList.remove('btn-selected');
+                                            btn.classList.add('btn-custom');
+                                        });
+
+                                        // Set styles for the selected button
+                                        button.classList.remove('btn-custom');
+                                        button.classList.add('btn-selected');
+
+                                        switch (chartType) {
+                                            case 'bar':
+                                                document.getElementById('bar-chart-panel').style.display = 'block';
+                                                document.getElementById('line-chart-panel').style.display = 'none';
+                                                break;
+                                            case 'line':
+                                                document.getElementById('bar-chart-panel').style.display = 'none';
+                                                document.getElementById('line-chart-panel').style.display = 'block';
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                </script>
+
                                 <!-- /.row -->
                             </div>
                             <!-- /.container-fluid -->
@@ -252,7 +320,7 @@ if (strlen($_SESSION['alogin']) == "") {
                             {
                                 label: 'Belum Terpantau',
                                 data: [<?php echo $totalBelumTerpantau; ?>],
-                                backgroundColor: '#F90',
+                                backgroundColor: '#9D9D9D',
                                 borderWidth: 1
                             }
                             // ,
@@ -300,6 +368,220 @@ if (strlen($_SESSION['alogin']) == "") {
                     }
                 });
             });
+
+            <?php
+            // Mendapatkan tahun saat ini
+            $tahunSaatIni = date('Y');
+
+            // Query untuk jumlah data bebas jentik keseluruhan per bulan pada tahun ini
+            $sqlBebasJentik = "SELECT MONTH(tanggal_pemantauan) as bulan, COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 0 AND YEAR(tanggal_pemantauan) = :tahun GROUP BY MONTH(tanggal_pemantauan)";
+            $queryBebasJentik = $dbh->prepare($sqlBebasJentik);
+            $queryBebasJentik->bindParam(':tahun', $tahunSaatIni, PDO::PARAM_INT);
+            $queryBebasJentik->execute();
+            $resultsBebasJentik = $queryBebasJentik->fetchAll(PDO::FETCH_ASSOC);
+
+            // Query untuk jumlah ada jentik keseluruhan per bulan pada tahun ini
+            $sqlAdaJentik = "SELECT MONTH(tanggal_pemantauan) as bulan, COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 1 AND YEAR(tanggal_pemantauan) = :tahun GROUP BY MONTH(tanggal_pemantauan)";
+            $queryAdaJentik = $dbh->prepare($sqlAdaJentik);
+            $queryAdaJentik->bindParam(':tahun', $tahunSaatIni, PDO::PARAM_INT);
+            $queryAdaJentik->execute();
+            $resultsAdaJentik = $queryAdaJentik->fetchAll(PDO::FETCH_ASSOC);
+
+            // Inisialisasi array untuk setiap bulan dengan jumlah laporan nol
+            $labels = [];
+            $dataBebasJentik = [];
+            $dataAdaJentik = [];
+
+            $bulanArray = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+
+            foreach ($bulanArray as $index => $bulan) {
+                $labels[] = $bulan;
+                $dataBebasJentik[$index + 1] = 0; // Menggunakan indeks dimulai dari 1
+                $dataAdaJentik[$index + 1] = 0;
+            }
+
+            // Mengisi array dengan hasil query yang sesuai untuk bebas jentik
+            foreach ($resultsBebasJentik as $result) {
+                $dataBebasJentik[$result['bulan']] = $result['total'];
+            }
+
+            // Mengisi array dengan hasil query yang sesuai untuk ada jentik
+            foreach ($resultsAdaJentik as $result) {
+                $dataAdaJentik[$result['bulan']] = $result['total'];
+            }
+
+
+
+            // Query untuk jumlah data bebas jentik keseluruhan per bulan
+
+            // $sqlBebasJentik = "SELECT MONTH(tanggal_pemantauan) as bulan, COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 0 GROUP BY MONTH(tanggal_pemantauan)";
+            // $queryBebasJentik = $dbh->prepare($sqlBebasJentik);
+            // $queryBebasJentik->execute();
+            // $resultsBebasJentik = $queryBebasJentik->fetchAll(PDO::FETCH_ASSOC);
+
+            // Query untuk jumlah ada jentik keseluruhan per bulan
+
+            // $sqlAdaJentik = "SELECT MONTH(tanggal_pemantauan) as bulan, COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 1 GROUP BY MONTH(tanggal_pemantauan)";
+            // $queryAdaJentik = $dbh->prepare($sqlAdaJentik);
+            // $queryAdaJentik->execute();
+            // $resultsAdaJentik = $queryAdaJentik->fetchAll(PDO::FETCH_ASSOC);
+
+            // Inisialisasi array untuk setiap bulan dengan jumlah laporan nol
+
+            // $labels = [];
+            // $dataBebasJentik = [];
+            // $dataAdaJentik = [];
+
+            // $bulanArray = [
+            //     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            //     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            // ];
+
+            // foreach ($bulanArray as $index => $bulan) {
+            //     $labels[] = $bulan;
+            //     $dataBebasJentik[$index + 1] = 0; // Menggunakan indeks dimulai dari 1
+            //     $dataAdaJentik[$index + 1] = 0;
+            // }
+
+            // // Mengisi array dengan hasil query yang sesuai untuk bebas jentik
+            // foreach ($resultsBebasJentik as $result) {
+            //     $dataBebasJentik[$result['bulan']] = $result['total'];
+            // }
+
+            // // Mengisi array dengan hasil query yang sesuai untuk ada jentik
+            // foreach ($resultsAdaJentik as $result) {
+            //     $dataAdaJentik[$result['bulan']] = $result['total'];
+            // }
+
+            // Line Chart Script
+            // 
+            ?>
+            // Line Chart Script
+            var ctxLine = document.getElementById('line-chart').getContext('2d');
+            var myLineChart = new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: <?php echo json_encode($labels); ?>,
+                    datasets: [{
+                            label: 'Bebas Jentik',
+                            data: <?php echo json_encode(array_values($dataBebasJentik)); ?>,
+                            backgroundColor: 'rgba(0, 71, 255, 0.3)',
+                            borderColor: '#0047FF',
+                            borderWidth: 2,
+                            fill: true
+                        },
+                        {
+                            label: 'Ada Jentik',
+                            data: <?php echo json_encode(array_values($dataAdaJentik)); ?>,
+                            backgroundColor: 'rgba(255, 0, 0, 0.3)',
+                            borderColor: '#F00',
+                            borderWidth: 2,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    return value.toFixed(0) + ' Rumah';
+                                }
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            left: 20,
+                            right: 20,
+                            top: 0,
+                            bottom: 0
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 20,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.5 // Nilai tension yang dapat disesuaikan, eksperimen dengan nilai ini
+                        }
+                    }
+                }
+            });
+
+            // Line Chart Script
+
+            // var ctxLine = document.getElementById('line-chart').getContext('2d');
+            // var myLineChart = new Chart(ctxLine, {
+            //     type: 'line',
+            //     data: {
+            //         labels: <?php echo json_encode($labels); ?>,
+            //         datasets: [{
+            //                 label: 'Bebas Jentik',
+            //                 data: <?php echo json_encode(array_values($dataBebasJentik)); ?>,
+            //                 backgroundColor: 'rgba(0, 71, 255, 0.3)',
+            //                 borderColor: '#0047FF',
+            //                 borderWidth: 2,
+            //                 fill: true
+            //             },
+            //             {
+            //                 label: 'Ada Jentik',
+            //                 data: <?php echo json_encode(array_values($dataAdaJentik)); ?>,
+            //                 backgroundColor: 'rgba(255, 0, 0, 0.3)',
+            //                 borderColor: '#F00',
+            //                 borderWidth: 2,
+            //                 fill: true
+            //             }
+            //         ]
+            //     },
+            //     options: {
+            //         scales: {
+            //             y: {
+            //                 beginAtZero: true,
+            //                 ticks: {
+            //                     stepSize: 1,
+            //                     callback: function(value) {
+            //                         return value.toFixed(0) + ' Rumah';
+            //                     }
+            //                 }
+            //             }
+            //         },
+            //         layout: {
+            //             padding: {
+            //                 left: 20,
+            //                 right: 20,
+            //                 top: 0,
+            //                 bottom: 0
+            //             }
+            //         },
+            //         plugins: {
+            //             legend: {
+            //                 display: true,
+            //                 position: 'bottom',
+            //                 labels: {
+            //                     boxWidth: 20,
+            //                     font: {
+            //                         size: 12
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     }
+            // });
         </script>
     </body>
 
