@@ -13,9 +13,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmtAdmin->bindParam(':username', $username, PDO::PARAM_STR);
     $stmtAdmin->execute();
 
-    $querySuperAdmin = "SELECT * FROM super_admin WHERE email = :email";
+    $querySuperAdmin = "SELECT * FROM super_admin WHERE username = :username";
     $stmtSuperAdmin = $dbh->prepare($querySuperAdmin);
-    $stmtSuperAdmin->bindParam(':email', $username, PDO::PARAM_STR);
+    $stmtSuperAdmin->bindParam(':username', $username, PDO::PARAM_STR);
     $stmtSuperAdmin->execute();
 
     if ($stmtAdmin->rowCount() > 0) {
