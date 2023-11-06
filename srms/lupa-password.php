@@ -9,8 +9,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $newPassword = $_POST['logPassword'];
   $confirmedPassword = $_POST['logPasswordkonfirm'];
 
+  // Ambil NIK dari parameter kueri
+  $nik = isset($_GET['nik']) ? $_GET['nik'] : '';
+
   // Validasi apakah nama pengguna ada dalam tabel admin
-  $stmt = $dbh->prepare("SELECT * FROM admin WHERE username = :username");
+  $stmt = $dbh->prepare("SELECT nik FROM admin WHERE username = :username");
   $stmt->bindParam(':username', $username);
   $stmt->execute();
 
@@ -108,9 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="input-field-bt">
               <input type="submit" class="input-submit" value="Simpan" />
             </div>
-            <div class="forgot-back">
-              <a href="verifikasi-otp.php">Kembali</a>
-            </div>
+            <!-- <div class="forgot-back">
+              <a href="verifikasi-nik.php">Kembali</a>
+            </div> -->
           </div>
         </form>
       </div>

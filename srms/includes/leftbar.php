@@ -45,9 +45,9 @@
                 <li>
                     <a href="hasil-pemantauan.php"><i class="fa fa-file-text"></i> <span>Hasil Pemantauan</span> </a>
                 </li>
-                <li>
+                <!-- <li>
                     <a href="jadwal-pemantauan.php"><i class="fa fa-calendar"></i> <span>Jadwal Pemantauan</span></a>
-                </li>
+                </li> -->
                 <!-- <li>
                     <a href="change-password.php"><i class="fa fa fa-server"></i> <span>Ubah Kata Sandi Admin</span></a>
                 </li> -->

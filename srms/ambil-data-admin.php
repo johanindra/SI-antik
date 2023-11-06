@@ -3,7 +3,7 @@
 
 include('../server/koneksi.php');
 
-$sql = "SELECT id_admin, username, tanggal_update_password FROM admin";
+$sql = "SELECT id_admin, nik, nama_lengkap, username, tanggal_update_password FROM admin";
 $query = $dbh->prepare($sql);
 $query->execute();
 $results = $query->fetchAll(PDO::FETCH_OBJ);
@@ -14,6 +14,8 @@ if ($query->rowCount() > 0) {
         echo "<tr>";
         echo "<td class='nomor-urut'>" . htmlentities($cnt) . "</td>";
         echo "<td>" . htmlentities($result->id_admin) . "</td>";
+        echo "<td>" . htmlentities($result->nik) . "</td>";
+        echo "<td>" . htmlentities($result->nama_lengkap) . "</td>";
         echo "<td>" . htmlentities($result->username) . "</td>";
         echo "<td>" . htmlentities($result->tanggal_update_password) . "</td>";
         echo "<td>";

@@ -143,6 +143,14 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                         </div>
                                                                     <?php } ?>
                                                                     <div class="form-group">
+                                                                        <label for="nik">NIK:</label>
+                                                                        <input type="text" class="form-control" id="nik" name="nik" required>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="nama_lengkap">Nama Lengkap:</label>
+                                                                        <input type="text" class="form-control" id="nama_lengkap" name="nama_lengkap" required>
+                                                                    </div>
+                                                                    <div class="form-group">
                                                                         <label for="username">Username:</label>
                                                                         <input type="text" class="form-control" id="username" name="username" required>
                                                                     </div>
@@ -163,7 +171,8 @@ if (strlen($_SESSION['alogin']) == "") {
                                                         <thead>
                                                             <tr>
                                                                 <th>#</th>
-                                                                <!-- <th>ID Admin</th> -->
+                                                                <th>NIK</th>
+                                                                <th>Nama Lengkap</th>
                                                                 <th>Username</th>
                                                                 <th>Tanggal Daftar</th>
                                                                 <th>Tanggal Update Password</th>
@@ -172,7 +181,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                         </thead>
                                                         <tbody>
                                                             <?php
-                                                            $sql = "SELECT id_admin, username, tanggal_masuk, tanggal_update_password FROM admin";
+                                                            $sql = "SELECT id_admin,nik,nama_lengkap, username, tanggal_masuk, tanggal_update_password FROM admin";
                                                             $query = $dbh->prepare($sql);
                                                             $query->execute();
                                                             $results = $query->fetchAll(PDO::FETCH_OBJ);
@@ -182,7 +191,8 @@ if (strlen($_SESSION['alogin']) == "") {
                                                             ?>
                                                                     <tr>
                                                                         <td class="nomor-urut"><?php echo htmlentities($cnt); ?></td>
-                                                                        <!-- <td><?php echo htmlentities($result->id_admin); ?></td> -->
+                                                                        <td><?php echo htmlentities($result->nik); ?></td>
+                                                                        <td><?php echo htmlentities($result->nama_lengkap); ?></td>
                                                                         <td><?php echo htmlentities($result->username); ?></td>
                                                                         <td><?php echo htmlentities($result->tanggal_masuk); ?></td>
                                                                         <td><?php echo htmlentities($result->tanggal_update_password); ?></td>
@@ -306,12 +316,15 @@ if (strlen($_SESSION['alogin']) == "") {
                                             updateAdminTable();
                                         } else {
                                             // Jika gagal, tampilkan pesan error
-                                            if (response.message === "Username sudah digunakan") {
+                                            if (response.message === "NIK sudah terdaftar") {
+                                                // Tampilkan pesan spesifik jika NIK sudah ada
+                                                Swal.fire('Error', 'NIK sudah terdaftar. Silakan masukkan NIK yang lain.', 'error');
+                                            } else if (response.message === "Username sudah digunakan") {
                                                 // Tampilkan pesan spesifik jika username sudah ada
                                                 Swal.fire('Error', 'Username sudah ada. Silakan pilih username lain.', 'error');
                                             } else {
                                                 // Tampilkan pesan error umum
-                                                Swal.fire('Error', 'Gagal menambahkan admin', 'error');
+                                                Swal.fire('Error', response.message, 'error');
                                             }
                                         }
                                     },

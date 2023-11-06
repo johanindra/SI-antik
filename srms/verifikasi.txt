@@ -50,3 +50,35 @@
 </body>
 
 </html>
+
+<?php
+// Sisipkan file koneksi.php untuk menghubungkan ke database
+include("../server/koneksi.php");
+
+// Ambil nilai yang dimasukkan oleh pengguna
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nik = $_POST["kodeOTP"];
+
+    // Query SQL untuk memeriksa apakah NIK terdaftar di tabel admin
+    $queryAdmin = "SELECT * FROM admin WHERE nik = :nik";
+    $stmtAdmin = $dbh->prepare($queryAdmin);
+    $stmtAdmin->bindParam(':nik', $nik, PDO::PARAM_STR);
+    $stmtAdmin->execute();
+
+    if ($stmtAdmin->rowCount() > 0) {
+        // Jika NIK terdaftar di tabel admin
+        // Redirect ke lupa-password.php tanpa parameter
+        header("Location: lupa-password.php");
+        exit();
+    } else {
+        // Jika NIK tidak terdaftar di tabel admin
+        $errorMessage = "NIK tidak terdaftar!";
+
+        // Tampilkan pesan kesalahan
+        echo '<script>';
+        echo 'alert("' . $errorMessage . '");';
+        echo 'window.location.href = "verifikasi-nik.php";';
+        echo '</script>';
+    }
+}
+?>
