@@ -180,7 +180,43 @@ if (strlen($_SESSION['alogin']) == "") {
                     <script src="js/main.js"></script>
                     <script>
                         $(document).ready(function() {
-                            $('#example').DataTable();
+                            // Inisialisasi DataTables dengan konfigurasi kolom pencarian
+                            var table = $('#example').DataTable({
+                                "scrollX": true, // Menambahkan fungsi gulir horizontal
+                                "columns": [
+                                    null, // Kolom nomor urut
+                                    {
+                                        "searchable": true
+                                    }, // Kolom NIK
+                                    {
+                                        "searchable": true
+                                    }, // Kolom Nama Lengkap
+                                    {
+                                        "searchable": false
+                                    }, // Kolom RT/RW
+                                    {
+                                        "searchable": false
+                                    }, // Kolom Tanggal Laporan
+                                    {
+                                        "searchable": false
+                                    }, // Kolom Tanggal Pemantauan
+                                    {
+                                        "searchable": false
+                                    } // Kolom Status Jentik
+                                ]
+                            });
+                            $('#example_filter label').contents().filter(function() {
+                                return this.nodeType === 3;
+                            }).replaceWith('Cari: ');
+
+
+                            // Tambahkan fungsi pencarian
+                            $('#searchInput').on('keyup', function() {
+                                table.search(this.value).draw();
+                            });
+                            // Tambahkan teks di bawah kolom pencarian
+                            $('.dataTables_filter').before('<div class="search-text"><small>Cari berdasarkan NIK dan Nama Lengkap</small></div>');
+                            $('.search-text').css('text-align', 'right');
                         });
 
                         function confirmDelete(userId, rowElement) {
