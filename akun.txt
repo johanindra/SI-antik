@@ -1,0 +1,15 @@
+----akun admin desa----
+
+username :  1. admindwi
+            2. adminamelia
+            3. adminheru
+password :  bulusariwae
+
+----akun admin kader----
+
+1.   username : admin
+     passwrod : admin
+2.   username : admin2
+     password : admin2
+3.   username : admin3
+     password : admin3

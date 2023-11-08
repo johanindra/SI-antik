@@ -7,14 +7,15 @@ if (strlen($_SESSION['alogin']) == "") {
     header("Location: index.php");
 } else {
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // Ambil ID admin dari permintaan POST
-        $userId = $_POST['id'];
+        // Ambil NIK user dari permintaan POST
+        // Ambil NIK user dari permintaan POST
+        $userNIK = $_POST['nik_user'];
 
         try {
-            // Lakukan penghapusan dari tabel admin
-            $query = "DELETE FROM user_mobile WHERE id_user = :userId";
+            // Lakukan penghapusan dari tabel user_mobile
+            $query = "DELETE FROM user WHERE nik_user = :userNIK";
             $stmt = $dbh->prepare($query);
-            $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+            $stmt->bindParam(':userNIK', $userNIK, PDO::PARAM_STR);
             $stmt->execute();
 
             $response = array('success' => true);

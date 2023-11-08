@@ -74,7 +74,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%">
                                         <a class="dashboard-stat bg-danger" href="data-user.php"> <!-- Ganti bg-success menjadi bg-danger -->
                                             <?php
-                                            $sql = "SELECT COUNT(*) as total FROM user_mobile"; // Menghitung jumlah baris dalam tabel user_mobile
+                                            $sql = "SELECT COUNT(*) as total FROM user"; // Menghitung jumlah baris dalam tabel user_mobile
                                             $query = $dbh->prepare($sql);
                                             $query->execute();
                                             $result = $query->fetch(PDO::FETCH_ASSOC);

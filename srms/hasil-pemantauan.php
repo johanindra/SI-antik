@@ -181,8 +181,14 @@ if (strlen($_SESSION['alogin']) == "") {
                                                     $filterMonth = isset($_POST['filter_month']) ? $_POST['filter_month'] : $currentMonth;
                                                     $filterYear = isset($_POST['filter_year']) ? $_POST['filter_year'] : $currentYear;
 
-                                                    // Query SQL untuk mengambil data jika status_jentik tidak kosong dan sesuai dengan filter
-                                                    $sql = "SELECT * FROM pemantauan_jentik WHERE status_jentik IS NOT NULL AND MONTH(tanggal_pemantauan) = $filterMonth AND YEAR(tanggal_pemantauan) = $filterYear";
+                                                    // Query SQL untuk mengambil data jika status kosong dan sesuai dengan filter
+                                                    $sql = "SELECT id_laporan, laporan.nik_user, laporan.tanggal_laporan, laporan.tanggal_pemantauan, laporan.status, user.nama_user, user.rt_rw 
+                                                    FROM laporan 
+                                                    INNER JOIN user ON laporan.nik_user = user.nik_user 
+                                                    WHERE laporan.status IS NOT NULL AND laporan.tanggal_pemantauan IS NOT NULL
+                                                    AND MONTH(laporan.tanggal_laporan) = $filterMonth 
+                                                    AND YEAR(laporan.tanggal_laporan) = $filterYear";
+
                                                     $query = $dbh->prepare($sql);
                                                     $query->execute();
                                                     $results = $query->fetchAll(PDO::FETCH_OBJ);
@@ -191,19 +197,21 @@ if (strlen($_SESSION['alogin']) == "") {
                                                         foreach ($results as $result) { ?>
                                                             <tr>
                                                                 <td><?php echo htmlentities($cnt); ?></td>
-                                                                <td><?php echo htmlentities($result->NIK); ?></td>
-                                                                <td><?php echo htmlentities($result->nama_lengkap); ?></td>
+                                                                <td><?php echo htmlentities($result->nik_user); ?></td>
+                                                                <td><?php echo htmlentities($result->nama_user); ?></td>
                                                                 <td><?php echo htmlentities($result->rt_rw); ?></td>
                                                                 <td><?php echo htmlentities(date('d F Y', strtotime($result->tanggal_laporan))); ?></td>
                                                                 <td><?php echo htmlentities(date('d F Y', strtotime($result->tanggal_pemantauan))); ?></td>
                                                                 <td><?php
-                                                                    if ($result->status_jentik == 0) {
+                                                                    // var_dump($result->status); // Tambahkan baris ini untuk debugging
+                                                                    if ($result->status == 0) {
                                                                         echo htmlentities('Bebas Jentik') . ' (-)';
-                                                                    } elseif ($result->status_jentik == 1) {
+                                                                    } elseif ($result->status == 1) {
                                                                         echo htmlentities('Ada Jentik') . ' (&#10003;)';
                                                                     } else {
                                                                         echo htmlentities('Tidak Ada');
                                                                     }
+
                                                                     ?></td>
                                                             </tr>
                                                     <?php $cnt = $cnt + 1;

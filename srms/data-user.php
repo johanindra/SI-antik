@@ -127,7 +127,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                         </thead>
                                                         <tbody>
                                                             <?php
-                                                            $sql = "SELECT id_user, NIK, nama_lengkap, rt_rw, no_rumah, tanggal_masuk FROM user_mobile";
+                                                            $sql = "SELECT nik_user, nama_user, rt_rw, no_rumah, password_user, created_at FROM user";
                                                             $query = $dbh->prepare($sql);
                                                             $query->execute();
                                                             $results = $query->fetchAll(PDO::FETCH_OBJ);
@@ -137,13 +137,13 @@ if (strlen($_SESSION['alogin']) == "") {
                                                             ?>
                                                                     <tr>
                                                                         <td class="nomor-urut"><?php echo htmlentities($cnt); ?></td>
-                                                                        <td><?php echo htmlentities($result->NIK); ?></td>
-                                                                        <td><?php echo htmlentities($result->nama_lengkap); ?></td>
+                                                                        <td><?php echo htmlentities($result->nik_user); ?></td>
+                                                                        <td><?php echo htmlentities($result->nama_user); ?></td>
                                                                         <td><?php echo htmlentities($result->rt_rw); ?></td>
                                                                         <td><?php echo htmlentities($result->no_rumah); ?></td>
-                                                                        <td><?php echo htmlentities($result->tanggal_masuk); ?></td>
+                                                                        <td><?php echo htmlentities($result->created_at); ?></td>
                                                                         <td style="text-align: center;">
-                                                                            <a href="#" onclick="confirmDelete('<?php echo htmlentities($result->id_user); ?>', this)" title="Hapus Data">
+                                                                            <a href="#" onclick="confirmDelete('<?php echo htmlentities($result->nik_user); ?>', this)" title="Hapus Data">
                                                                                 <img src="img/btn-delet.png" alt="Hapus Data" class="btn-delete-img"></a>
                                                                         </td>
                                                                     </tr>
@@ -219,7 +219,7 @@ if (strlen($_SESSION['alogin']) == "") {
                             $('.search-text').css('text-align', 'right');
                         });
 
-                        function confirmDelete(userId, rowElement) {
+                        function confirmDelete(userNIK, rowElement) {
                             Swal.fire({
                                 title: 'Hapus pengguna mobile',
                                 text: 'Apakah Anda yakin ingin menghapus pengguna mobile ini?',
@@ -234,7 +234,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                         type: 'POST',
                                         url: 'hapus-user.php',
                                         data: {
-                                            id: userId
+                                            nik_user: userNIK // Ganti 'id' menjadi 'nik_user'
                                         },
                                         success: function(response) {
                                             if (response.success) {
@@ -254,6 +254,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                 }
                             });
                         }
+
 
                         function updateRowNumbers() {
                             // Ambil semua elemen dengan class "nomor-urut"

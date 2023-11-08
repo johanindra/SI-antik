@@ -7,9 +7,9 @@ include('../server/koneksi.php');
 
 $length = isset($_SESSION['alogin']) ? strlen($_SESSION['alogin']) : 0;
 
-$NIK = isset($_GET['id']) ? $_GET['id'] : '';
+$NIK = isset($_GET['NIK']) ? $_GET['NIK'] : '';
 
-$sql = "SELECT * FROM laporan INNER JOIN user ON laporan.nik_user = user.nik_user WHERE id_laporan = :NIK";
+$sql = "SELECT * FROM pemantauan_jentik WHERE NIK = :NIK";
 $query = $dbh->prepare($sql);
 $query->bindParam(':NIK', $NIK, PDO::PARAM_STR);
 $query->execute();
@@ -18,28 +18,28 @@ $result = $query->fetch(PDO::FETCH_OBJ);
 // Fungsi untuk mengupdate status jentik dan tanggal_pemantauan
 function updateStatusJentik($dbh, $NIK, $status_jentik, $result)
 {
-    $checkSql = "SELECT * FROM laporan WHERE id_laporan = :NIK";
+    $checkSql = "SELECT * FROM pemantauan_jentik WHERE NIK = :NIK";
     $checkQuery = $dbh->prepare($checkSql);
     $checkQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
     $checkQuery->execute();
     $existingResult = $checkQuery->fetch(PDO::FETCH_OBJ);
 
     if ($existingResult) {
-        $updateSql = "UPDATE laporan SET status = :status_jentik, tanggal_pemantauan = NOW() WHERE id_laporan = :NIK";
+        $updateSql = "UPDATE pemantauan_jentik SET status_jentik = :status_jentik, tanggal_pemantauan = NOW() WHERE NIK = :NIK";
         $updateQuery = $dbh->prepare($updateSql);
         $updateQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
         $updateQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
         $updateQuery->execute();
     } else {
-        $insertSql = "INSERT INTO laporan (id_laporan, status, tanggal_pemantauan) VALUES (:NIK, :status_jentik, NOW()) ON DUPLICATE KEY UPDATE status= :status_jentik, tanggal_pemantauan = NOW()";
+        $insertSql = "INSERT INTO pemantauan_jentik (NIK, status_jentik, tanggal_pemantauan) VALUES (:NIK, :status_jentik, NOW()) ON DUPLICATE KEY UPDATE status_jentik = :status_jentik, tanggal_pemantauan = NOW()";
         $insertQuery = $dbh->prepare($insertSql);
         $insertQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
         $insertQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
         $insertQuery->execute();
     }
 
-    // Tambahan: Update juga di tabel laporan
-    $updatePemantauanJentikSql = "UPDATE laporan SET status = :status_jentik, tanggal_pemantauan = NOW() WHERE id_laporan = :NIK";
+    // Tambahan: Update juga di tabel pemantauan_jentik
+    $updatePemantauanJentikSql = "UPDATE pemantauan_jentik SET status_jentik = :status_jentik, tanggal_pemantauan = NOW() WHERE NIK = :NIK";
     $updatePemantauanJentikQuery = $dbh->prepare($updatePemantauanJentikSql);
     $updatePemantauanJentikQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
     $updatePemantauanJentikQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
@@ -157,15 +157,15 @@ if (isset($_POST['submit'])) {
                                                 <table class="table table-bordered">
                                                     <tr>
                                                         <th>ID Laporan</th>
-                                                        <td><?php echo htmlentities($result->id_laporan); ?></td>
+                                                        <td><?php echo htmlentities($result->id_pemantauan); ?></td>
                                                     </tr>
                                                     <tr>
                                                         <th>NIK</th>
-                                                        <td><?php echo htmlentities($result->nik_user); ?></td>
+                                                        <td><?php echo htmlentities($result->NIK); ?></td>
                                                     </tr>
                                                     <tr>
                                                         <th>Nama Lengkap</th>
-                                                        <td><?php echo htmlentities($result->nama_user); ?></td>
+                                                        <td><?php echo htmlentities($result->nama_lengkap); ?></td>
                                                     </tr>
                                                     <tr>
                                                         <th>No. Rumah</th>
@@ -187,17 +187,18 @@ if (isset($_POST['submit'])) {
                                                     <tr>
                                                         <th>Foto</th>
                                                         <td>
-                                                            <?php if ($result->foto) {
-                                                                // $base64Image = base64_encode($result->foto);
-                                                                // $imageType = 'image/jpeg'; // You might need to determine the image type dynamically based on your database.
-                                                                // $gambarURL = "data:$imageType;base64,$base64Image";
+                                                            <?php
+                                                            if ($result->foto) {
+                                                                $base64Image = base64_encode($result->foto);
+                                                                $imageType = 'image/jpeg';
+                                                                $gambarURL = "data:$imageType;base64,$base64Image";
+                                                                echo '<img src="' . $gambarURL . '" alt="Foto" width="200" height="200">';
+                                                                echo '<br><br>';
+                                                                echo '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFoto">lihat foto</button>';
+                                                            } else {
+                                                                echo 'Tidak ada foto';
+                                                            }
                                                             ?>
-                                                                <img src="<?php echo '/si-antik/mobile'.$result->foto; ?>" alt="Foto" width="200" height="200">
-                                                                <br><br>
-                                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFoto">Lihat Foto</button>
-                                                            <?php } else { ?>
-                                                                Tidak ada foto
-                                                            <?php } ?>
                                                         </td>
                                                     </tr>
 
@@ -213,8 +214,8 @@ if (isset($_POST['submit'])) {
                                                 <div class="form-group">
                                                     <label for="status_jentik">Status Jentik</label>
                                                     <select class="form-control" id="status_jentik" name="status_jentik">
-                                                        <option value="0" <?php if ($result->status == 0) echo "selected"; ?>>Bebas Jentik</option>
-                                                        <option value="1" <?php if ($result->status == 1) echo "selected"; ?>>Ada Jentik</option>
+                                                        <option value="0" <?php if ($result->status_jentik == 0) echo "selected"; ?>>Bebas Jentik</option>
+                                                        <option value="1" <?php if ($result->status_jentik == 1) echo "selected"; ?>>Ada Jentik</option>
                                                     </select>
                                                 </div>
                                                 <button type="submit" name="submit" class="btn btn-primary">Simpan Status Jentik</button>
@@ -251,7 +252,7 @@ if (isset($_POST['submit'])) {
                                                 <div class="modal-dialog modal-lg" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
-                                                            <h5 class="modal-title" id="modalFotoLabel">Foto Laporan</h5>
+                                                            <h5 class="modal-title" id="modalFotoLabel">Foto Profil</h5>
                                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                 <span aria-hidden="true">&times;</span>
                                                             </button>
@@ -259,10 +260,10 @@ if (isset($_POST['submit'])) {
                                                         <div class="modal-body center-image">
                                                             <?php
                                                             if ($result->foto) {
-                                                                // $base64Image = base64_encode($result->foto);
-                                                                // $imageType = 'image/jpeg';
-                                                                // $gambarURL = "data:$imageType;base64,$base64Image";
-                                                                echo '<img src="' . '/si-antik/mobile'.$result->foto . '" alt="Foto Laporan" class="img-fluid">';
+                                                                $base64Image = base64_encode($result->foto);
+                                                                $imageType = 'image/jpeg';
+                                                                $gambarURL = "data:$imageType;base64,$base64Image";
+                                                                echo '<img src="' . $gambarURL . '" alt="Foto Profil" class="img-fluid">';
                                                             } else {
                                                                 echo 'Tidak ada foto';
                                                             }

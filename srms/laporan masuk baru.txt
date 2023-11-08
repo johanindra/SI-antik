@@ -184,7 +184,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                     $filterYear = isset($_POST['filter_year']) ? $_POST['filter_year'] : $currentYear;
 
                                                     // Query SQL untuk mengambil data jika status kosong dan sesuai dengan filter
-                                                    $sql = "SELECT id_laporan, laporan.nik_user, laporan.tanggal_laporan, user.nama_user, user.rt_rw 
+                                                    $sql = "SELECT laporan.nik_user, laporan.tanggal_laporan, user.nama_user, user.rt_rw 
                                                         FROM laporan 
                                                         INNER JOIN user ON laporan.nik_user = user.nik_user 
                                                         WHERE laporan.status IS NULL 
@@ -205,13 +205,10 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                 <td><?php echo htmlentities($result->rt_rw); ?></td>
                                                                 <td><?php echo htmlentities(date('d F Y', strtotime($result->tanggal_laporan))); ?></td>
                                                                 <td style="text-align: center;">
-                                                                    <a href="detail-laporan.php?id=<?php echo htmlentities($result->id_laporan); ?>">
-                                                                        <!-- <img src="img/View.png" alt="Detail" title="Detail Laporan" class="btn-edit-img"> -->
-                                                                        <button class="btn btn-sm" style="background-color: #FFBD59; color: #fff;" alt="Detail" title="Lihat detail laporan">Lihat</button>
+                                                                    <a href="detail-laporan.php?nik=<?php echo htmlentities($result->nik_user); ?>">
+                                                                        <img src="img/View.png" alt="Detail" title="Detail Laporan" class="btn-edit-img">
                                                                     </a>
                                                                 </td>
-
-
                                                             </tr>
                                                     <?php $cnt = $cnt + 1;
                                                         }

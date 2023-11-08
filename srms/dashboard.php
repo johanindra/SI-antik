@@ -56,7 +56,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                         <a class="dashboard-stat bg-warning" href="laporan-masuk.php">
                                             <?php
                                             // Kueri untuk menghitung total laporan masuk per bulan
-                                            $sql = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NULL";
+                                            $sql = "SELECT COUNT(*) as total FROM laporan WHERE status IS NULL";
 
                                             // Tambahkan filter berdasarkan bulan dan tahun
                                             $sql .= " AND MONTH(tanggal_laporan) = :filterMonth AND YEAR(tanggal_laporan) = :filterYear";
@@ -85,7 +85,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                         <a class="dashboard-stat bg-success" href="hasil-pemantauan.php">
                                             <?php
                                             // Kueri untuk menghitung total hasil pemantauan per bulan
-                                            $sql = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NOT NULL";
+                                            $sql = "SELECT COUNT(*) as total FROM laporan WHERE status IS NOT NULL";
 
                                             // Tambahkan filter berdasarkan bulan dan tahun
                                             $sql .= " AND MONTH(tanggal_pemantauan) = :filterMonth AND YEAR(tanggal_pemantauan) = :filterYear";
@@ -269,21 +269,21 @@ if (strlen($_SESSION['alogin']) == "") {
             $currentYear = date('Y');
 
             // Query untuk jumlah data Bebas Jentik bulan ini
-            $sqlTidakAdaJentik = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 0 AND MONTH(tanggal_pemantauan) = $currentMonth AND YEAR(tanggal_pemantauan) = $currentYear";
+            $sqlTidakAdaJentik = "SELECT COUNT(*) as total FROM laporan WHERE status = 0 AND MONTH(tanggal_pemantauan) = $currentMonth AND YEAR(tanggal_pemantauan) = $currentYear";
             $queryTidakAdaJentik = $dbh->prepare($sqlTidakAdaJentik);
             $queryTidakAdaJentik->execute();
             $resultTidakAdaJentik = $queryTidakAdaJentik->fetch(PDO::FETCH_ASSOC);
             $totalTidakAdaJentik = htmlentities($resultTidakAdaJentik['total']);
 
             // Query untuk jumlah data Ada Jentik bulan ini
-            $sqlTerdapatJentik = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 1 AND MONTH(tanggal_pemantauan) = $currentMonth AND YEAR(tanggal_pemantauan) = $currentYear";
+            $sqlTerdapatJentik = "SELECT COUNT(*) as total FROM laporan WHERE status = 1 AND MONTH(tanggal_pemantauan) = $currentMonth AND YEAR(tanggal_pemantauan) = $currentYear";
             $queryTerdapatJentik = $dbh->prepare($sqlTerdapatJentik);
             $queryTerdapatJentik->execute();
             $resultTerdapatJentik = $queryTerdapatJentik->fetch(PDO::FETCH_ASSOC);
             $totalTerdapatJentik = htmlentities($resultTerdapatJentik['total']);
 
             // Query untuk jumlah data Belum Terpantau bulan ini
-            $sqlBelumTerpantau = "SELECT COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik IS NULL AND tanggal_pemantauan IS NULL AND MONTH(tanggal_laporan) = $currentMonth AND YEAR(tanggal_laporan) = $currentYear";
+            $sqlBelumTerpantau = "SELECT COUNT(*) as total FROM laporan WHERE status IS NULL AND tanggal_pemantauan IS NULL AND MONTH(tanggal_laporan) = $currentMonth AND YEAR(tanggal_laporan) = $currentYear";
             $queryBelumTerpantau = $dbh->prepare($sqlBelumTerpantau);
             $queryBelumTerpantau->execute();
             $resultBelumTerpantau = $queryBelumTerpantau->fetch(PDO::FETCH_ASSOC);
@@ -374,14 +374,14 @@ if (strlen($_SESSION['alogin']) == "") {
             $tahunSaatIni = date('Y');
 
             // Query untuk jumlah data bebas jentik keseluruhan per bulan pada tahun ini
-            $sqlBebasJentik = "SELECT MONTH(tanggal_pemantauan) as bulan, COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 0 AND YEAR(tanggal_pemantauan) = :tahun GROUP BY MONTH(tanggal_pemantauan)";
+            $sqlBebasJentik = "SELECT MONTH(tanggal_pemantauan) as bulan, COUNT(*) as total FROM laporan WHERE status = 0 AND YEAR(tanggal_pemantauan) = :tahun GROUP BY MONTH(tanggal_pemantauan)";
             $queryBebasJentik = $dbh->prepare($sqlBebasJentik);
             $queryBebasJentik->bindParam(':tahun', $tahunSaatIni, PDO::PARAM_INT);
             $queryBebasJentik->execute();
             $resultsBebasJentik = $queryBebasJentik->fetchAll(PDO::FETCH_ASSOC);
 
             // Query untuk jumlah ada jentik keseluruhan per bulan pada tahun ini
-            $sqlAdaJentik = "SELECT MONTH(tanggal_pemantauan) as bulan, COUNT(*) as total FROM pemantauan_jentik WHERE status_jentik = 1 AND YEAR(tanggal_pemantauan) = :tahun GROUP BY MONTH(tanggal_pemantauan)";
+            $sqlAdaJentik = "SELECT MONTH(tanggal_pemantauan) as bulan, COUNT(*) as total FROM laporan WHERE status = 1 AND YEAR(tanggal_pemantauan) = :tahun GROUP BY MONTH(tanggal_pemantauan)";
             $queryAdaJentik = $dbh->prepare($sqlAdaJentik);
             $queryAdaJentik->bindParam(':tahun', $tahunSaatIni, PDO::PARAM_INT);
             $queryAdaJentik->execute();
