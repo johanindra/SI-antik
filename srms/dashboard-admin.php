@@ -27,6 +27,30 @@ if (strlen($_SESSION['alogin']) == "") {
         <link rel="stylesheet" href="css/icheck/skins/line/green.css">
         <link rel="stylesheet" href="css/main.css" media="screen">
         <script src="js/modernizr/modernizr.min.js"></script>
+        <style>
+            .dashboard-stat.bg-light {
+                background-color: #ffffff;
+                color: #2a2185;
+                transition: background-color 0.3s, color 0.3s, font-size 0.3s;
+            }
+
+            .dashboard-stat.bg-light:hover {
+                background-color: #2a2185 !important;
+                color: #ffffff !important;
+            }
+
+            .dashboard-stat:hover .bg-icon {
+                color: #ffffff !important;
+            }
+
+            .dashboard-stat:hover .number {
+                font-size: 3rem;
+            }
+
+            .dashboard-stat:hover .name {
+                font-size: 1.2rem;
+            }
+        </style>
     </head>
 
     <body class="top-navbar-fixed">
@@ -54,7 +78,7 @@ if (strlen($_SESSION['alogin']) == "") {
                             <div class="container-fluid">
                                 <div class="row">
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%;">
-                                        <a class="dashboard-stat bg-primary" href="data-admin.php"> <!-- Ganti bg-warning menjadi bg-primary -->
+                                        <a class="dashboard-stat bg-light" href="data-admin.php"> <!-- Ganti bg-warning menjadi bg-primary -->
                                             <?php
                                             $sql = "SELECT COUNT(*) as total FROM admin"; // Menghitung jumlah baris dalam tabel admin
                                             $query = $dbh->prepare($sql);
@@ -64,15 +88,15 @@ if (strlen($_SESSION['alogin']) == "") {
                                             ?>
                                             <span class="number counter">
                                                 <?php echo htmlentities($totalAdmin); ?>
-                                            </span>
+                                            </span><br>
                                             <span class="name">Admin</span>
                                             <span class="bg-icon"><i class="fa fa-user"></i></span>
                                         </a>
                                         <!-- /.dashboard-stat -->
                                     </div>
 
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%">
-                                        <a class="dashboard-stat bg-danger" href="data-user.php"> <!-- Ganti bg-success menjadi bg-danger -->
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%;">
+                                        <a class="dashboard-stat bg-light" href="data-user.php"> <!-- Ganti bg-success menjadi bg-danger -->
                                             <?php
                                             $sql = "SELECT COUNT(*) as total FROM user"; // Menghitung jumlah baris dalam tabel user_mobile
                                             $query = $dbh->prepare($sql);
@@ -83,7 +107,7 @@ if (strlen($_SESSION['alogin']) == "") {
 
                                             <span class="number counter">
                                                 <?php echo htmlentities($totalUserMobile); ?>
-                                            </span>
+                                            </span><br>
                                             <span class="name">User Mobile</span>
                                             <span class="bg-icon"><i class="fa fa-users"></i></span>
                                         </a>

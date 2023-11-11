@@ -1,7 +1,7 @@
 <?php
 // Koneksi ke database (sesuaikan dengan pengaturan Anda)
 $host = 'localhost';
-$db = 'test_siantik';
+$db = 'jumantik';
 $user = 'root';
 $pass = '';
 

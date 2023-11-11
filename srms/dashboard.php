@@ -26,6 +26,30 @@ if (strlen($_SESSION['alogin']) == "") {
         <link rel="stylesheet" href="css/icheck/skins/line/red.css">
         <link rel="stylesheet" href="css/main.css" media="screen">
         <script src="js/modernizr/modernizr.min.js"></script>
+        <style>
+            .dashboard-stat.bg-light {
+                background-color: #ffffff;
+                color: #2a2185;
+                transition: background-color 0.3s, color 0.3s, font-size 0.3s;
+            }
+
+            .dashboard-stat.bg-light:hover {
+                background-color: #2a2185 !important;
+                color: #ffffff !important;
+            }
+
+            .dashboard-stat:hover .bg-icon {
+                color: #ffffff !important;
+            }
+
+            .dashboard-stat:hover .number {
+                font-size: 3rem;
+            }
+
+            .dashboard-stat:hover .name small {
+                font-size: 1.2rem;
+            }
+        </style>
     </head>
 
     <body class="top-navbar-fixed">
@@ -53,7 +77,7 @@ if (strlen($_SESSION['alogin']) == "") {
                             <div class="container-fluid">
                                 <div class="row">
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%;">
-                                        <a class="dashboard-stat bg-warning" href="laporan-masuk.php">
+                                        <a class="dashboard-stat bg-light" href="laporan-masuk.php">
                                             <?php
                                             // Kueri untuk menghitung total laporan masuk per bulan
                                             $sql = "SELECT COUNT(*) as total FROM laporan WHERE status IS NULL";
@@ -73,7 +97,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                             ?>
                                             <span class="number counter">
                                                 <?php echo htmlentities($totalLaporanMasuk); ?>
-                                            </span>
+                                            </span><br>
                                             <span class="name"><small>Laporan Masuk Bulan <?php echo date("F Y", mktime(0, 0, 0, $filterMonth, 1, $filterYear)); ?></small></span>
                                             <span class="bg-icon"><i class="fa fa-envelope"></i></span>
                                         </a>
@@ -81,8 +105,8 @@ if (strlen($_SESSION['alogin']) == "") {
                                         <!-- /.dashboard-stat -->
                                     </div>
                                     <!-- hasil pemantauan -->
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%">
-                                        <a class="dashboard-stat bg-success" href="hasil-pemantauan.php">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%;">
+                                        <a class="dashboard-stat bg-light" href="hasil-pemantauan.php">
                                             <?php
                                             // Kueri untuk menghitung total hasil pemantauan per bulan
                                             $sql = "SELECT COUNT(*) as total FROM laporan WHERE status IS NOT NULL";
@@ -103,7 +127,7 @@ if (strlen($_SESSION['alogin']) == "") {
 
                                             <span class="number counter">
                                                 <?php echo htmlentities($totalHasilPemantauan); ?>
-                                            </span>
+                                            </span><br>
                                             <span class="name"><small>Hasil Pemantauan Bulan <?php echo date("F Y", mktime(0, 0, 0, $filterMonth, 1, $filterYear)); ?></small></span>
                                             <span class="bg-icon"><i class="fa fa-file-text"></i></span>
                                         </a>

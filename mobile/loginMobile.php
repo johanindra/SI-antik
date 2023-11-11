@@ -3,7 +3,7 @@ header("Content-Type: application/json");
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // koneksi ke database
-        $conn = new mysqli("localhost", "root", "", "test_siantik");
+        $conn = new mysqli("localhost", "root", "", "jumantik");
 
         // jika koneksi gagal
         if ($conn->connect_error) {

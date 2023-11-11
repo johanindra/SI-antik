@@ -1,76 +1,3 @@
-<?php
-// Sisipkan file koneksi.php untuk menghubungkan ke database
-include("../server/koneksi.php");
-
-// Ambil nilai yang dimasukkan oleh pengguna
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST["logUsername"];
-    $password = $_POST["logPassword"];
-
-    // Query SQL untuk memeriksa apakah pengguna terdaftar di tabel admin atau super_admin
-    $queryAdmin = "SELECT * FROM admin WHERE username = :username";
-    $stmtAdmin = $dbh->prepare($queryAdmin);
-    $stmtAdmin->bindParam(':username', $username, PDO::PARAM_STR);
-    $stmtAdmin->execute();
-
-    $querySuperAdmin = "SELECT * FROM super_admin WHERE username = :username";
-    $stmtSuperAdmin = $dbh->prepare($querySuperAdmin);
-    $stmtSuperAdmin->bindParam(':username', $username, PDO::PARAM_STR);
-    $stmtSuperAdmin->execute();
-
-    if ($stmtAdmin->rowCount() > 0) {
-        // Jika pengguna terdaftar di tabel admin
-        $result = $stmtAdmin->fetch(PDO::FETCH_ASSOC);
-
-        // Memeriksa apakah password sesuai dengan password terenkripsi di database
-        if (password_verify($password, $result['password']) || $password == $result['password']) {
-            // $nama_lengkap = $result['username'];
-
-            // Periksa peran pengguna
-            if ($result['role'] == 'super_admin') {
-                // Jika super_admin, arahkan ke dashboard-admin.php
-                // $successMessage = "Selamat datang, " . $nama_lengkap . " (Super Admin)!";
-                header("Location: dashboard-admin.php?message=" . urlencode($successMessage));
-                exit();
-            } else {
-                // Jika admin, arahkan ke dashboard.php
-                // $successMessage = "Selamat datang, " . $nama_lengkap . "!";
-                header("Location: dashboard.php?message=" . urlencode($successMessage));
-                exit();
-            }
-        } else {
-            // Password salah
-            $errorMessage = "Password salah!";
-        }
-    } elseif ($stmtSuperAdmin->rowCount() > 0) {
-        // Jika pengguna terdaftar di tabel super_admin
-        $result = $stmtSuperAdmin->fetch(PDO::FETCH_ASSOC);
-
-        // Memeriksa apakah password sesuai dengan password terenkripsi di database
-        if (password_verify($password, $result['password']) || $password == $result['password']) {
-            // Asumsikan tidak ada kolom 'role' di tabel super_admin
-            // $nama_lengkap = $result['username'];
-
-            // $successMessage = "Selamat datang, " . $nama_lengkap . " (Super Admin)!";
-            header("Location: dashboard-admin.php?message=" . urlencode($successMessage));
-            exit();
-        } else {
-            // Password salah
-            $errorMessage = "Password salah!";
-        }
-    } else {
-        // Username salah
-        $errorMessage = "Admin tidak terdaftar!";
-    }
-
-    // Tampilkan pesan kesalahan
-    echo '<script>';
-    echo 'alert("' . $errorMessage . '");';
-    echo 'window.location.href = "index.php";';
-    echo '</script>';
-}
-?>
-
 <!DOCTYPE html>
 <html lang="id">
 
@@ -83,6 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Admin Login SI-antik</title>
     <!-- logo -->
     <link href="img/Logo.png" rel="shorcut icon">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -114,9 +42,100 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <button type="submit" class="input-submit">Login</button>
                         </div>
                         <div class="forgot">
-                            <a href="verifikasi-nik.php">Lupa password?</a>
+                            <a href="lupa-password.php">Lupa password?</a>
                         </div>
                     </div>
+                    <?php
+                    // Sisipkan file koneksi.php untuk menghubungkan ke database
+                    include("../server/koneksi.php");
+
+                    // Ambil nilai yang dimasukkan oleh pengguna
+                    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                        $username = $_POST["logUsername"];
+                        $password = $_POST["logPassword"];
+
+                        // Query SQL untuk memeriksa apakah pengguna terdaftar di tabel admin atau super_admin
+                        $queryAdmin = "SELECT * FROM admin WHERE username = :username";
+                        $stmtAdmin = $dbh->prepare($queryAdmin);
+                        $stmtAdmin->bindParam(':username', $username, PDO::PARAM_STR);
+                        $stmtAdmin->execute();
+
+                        $querySuperAdmin = "SELECT * FROM super_admin WHERE username = :username";
+                        $stmtSuperAdmin = $dbh->prepare($querySuperAdmin);
+                        $stmtSuperAdmin->bindParam(':username', $username, PDO::PARAM_STR);
+                        $stmtSuperAdmin->execute();
+
+                        if ($stmtAdmin->rowCount() > 0) {
+                            // Jika pengguna terdaftar di tabel admin
+                            $result = $stmtAdmin->fetch(PDO::FETCH_ASSOC);
+
+                            // Memeriksa apakah password sesuai dengan password terenkripsi di database
+                            if (password_verify($password, $result['password']) || $password == $result['password']) {
+                                // Jika admin, arahkan ke dashboard.php
+                                $successMessage =  "Admin Kader " . $result['nama_lengkap'];
+                                echo '<script>';
+                                echo 'Swal.fire({
+                        title: "Selamat Datang! 😊",
+                        text: "' . $successMessage . '",
+                        icon: "success",
+                        confirmButtonText: "OK"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "dashboard.php";
+                        }
+                    });';
+                                echo '</script>';
+                                exit();
+                            } else {
+                                // Password salah
+                                $errorMessage = "Password salah!";
+                            }
+                        } elseif ($stmtSuperAdmin->rowCount() > 0) {
+                            // Jika pengguna terdaftar di tabel super_admin
+                            $result = $stmtSuperAdmin->fetch(PDO::FETCH_ASSOC);
+
+                            // Memeriksa apakah password sesuai dengan password terenkripsi di database
+                            if (password_verify($password, $result['password']) || $password == $result['password']) {
+                                // Asumsikan tidak ada kolom 'role' di tabel super_admin
+                                $successMessage = "Admin Desa " . $result['nama_lengkap'];
+                                echo '<script>';
+                                echo 'Swal.fire({
+                        title: "Selamat datang! 😊",
+                        text: "' . $successMessage . '",
+                        icon: "success",
+                        confirmButtonText: "OK"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "dashboard-admin.php";
+                        }
+                    });';
+                                echo '</script>';
+                                exit();
+                            } else {
+                                // Password salah
+                                $errorMessage = "Password salah!";
+                            }
+                        } else {
+                            // Username salah
+                            $errorMessage = "Admin tidak terdaftar!";
+                        }
+
+                        // Tampilkan pesan kesalahan
+                        echo '<script>';
+                        echo 'Swal.fire({
+                title: "Uppss🙊🙉",
+                text: "' . $errorMessage . '",
+                icon: "error",
+                confirmButtonText: "OK"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "index.php";
+                }
+            });';
+                        echo '</script>';
+                    }
+                    ?>
+
                 </form>
             </div>
         </div>

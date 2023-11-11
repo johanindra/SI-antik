@@ -10,6 +10,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $username = $_POST['username'];
         $password = $_POST['password'];
 
+        // Validasi NIK hanya dapat dimasukkan angka dan harus 16 digit
+        if (!preg_match('/^[0-9]{16}$/', $nik)) {
+            // Jika NIK tidak sesuai, kirim respons error ke klien
+            $response['success'] = false;
+            $response['message'] = "NIK harus terdiri dari 16 digit angka.";
+            // Encode respons dalam format JSON
+            echo json_encode($response);
+            // Keluar dari skrip
+            exit();
+        }
+
+        // Validasi nama lengkap (tidak mengandung karakter khusus)
+        if (!preg_match('/^[a-zA-Z0-9\s]+$/', $nama_lengkap)) {
+            $response['success'] = false;
+            $response['message'] = "Nama lengkap hanya dapat mengandung huruf, angka, dan spasi.";
+            echo json_encode($response);
+            exit();
+        }
+
+        // Validasi panjang username (minimal 4 karakter, maksimal 8 karakter)
+        if (strlen($username) < 4 || strlen($username) > 8) {
+            $response['success'] = false;
+            $response['message'] = "Username harus terdiri dari 4 hingga 8 karakter.";
+            echo json_encode($response);
+            exit();
+        }
+
+        // Validasi panjang password (minimal 6 karakter, maksimal 12 karakter)
+        if (strlen($password) < 6 || strlen($password) > 12) {
+            $response['success'] = false;
+            $response['message'] = "Password harus terdiri dari 6 hingga 12 karakter.";
+            echo json_encode($response);
+            exit();
+        }
+
         // Cek apakah NIK sudah ada di database
         $cekNIK = "SELECT * FROM admin WHERE nik = :nik";
         $stmtNIK = $dbh->prepare($cekNIK);

@@ -1,8 +1,14 @@
 <!-- <style>
     .left-sidebar {
         /* background-color: black; */
-        background-color: #111827;
+        background-color: #2a2185;
         padding: 15px;
+    }
+
+    .left-sidebar:hover,
+    .left-sidebar.closed:hover {
+        background-color: #2a2185;
+        /* Change this to your desired hover color */
     }
 
     .sidebar-nav ul.side-nav li a {
@@ -15,7 +21,10 @@
     }
 
     .sidebar-nav ul.side-nav li a:hover {
-        background-color: #BE780F;
+        background-color: #ffff;
+        /* Change this to your desired hover color */
+        color: #2a2185;
+        /* Change this to your desired hover text color */
     }
 </style> -->
 <div class="left-sidebar bg-black-300 box-shadow">

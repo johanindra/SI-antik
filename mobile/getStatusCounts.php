@@ -3,7 +3,7 @@
 $host = "localhost";
 $username = "root";
 $password = "";
-$database = "test_siantik";
+$database = "jumantik";
 
 $connection = mysqli_connect($host, $username, $password, $database);
 

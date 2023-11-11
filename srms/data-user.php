@@ -238,13 +238,13 @@ if (strlen($_SESSION['alogin']) == "") {
                                         },
                                         success: function(response) {
                                             if (response.success) {
-                                                Swal.fire('Sukses', 'Pengguna mobile berhasil dihapus', 'success');
+                                                Swal.fire('Berhasil!', 'Pengguna mobile berhasil dihapus', 'success');
                                                 // Hapus baris tabel dari halaman
                                                 $(rowElement).closest('tr').remove();
 
                                                 updateRowNumbers();
                                             } else {
-                                                Swal.fire('Error', 'Gagal menghapus pengguna mobile', 'error');
+                                                Swal.fire('Uppss🙊🙉', 'Gagal menghapus pengguna mobile', 'error');
                                             }
                                         },
                                         error: function() {

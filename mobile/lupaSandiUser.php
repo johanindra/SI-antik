@@ -5,7 +5,7 @@ header("Content-Type: application/json");
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "test_siantik";
+$db = "jumantik";
 
 // Ambil data yang dikirim dari aplikasi Android
 $nik_user = $_POST['nik_user'];

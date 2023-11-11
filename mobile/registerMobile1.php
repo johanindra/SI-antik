@@ -4,7 +4,7 @@ header("Content-Type: application/json");
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "test_siantik";
+$db = "jumantik";
 
 // Periksa apakah data yang dibutuhkan ada dalam permintaan
 if (isset($_POST['nik_user'], $_POST['nama_user'], $_POST['password_user'], $_POST['rt_rw'],$_POST['no_rumah'])) {

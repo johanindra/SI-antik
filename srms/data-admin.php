@@ -144,20 +144,33 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                     <?php } ?>
                                                                     <div class="form-group">
                                                                         <label for="nik">NIK:</label>
-                                                                        <input type="text" class="form-control" id="nik" name="nik" required>
+                                                                        <input type="text" class="form-control" id="nik" name="nik" title="Masukkan NIK" required minlength="16" maxlength="16" oninput="validateNIK(event)" />
+                                                                        <span id="angkaMessage" style="color: red; font-size: 12px;"></span>
                                                                     </div>
                                                                     <div class="form-group">
                                                                         <label for="nama_lengkap">Nama Lengkap:</label>
-                                                                        <input type="text" class="form-control" id="nama_lengkap" name="nama_lengkap" required>
+                                                                        <input type="text" class="form-control" id="nama_lengkap" name="nama_lengkap" title="Masukkan Nama Lengkap" required>
                                                                     </div>
+                                                                    <!-- <div class="form-group">
+                                                                        <label for="username">Username:</label>
+                                                                        <input type="text" class="form-control" id="username" name="username" title="username minimal 4 karakter" required>
+                                                                    </div> -->
                                                                     <div class="form-group">
                                                                         <label for="username">Username:</label>
-                                                                        <input type="text" class="form-control" id="username" name="username" required>
+                                                                        <input type="text" class="form-control" id="username" name="username" title="username minimal 4 karakter" required minlength="4" maxlength="8" oninput="validateUsername(event)" />
+                                                                        <span id="usernameMessage" style="color: red; font-size: 12px;"></span>
                                                                     </div>
                                                                     <div class="form-group">
                                                                         <label for="password">Password:</label>
-                                                                        <input type="password" class="form-control" id="password" name="password" required>
+                                                                        <input type="password" class="form-control" id="password" name="password" title="password minimal 6 karakter" required minlength="6" maxlength="12" oninput="validatePassword(event)" />
+                                                                        <span id="passwordMessage" style="color: red; font-size: 12px;"></span>
                                                                     </div>
+
+
+                                                                    <!-- <div class="form-group">
+                                                                        <label for="password">Password:</label>
+                                                                        <input type="password" class="form-control" id="password" name="password" title="password minimal 6 karakter" required>
+                                                                    </div> -->
                                                                     <button type="submit" class="btn btn-primary" name="submit">Simpan</button>
                                                                 </form>
                                                             </div>
@@ -195,10 +208,14 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                         <td><?php echo htmlentities($result->nama_lengkap); ?></td>
                                                                         <td><?php echo htmlentities($result->username); ?></td>
                                                                         <td><?php echo htmlentities($result->tanggal_masuk); ?></td>
-                                                                        <td><?php echo htmlentities($result->tanggal_update_password); ?></td>
+                                                                        <!-- <td><?php echo htmlentities($result->tanggal_update_password); ?></td> -->
+                                                                        <td><?php echo $result->tanggal_update_password ? htmlentities($result->tanggal_update_password) : '-'; ?></td>
                                                                         <td style="text-align: center;">
                                                                             <!-- <a href="detail-laporan.php?NIK=<?php echo htmlentities($result->id_admin); ?>">
                                                                                 <img src="btn-edit.png" alt="Detail" title="Detail" class="btn-edit-img">
+                                                                            </a> -->
+                                                                            <!-- <a href="edit-admin.php?id=<?php echo htmlentities($result->id_admin); ?>" title="Edit Data">
+                                                                                <img src="img/btn-edit.png" alt="Edit Data" class="btn-edit-img">
                                                                             </a> -->
                                                                             <a href="#" onclick="confirmDelete('<?php echo htmlentities($result->id_admin); ?>', this)" title="Hapus Data">
                                                                                 <img src="img/btn-delet.png" alt="Hapus Data" class="btn-delete-img"></a>
@@ -295,13 +312,13 @@ if (strlen($_SESSION['alogin']) == "") {
                                         },
                                         success: function(response) {
                                             if (response.success) {
-                                                Swal.fire('Sukses', 'Admin berhasil dihapus', 'success');
+                                                Swal.fire('Berhasil!', 'Admin berhasil dihapus', 'success');
                                                 // Hapus baris tabel dari halaman
                                                 $(rowElement).closest('tr').remove();
 
                                                 updateRowNumbers();
                                             } else {
-                                                Swal.fire('Error', 'Gagal menghapus admin', 'error');
+                                                Swal.fire('Uppss🙊🙉', 'Gagal menghapus admin', 'error');
                                             }
                                         },
                                         error: function() {
@@ -354,13 +371,13 @@ if (strlen($_SESSION['alogin']) == "") {
                                             // Jika gagal, tampilkan pesan error
                                             if (response.message === "NIK sudah terdaftar") {
                                                 // Tampilkan pesan spesifik jika NIK sudah ada
-                                                Swal.fire('Error', 'NIK sudah terdaftar. Silakan masukkan NIK yang lain.', 'error');
+                                                Swal.fire('Uppss🙊🙉', 'NIK sudah terdaftar. Silakan masukkan NIK yang lain.', 'error');
                                             } else if (response.message === "Username sudah digunakan") {
                                                 // Tampilkan pesan spesifik jika username sudah ada
-                                                Swal.fire('Error', 'Username sudah ada. Silakan pilih username lain.', 'error');
+                                                Swal.fire('Uppss🙊🙉', 'Username sudah ada. Silakan pilih username lain.', 'error');
                                             } else {
                                                 // Tampilkan pesan error umum
-                                                Swal.fire('Error', response.message, 'error');
+                                                Swal.fire('Uppss🙊🙉', response.message, 'error');
                                             }
                                         }
                                     },
@@ -390,6 +407,50 @@ if (strlen($_SESSION['alogin']) == "") {
                                     Swal.fire('Error', 'Terjadi kesalahan pada server saat mengambil data admin', 'error');
                                 }
                             });
+                        }
+
+                        function validateNIK(event) {
+                            // Mengambil nilai input
+                            let input = event.target.value;
+
+                            // Menghilangkan karakter selain angka
+                            input = input.replace(/\D/g, '');
+
+                            // Memastikan panjang antara 12 hingga 20 angka
+                            input = input.substring(0, 16);
+
+                            // Mengupdate nilai input
+                            event.target.value = input;
+
+                            // Menampilkan pesan jika terdapat karakter selain angka
+                            const angkaMessage = document.getElementById('angkaMessage');
+                            if (/[^0-9]/.test(input) || input.length < 16 || input.length > 16) {
+                                angkaMessage.textContent = 'Hanya bisa memasukkan NIK (16 digit angka)';
+                            } else {
+                                angkaMessage.textContent = '';
+                            }
+                        }
+
+                        function validateUsername(event) {
+                            let input = event.target.value;
+                            const usernameMessage = document.getElementById('usernameMessage');
+
+                            if (input.length < 4 || input.length > 8) {
+                                usernameMessage.textContent = 'Username harus terdiri dari 4 hingga 8 karakter';
+                            } else {
+                                usernameMessage.textContent = '';
+                            }
+                        }
+
+                        function validatePassword(event) {
+                            let input = event.target.value;
+                            const passwordMessage = document.getElementById('passwordMessage');
+
+                            if (input.length < 6 || input.length > 12) {
+                                passwordMessage.textContent = 'Password harus terdiri dari 6 hingga 12 karakter';
+                            } else {
+                                passwordMessage.textContent = '';
+                            }
                         }
                     </script>
     </body>
