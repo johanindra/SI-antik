@@ -2,8 +2,23 @@
 session_start();
 error_reporting(0);
 include('../server/koneksi.php');
-if (strlen($_SESSION['alogin']) == "") {
-    header("Location: index.php");
+
+// Periksa apakah pengguna sudah login
+if (!isset($_SESSION['username'])) {
+    echo '<script>
+            alert("Anda belum login. Silakan login terlebih dahulu.");
+            window.location.href = "index.php";
+          </script>';
+    exit;
+}
+
+// Periksa apakah pengguna adalah super admin
+if ($_SESSION['role'] !== 'super_admin') {
+    echo '<script>
+            alert("Anda tidak memiliki izin untuk mengakses halaman ini.");
+            window.history.back();
+          </script>';
+    exit;
 } else {
 ?>
 
@@ -394,13 +409,12 @@ if (strlen($_SESSION['alogin']) == "") {
                             // Lakukan pengambilan data admin terbaru menggunakan AJAX
                             $.ajax({
                                 type: 'GET',
-                                url: 'ambil-data-admin.php', // Sesuaikan dengan file yang akan mengambil data admin
+                                url: 'ambil-data-admin.php',
                                 dataType: 'html',
                                 success: function(data) {
-                                    // Ganti isi tabel dengan data admin terbaru
-                                    $('#example').DataTable().destroy();
+                                    // Perbarui data dalam tabel tanpa menghancurkannya
                                     $('#example tbody').html(data);
-                                    $('#example').DataTable();
+                                    $('#example').DataTable().draw();
                                 },
                                 error: function() {
                                     // Jika terjadi kesalahan pada server, tampilkan pesan error
@@ -408,6 +422,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                 }
                             });
                         }
+
 
                         function validateNIK(event) {
                             // Mengambil nilai input

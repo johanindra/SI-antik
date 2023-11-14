@@ -5,6 +5,24 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 include('../server/koneksi.php');
 
+// Periksa apakah pengguna sudah login
+if (!isset($_SESSION['username'])) {
+    echo '<script>
+            alert("Anda belum login. Silakan login terlebih dahulu.");
+            window.location.href = "index.php";
+          </script>';
+    exit;
+}
+
+// Periksa apakah pengguna adalah admin
+if ($_SESSION['role'] !== 'admin') {
+    echo '<script>
+            alert("Anda tidak memiliki izin untuk mengakses halaman ini.");
+            window.history.back();
+          </script>';
+    exit;
+}
+
 $length = isset($_SESSION['alogin']) ? strlen($_SESSION['alogin']) : 0;
 
 $NIK = isset($_GET['id']) ? $_GET['id'] : '';
@@ -182,8 +200,9 @@ if (isset($_POST['submit'])) {
                                                     </tr>
                                                     <tr>
                                                         <th>Deskripsi Keadaan</th>
-                                                        <td><?php echo htmlentities($result->deskripsi); ?></td>
+                                                        <td><?php echo empty($result->deskripsi) ? '-' : htmlentities($result->deskripsi); ?></td>
                                                     </tr>
+
                                                     <tr>
                                                         <th>Foto</th>
                                                         <td>
@@ -192,7 +211,7 @@ if (isset($_POST['submit'])) {
                                                                 // $imageType = 'image/jpeg'; // You might need to determine the image type dynamically based on your database.
                                                                 // $gambarURL = "data:$imageType;base64,$base64Image";
                                                             ?>
-                                                                <img src="<?php echo '/si-antik/mobile'.$result->foto; ?>" alt="Foto" width="200" height="200">
+                                                                <img src="<?php echo '/si-antik/mobile' . $result->foto; ?>" alt="Foto" width="200" height="200">
                                                                 <br><br>
                                                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFoto">Lihat Foto</button>
                                                             <?php } else { ?>
@@ -203,12 +222,24 @@ if (isset($_POST['submit'])) {
 
                                                 </table>
 
+
                                             <?php } else { ?>
                                                 <div class="alert alert-danger">
                                                     Data tidak ditemukan.
                                                 </div>
                                             <?php } ?>
                                             <!-- Tambahkan elemen form untuk mengatur status jentik secara manual -->
+                                            <!-- <form method="post">
+                                                <div class="form-group">
+                                                    <label for="status_jentik">Status Jentik</label>
+                                                    <select class="form-control" id="status_jentik" name="status_jentik">
+                                                        <option value="0" <?php if ($result->status == 0) echo "selected"; ?>>Bebas Jentik</option>
+                                                        <option value="1" <?php if ($result->status == 1) echo "selected"; ?>>Ada Jentik</option>
+                                                    </select>
+                                                </div>
+                                                <button type="submit" name="submit" class="btn btn-primary">Simpan Status Jentik</button>
+                                            </form><br>
+                                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('<?php echo htmlentities($result->id_laporan); ?>');" alt="Hapus" title="Hapus laporan">Hapus Laporan</button> -->
                                             <form method="post">
                                                 <div class="form-group">
                                                     <label for="status_jentik">Status Jentik</label>
@@ -218,6 +249,7 @@ if (isset($_POST['submit'])) {
                                                     </select>
                                                 </div>
                                                 <button type="submit" name="submit" class="btn btn-primary">Simpan Status Jentik</button>
+                                                <button class="btn btn-sm btn-danger" type="button" onclick="confirmDelete('<?php echo htmlentities($result->id_laporan); ?>');" alt="Hapus" title="Hapus laporan">Hapus Laporan</button>
                                             </form>
 
                                             <?php
@@ -229,7 +261,9 @@ if (isset($_POST['submit'])) {
                                                     echo 'Swal.fire({
                                                                 icon: "success",
                                                                 title: "Berhasil!",
-                                                                text: "Status Jentik berhasil diperbarui.",
+                                                                text: "Status Jentik berhasil disimpan.",
+                                                            }).then(() => {
+                                                                window.location.href = "laporan-masuk.php";
                                                             });';
                                                     echo '</script>';
                                                 } else {
@@ -237,7 +271,7 @@ if (isset($_POST['submit'])) {
                                                     echo 'Swal.fire({
                                                                 icon: "error",
                                                                 title: "Oops...",
-                                                                text: "Gagal memperbarui Status Jentik.",
+                                                                text: "Gagal menyimpan Status Jentik.",
                                                             });';
                                                     echo '</script>';
                                                 }
@@ -262,7 +296,7 @@ if (isset($_POST['submit'])) {
                                                                 // $base64Image = base64_encode($result->foto);
                                                                 // $imageType = 'image/jpeg';
                                                                 // $gambarURL = "data:$imageType;base64,$base64Image";
-                                                                echo '<img src="' . '/si-antik/mobile'.$result->foto . '" alt="Foto Laporan" class="img-fluid">';
+                                                                echo '<img src="' . '/si-antik/mobile' . $result->foto . '" alt="Foto Laporan" class="img-fluid">';
                                                             } else {
                                                                 echo 'Tidak ada foto';
                                                             }
@@ -298,6 +332,54 @@ if (isset($_POST['submit'])) {
     <script src="js/prism/prism.js"></script>
     <!-- ========== THEME JS ========== -->
     <script src="js/main.js"></script>
+
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: 'Apakah Anda yakin ingin menghapus laporan ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Kirim permintaan POST ke hapus-laporan.php
+                    fetch('hapus-laporan.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: 'id=' + id,
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Berhasil',
+                                    text: 'Laporan berhasil dihapus',
+                                    icon: 'success'
+                                }).then(() => {
+                                    // Redirect ke halaman utama atau lakukan sesuatu setelah penghapusan
+                                    window.location.href = "laporan-masuk.php"; // Anda dapat mengganti ini sesuai kebutuhan
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Gagal',
+                                    text: 'Gagal menghapus laporan: ' + data.message,
+                                    icon: 'error'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

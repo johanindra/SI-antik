@@ -3,8 +3,22 @@ session_start();
 error_reporting(0);
 include('../server/koneksi.php');
 
-if (strlen($_SESSION['alogin']) == "") {
-    header("Location: index.php");
+// Periksa apakah pengguna sudah login
+if (!isset($_SESSION['username'])) {
+    echo '<script>
+            alert("Anda belum login. Silakan login terlebih dahulu.");
+            window.location.href = "index.php";
+          </script>';
+    exit;
+}
+
+// Periksa apakah pengguna adalah super admin
+if ($_SESSION['role'] !== 'super_admin') {
+    echo '<script>
+            alert("Anda tidak memiliki izin untuk mengakses halaman ini.");
+            window.history.back();
+          </script>';
+    exit;
 } else {
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Ambil ID admin dari permintaan POST

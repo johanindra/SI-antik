@@ -3,8 +3,12 @@ session_start();
 error_reporting(0);
 include('../server/koneksi.php');
 
-if (strlen($_SESSION['alogin']) == "") {
-    header("Location: index.php");
+if (!isset($_SESSION['username'])) {
+    echo '<script>
+            alert("Anda harus login terlebih dahulu");
+            window.location.href = "index.php";
+          </script>';
+    exit;
 } else {
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Ambil NIK user dari permintaan POST

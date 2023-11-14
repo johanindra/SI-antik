@@ -3,9 +3,22 @@ session_start();
 error_reporting(0);
 include('../server/koneksi.php');
 
-// Periksa apakah pengguna telah login
-if (strlen($_SESSION['alogin']) == "") {
-    header("Location: index.php");
+// Periksa apakah pengguna sudah login
+if (!isset($_SESSION['username'])) {
+    echo '<script>
+            alert("Anda belum login. Silakan login terlebih dahulu.");
+            window.location.href = "index.php";
+          </script>';
+    exit;
+}
+
+// Periksa apakah pengguna adalah admin
+if ($_SESSION['role'] !== 'admin') {
+    echo '<script>
+            alert("Anda tidak memiliki izin untuk mengakses halaman ini.");
+            window.history.back();
+          </script>';
+    exit;
 } else {
 ?>
     <!DOCTYPE html>
@@ -173,6 +186,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                         <th>Tanggal Laporan</th>
                                                         <th>Tanggal Pemantauan</th>
                                                         <th>Status Jentik</th>
+                                                        <th>Detail</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -213,6 +227,12 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                     }
 
                                                                     ?></td>
+                                                                <td style="text-align: center;">
+                                                                    <a href="detail-pemantauan.php?id=<?php echo htmlentities($result->id_laporan); ?>">
+                                                                        <!-- <img src="img/View.png" alt="Detail" title="Detail pemantauan" class="btn-edit-img"> -->
+                                                                        <button class="btn btn-sm" style="background-color: #FFBD59; color: #fff;" alt="Detail" title="Lihat detail pemantauan">Lihat</button>
+                                                                    </a>
+                                                                </td>
                                                             </tr>
                                                     <?php $cnt = $cnt + 1;
                                                         }
@@ -265,10 +285,10 @@ if (strlen($_SESSION['alogin']) == "") {
                             "searchable": true
                         }, // Kolom NIK
                         {
-                            "searchable": true
+                            "searchable": false
                         }, // Kolom Nama Lengkap
                         {
-                            "searchable": false
+                            "searchable": true
                         }, // Kolom RT/RW
                         {
                             "searchable": false
@@ -278,7 +298,10 @@ if (strlen($_SESSION['alogin']) == "") {
                         }, // Kolom Tanggal Pemantauan
                         {
                             "searchable": true
-                        } // Kolom Status Jentik
+                        }, // Kolom Status Jentik
+                        {
+                            "searchable": false
+                        } // detail
                     ]
                 });
                 $('#example_filter label').contents().filter(function() {
@@ -291,7 +314,7 @@ if (strlen($_SESSION['alogin']) == "") {
                     table.search(this.value).draw();
                 });
                 // Tambahkan teks di bawah kolom pencarian
-                $('.dataTables_filter').before('<div class="search-text"><small>Cari berdasarkan NIK, Nama Lengkap dan Status</small></div>');
+                $('.dataTables_filter').before('<div class="search-text"><small>Cari berdasarkan NIK, Rt/Rw dan Status</small></div>');
                 $('.search-text').css('text-align', 'right');
             });
 
@@ -330,8 +353,14 @@ if (strlen($_SESSION['alogin']) == "") {
                     var cells = row.querySelectorAll('td:not(:first-child)');
 
                     // Tambahkan isi setiap sel ke konten cetak
-                    cells.forEach(function(cell) {
-                        printContent += '<td>' + cell.innerText + '</td>';
+                    // cells.forEach(function(cell) {
+                    //     printContent += '<td>' + cell.innerText + '</td>';
+                    // });
+                    cells.forEach(function(cell, cellIndex) {
+                        // Jika bukan kolom "Detail", tambahkan isi sel ke konten preview
+                        if (cellIndex !== 6) {
+                            printContent += '<td>' + cell.innerText + '</td>';
+                        }
                     });
 
                     printContent += '</tr>';
@@ -393,7 +422,6 @@ if (strlen($_SESSION['alogin']) == "") {
                 previewContent += '<h3 style="text-align:center; margin-top:20px;">Data Hasil Pemantauan Jentik<br>Desa Bulusari Kecamatan Tarokan<br>Pada bulan ' + '<?php echo date("F", mktime(0, 0, 0, $filterMonth, 1)); ?>' + ' tahun <?php echo $filterYear; ?></h3>';
 
                 previewContent += '<table border="1" cellspacing="0" width="100%">';
-                //textnya berada di kiri jika mau di tengah hapus saja (style="text-align: left;")
                 previewContent += '<thead style="text-align: left;"><tr><th>No</th><th>NIK</th><th>Nama Lengkap</th><th>RT/RW</th><th>Tanggal Laporan</th><th>Tanggal Pemantauan</th><th>Status Jentik</th></tr></thead>';
                 previewContent += '<tbody>';
 
@@ -405,8 +433,11 @@ if (strlen($_SESSION['alogin']) == "") {
 
                     var cells = row.querySelectorAll('td:not(:first-child)');
 
-                    cells.forEach(function(cell) {
-                        previewContent += '<td>' + cell.innerText + '</td>';
+                    cells.forEach(function(cell, cellIndex) {
+                        // Jika bukan kolom "Detail", tambahkan isi sel ke konten preview
+                        if (cellIndex !== 6) {
+                            previewContent += '<td>' + cell.innerText + '</td>';
+                        }
                     });
 
                     previewContent += '</tr>';

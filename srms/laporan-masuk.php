@@ -3,9 +3,22 @@ session_start();
 error_reporting(0);
 include('../server/koneksi.php');
 
-// Periksa apakah pengguna telah login
-if (strlen($_SESSION['alogin']) == "") {
-    header("Location: index.php");
+// Periksa apakah pengguna sudah login
+if (!isset($_SESSION['username'])) {
+    echo '<script>
+            alert("Anda belum login. Silakan login terlebih dahulu.");
+            window.location.href = "index.php";
+          </script>';
+    exit;
+}
+
+// Periksa apakah pengguna adalah admin
+if ($_SESSION['role'] !== 'admin') {
+    echo '<script>
+            alert("Anda tidak memiliki izin untuk mengakses halaman ini.");
+            window.history.back();
+          </script>';
+    exit;
 } else {
 ?>
     <!DOCTYPE html>
@@ -209,6 +222,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                         <!-- <img src="img/View.png" alt="Detail" title="Detail Laporan" class="btn-edit-img"> -->
                                                                         <button class="btn btn-sm" style="background-color: #FFBD59; color: #fff;" alt="Detail" title="Lihat detail laporan">Lihat</button>
                                                                     </a>
+                                                                    <!-- <button class="btn btn-sm btn-danger" onclick="confirmDelete('<?php echo htmlentities($result->id_laporan); ?>');" alt="Hapus" title="Hapus laporan">Hapus</button> -->
                                                                 </td>
 
 
@@ -290,6 +304,52 @@ if (strlen($_SESSION['alogin']) == "") {
                 $('.dataTables_filter').before('<div class="search-text"><small>Cari berdasarkan NIK dan Nama Lengkap</small></div>');
                 $('.search-text').css('text-align', 'right');
             });
+
+            // function confirmDelete(id) {
+            //     Swal.fire({
+            //         title: 'Konfirmasi Hapus',
+            //         text: 'Apakah Anda yakin ingin menghapus laporan ini?',
+            //         icon: 'warning',
+            //         showCancelButton: true,
+            //         confirmButtonColor: '#d33',
+            //         cancelButtonColor: '#3085d6',
+            //         confirmButtonText: 'Ya, Hapus!',
+            //         cancelButtonText: 'Batal'
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             // Kirim permintaan POST ke hapus-laporan.php
+            //             fetch('hapus-laporan.php', {
+            //                     method: 'POST',
+            //                     headers: {
+            //                         'Content-Type': 'application/x-www-form-urlencoded',
+            //                     },
+            //                     body: 'id=' + id,
+            //                 })
+            //                 .then(response => response.json())
+            //                 .then(data => {
+            //                     if (data.success) {
+            //                         Swal.fire({
+            //                             title: 'Berhasil',
+            //                             text: 'Laporan berhasil dihapus',
+            //                             icon: 'success'
+            //                         }).then(() => {
+            //                             // Redirect ke halaman utama atau lakukan sesuatu setelah penghapusan
+            //                             window.location.reload(); // Anda dapat mengganti ini sesuai kebutuhan
+            //                         });
+            //                     } else {
+            //                         Swal.fire({
+            //                             title: 'Gagal',
+            //                             text: 'Gagal menghapus laporan: ' + data.message,
+            //                             icon: 'error'
+            //                         });
+            //                     }
+            //                 })
+            //                 .catch(error => {
+            //                     console.error('Error:', error);
+            //                 });
+            //         }
+            //     });
+            // }
         </script>
         <!-- ... -->
     </body>
