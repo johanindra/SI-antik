@@ -5,7 +5,6 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 include('../server/koneksi.php');
 
-// Periksa apakah pengguna sudah login
 if (!isset($_SESSION['username'])) {
     echo '<script>
             alert("Anda belum login. Silakan login terlebih dahulu.");
@@ -14,7 +13,6 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-// Periksa apakah pengguna adalah admin
 if ($_SESSION['role'] !== 'admin') {
     echo '<script>
             alert("Anda tidak memiliki izin untuk mengakses halaman ini.");
@@ -22,8 +20,6 @@ if ($_SESSION['role'] !== 'admin') {
           </script>';
     exit;
 }
-
-$length = isset($_SESSION['alogin']) ? strlen($_SESSION['alogin']) : 0;
 
 $NIK = isset($_GET['id']) ? $_GET['id'] : '';
 
@@ -33,70 +29,15 @@ $query->bindParam(':NIK', $NIK, PDO::PARAM_STR);
 $query->execute();
 $result = $query->fetch(PDO::FETCH_OBJ);
 
-// Fungsi untuk mengupdate status jentik dan tanggal_pemantauan
-function updateStatusJentik($dbh, $NIK, $status_jentik, $result)
+function updateStatusJentik($dbh, $NIK, $status_jentik)
 {
-    $checkSql = "SELECT * FROM laporan WHERE id_laporan = :NIK";
-    $checkQuery = $dbh->prepare($checkSql);
-    $checkQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
-    $checkQuery->execute();
-    $existingResult = $checkQuery->fetch(PDO::FETCH_OBJ);
-
-    if ($existingResult) {
-        $updateSql = "UPDATE laporan SET status = :status_jentik, tanggal_pemantauan = NOW() WHERE id_laporan = :NIK";
-        $updateQuery = $dbh->prepare($updateSql);
-        $updateQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
-        $updateQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
-        $updateQuery->execute();
-    } else {
-        $insertSql = "INSERT INTO laporan (id_laporan, status, tanggal_pemantauan) VALUES (:NIK, :status_jentik, NOW()) ON DUPLICATE KEY UPDATE status= :status_jentik, tanggal_pemantauan = NOW()";
-        $insertQuery = $dbh->prepare($insertSql);
-        $insertQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
-        $insertQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
-        $insertQuery->execute();
-    }
-
-    // Tambahan: Update juga di tabel laporan
-    $updatePemantauanJentikSql = "UPDATE laporan SET status = :status_jentik, tanggal_pemantauan = NOW() WHERE id_laporan = :NIK";
-    $updatePemantauanJentikQuery = $dbh->prepare($updatePemantauanJentikSql);
-    $updatePemantauanJentikQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
-    $updatePemantauanJentikQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
-    $updatePemantauanJentikQuery->execute();
+    $updateSql = "UPDATE laporan SET status = :status_jentik, tanggal_pemantauan = NOW() WHERE id_laporan = :NIK";
+    $updateQuery = $dbh->prepare($updateSql);
+    $updateQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
+    $updateQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
+    $updateQuery->execute();
 
     return true;
-}
-
-if (isset($_POST['submit'])) {
-    $status_jentik = $_POST['status_jentik'];
-
-    if (updateStatusJentik($dbh, $NIK, $status_jentik, $result)) {
-        // echo '<script>';
-        // echo 'Swal.fire({
-        //                 icon: "success",
-        //                 title: "Berhasil!",
-        //                 text: "Status Jentik berhasil diperbarui.",
-        //             });';
-        // echo '</script>';
-        echo '<script>';
-        echo 'Swal.fire({
-                    icon: "success",
-                    title: "Berhasil!",
-                    text: "Status Jentik berhasil diperbarui.",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "laporan-masuk.php";
-                    }
-                });';
-        echo '</script>';
-    } else {
-        echo '<script>';
-        echo 'Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "Gagal memperbarui Status Jentik.",
-                    });';
-        echo '</script>';
-    }
 }
 
 ?>
@@ -210,17 +151,17 @@ if (isset($_POST['submit'])) {
                                                     </tr>
                                                     <tr>
                                                         <th>Status Jentik</th>
-                                                        <td><?php
-                                                            // var_dump($result->status); // Tambahkan baris ini untuk debugging
-                                                            if ($result->status == 0) {
-                                                                echo htmlentities('Bebas Jentik') . ' (-)';
-                                                            } elseif ($result->status == 1) {
-                                                                echo htmlentities('Ada Jentik') . ' (&#10003;)';
-                                                            } else {
-                                                                echo htmlentities('Tidak Ada');
-                                                            }
+                                                        <td id="statusJentik"><?php
+                                                                                // var_dump($result->status); // Tambahkan baris ini untuk debugging
+                                                                                if ($result->status == 0) {
+                                                                                    echo htmlentities('Bebas Jentik') . ' (-)';
+                                                                                } elseif ($result->status == 1) {
+                                                                                    echo htmlentities('Ada Jentik') . ' (&#10003;)';
+                                                                                } else {
+                                                                                    echo htmlentities('Tidak Ada');
+                                                                                }
 
-                                                            ?></td>
+                                                                                ?></td>
                                                     </tr>
                                                     <tr>
                                                         <th>Foto</th>
@@ -249,6 +190,8 @@ if (isset($_POST['submit'])) {
                                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editStatusJentikModal">
                                                 Edit Status Jentik
                                             </button>
+                                            <button class="btn btn-sm btn-danger" type="button" onclick="confirmDelete('<?php echo htmlentities($result->id_laporan); ?>');" alt="Hapus" title="Hapus Data">Hapus Data</button>
+
 
                                             <!-- Modal untuk Edit Status Jentik -->
                                             <div class="modal fade" id="editStatusJentikModal" tabindex="-1" role="dialog" aria-labelledby="editStatusJentikModalLabel" aria-hidden="true">
@@ -273,28 +216,6 @@ if (isset($_POST['submit'])) {
                                                                     </div>
                                                                     <button type="submit" name="submit" class="btn btn-primary">Edit</button>
                                                                 </form>
-                                                                <script>
-                                                                    <?php
-                                                                    if (isset($_POST['submit'])) {
-                                                                        $status_jentik = $_POST['status_jentik'];
-
-                                                                        if (updateStatusJentik($dbh, $NIK, $status_jentik, $result)) {
-                                                                            echo 'Swal.fire({
-                                                                                    icon: "success",
-                                                                                    title: "Berhasil!",
-                                                                                    text: "Status jentik berhasil diperbarui.",
-                                                                            });';
-                                                                        } else {
-                                                                            echo 'Swal.fire({
-                                                                                icon: "error",
-                                                                                title: "Oops...",
-                                                                                text: "Gagal memperbarui Status Jentik.",
-                                                                            });';
-                                                                        }
-                                                                    }
-                                                                    ?>
-                                                                </script>
-
                                                             <?php } else { ?>
                                                                 <div class="alert alert-danger">
                                                                     Data tidak ditemukan.
@@ -308,44 +229,44 @@ if (isset($_POST['submit'])) {
                                                 </div>
                                             </div>
 
-                                            <!-- Tambahkan elemen form untuk mengatur status jentik secara manual -->
-                                            <!-- <form method="post">
-                                                <div class="form-group">
-                                                    <label for="status_jentik">Status Jentik</label>
-                                                    <select class="form-control" id="status_jentik" name="status_jentik">
-                                                        <option value="0" <?php if ($result->status == 0) echo "selected"; ?>>Bebas Jentik</option>
-                                                        <option value="1" <?php if ($result->status == 1) echo "selected"; ?>>Ada Jentik</option>
-                                                    </select>
-                                                </div>
-                                                <button type="submit" name="submit" class="btn btn-primary">Simpan Status Jentik</button>
-                                            </form> -->
+                                            <?php
+                                            // Fungsi untuk mendapatkan teks status berdasarkan kode status
+                                            function getStatusText($status_jentik)
+                                            {
+                                                if ($status_jentik == 0) {
+                                                    return 'Bebas Jentik (-)';
+                                                } elseif ($status_jentik == 1) {
+                                                    return 'Ada Jentik (&#10003;)';
+                                                } else {
+                                                    return 'Tidak Ada';
+                                                }
+                                            }
 
-                                            <!-- <?php
-                                                    if (isset($_POST['submit'])) {
-                                                        $status_jentik = $_POST['status_jentik'];
+                                            if (isset($_POST['submit'])) {
+                                                $status_jentik = $_POST['status_jentik'];
 
-                                                        if (updateStatusJentik($dbh, $NIK, $status_jentik, $result)) {
-                                                            echo '<script>';
-                                                            echo 'Swal.fire({
-                                                                icon: "success",
-                                                                title: "Berhasil!",
-                                                                text: "Status Jentik berhasil diperbarui.",
-                                                            }).then(() => {
-                                                                window.location.href = "laporan-masuk.php";
-                                                            });';
-                                                            echo '</script>';
-                                                        } else {
-                                                            echo '<script>';
-                                                            echo 'Swal.fire({
-                                                                icon: "error",
-                                                                title: "Oops...",
-                                                                text: "Gagal memperbarui Status Jentik.",
-                                                            });';
-                                                            echo '</script>';
-                                                        }
-                                                    }
-                                                    ?> -->
-
+                                                if (updateStatusJentik($dbh, $NIK, $status_jentik, $result)) {
+                                                    echo '<script>';
+                                                    echo 'Swal.fire({
+                                                            icon: "success",
+                                                            title: "Berhasil!",
+                                                            text: "Status Jentik berhasil diperbarui.",
+                                                        }).then(() => {
+                                                            Swal.close(); // Menutup pesan SweetAlert tanpa me-refresh halaman
+                                                            updateStatusInTable("' . getStatusText($status_jentik) . '");
+                                                        });';
+                                                    echo '</script>';
+                                                } else {
+                                                    echo '<script>';
+                                                    echo 'Swal.fire({
+                                                            icon: "error",
+                                                            title: "Oops...",
+                                                            text: "Gagal memperbarui Status Jentik.",
+                                                        });';
+                                                    echo '</script>';
+                                                }
+                                            }
+                                            ?>
 
 
                                             <!-- Modal untuk Perbesar Foto -->
@@ -400,6 +321,58 @@ if (isset($_POST['submit'])) {
     <script src="js/prism/prism.js"></script>
     <!-- ========== THEME JS ========== -->
     <script src="js/main.js"></script>
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: 'Apakah Anda yakin ingin menghapus data hasil pemantauan ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Kirim permintaan POST ke hapus-laporan.php
+                    fetch('hapus-laporan.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: 'id=' + id,
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Berhasil',
+                                    text: 'Data hasil pemantauan berhasil dihapus',
+                                    icon: 'success'
+                                }).then(() => {
+                                    // Redirect ke halaman utama atau lakukan sesuatu setelah penghapusan
+                                    window.location.href = "hasil-pemantauan.php"; // Anda dapat mengganti ini sesuai kebutuhan
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Gagal',
+                                    text: 'Gagal menghapus data hasil pemantauan: ' + data.message,
+                                    icon: 'error'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                }
+            });
+        }
+
+        function updateStatusInTable(newStatus) {
+            // Update nilai dalam tabel dengan ID "statusJentik"
+            document.getElementById("statusJentik").innerHTML = newStatus;
+        }
+    </script>
 </body>
 
 </html>

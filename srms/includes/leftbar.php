@@ -75,6 +75,10 @@ function shortenName($full_name)
                 <!-- <li>
                     <a href="change-password.php"><i class="fa fa fa-server"></i> <span>Ubah Kata Sandi Admin</span></a>
                 </li> -->
+                <li>
+                    <a href="data-user.php"><i class="fa fa-users"></i> <span>Data User Mobile</span>
+                    </a>
+                </li>
             </ul>
         </div>
         <!-- /.sidebar-nav -->

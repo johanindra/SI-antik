@@ -12,8 +12,8 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-// Periksa apakah pengguna adalah super admin
-if ($_SESSION['role'] !== 'super_admin') {
+// Periksa apakah pengguna adalah admin
+if ($_SESSION['role'] !== 'admin') {
     echo '<script>
             alert("Anda tidak memiliki izin untuk mengakses halaman ini.");
             window.history.back();
@@ -93,11 +93,11 @@ if ($_SESSION['role'] !== 'super_admin') {
     <body class="top-navbar-fixed">
         <div class="main-wrapper">
             <!-- ========== TOP NAVBAR ========== -->
-            <?php include('includes/topbar-admin.php'); ?>
+            <?php include('includes/topbar.php'); ?>
             <!-- ========== WRAPPER FOR BOTH SIDEBARS & MAIN CONTENT ========== -->
             <div class="content-wrapper">
                 <div class="content-container">
-                    <?php include('includes/leftbar-admin.php'); ?>
+                    <?php include('includes/leftbar.php'); ?>
                     <div class="main-page">
                         <div class="container-fluid">
                             <div class="row page-title-div">
@@ -108,7 +108,7 @@ if ($_SESSION['role'] !== 'super_admin') {
                             <div class="row breadcrumb-div">
                                 <div class="col-md-6">
                                     <ul class="breadcrumb">
-                                        <li><a href="dashboard-admin.php"><i class="fa fa-home"></i> Home</a></li>
+                                        <li><a href="dashboard.php"><i class="fa fa-home"></i> Home</a></li>
                                         <li> Data User</li>
                                     </ul>
                                 </div>
@@ -217,7 +217,21 @@ if ($_SESSION['role'] !== 'super_admin') {
                                     {
                                         "searchable": false
                                     } // Kolom Status Jentik
-                                ]
+                                ],
+                                "language": {
+                                    "zeroRecords": "Tidak ada data admin yang sesuai dengan pencarian",
+                                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                                    "infoEmpty": "Menampilkan 0 sampai 0 dari 0 data",
+                                    "infoFiltered": "(disaring dari _MAX_ data keseluruhan)",
+                                    "lengthMenu": "Tampilkan _MENU_ data per halaman",
+                                    "search": "Cari:",
+                                    "paginate": {
+                                        "first": "Pertama",
+                                        "last": "Terakhir",
+                                        "next": "next",
+                                        "previous": "previous"
+                                    }
+                                }
                             });
                             $('#example_filter label').contents().filter(function() {
                                 return this.nodeType === 3;

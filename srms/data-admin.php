@@ -240,7 +240,10 @@ if ($_SESSION['role'] !== 'super_admin') {
                                                                     $cnt = $cnt + 1;
                                                                 }
                                                             } else {
-                                                                echo '<tr><td colspan="8" class="text-center">Tidak ada data admin</td></tr>';
+                                                                // Jika tabel admin kosong, tampilkan formulir tambah admin
+                                                                echo '<div class="alert alert-info" role="alert">';
+                                                                echo 'Tidak ada data admin.';
+                                                                echo '</div>';
                                                             }
                                                             ?>
                                                         </tbody>
@@ -292,7 +295,22 @@ if ($_SESSION['role'] !== 'super_admin') {
                                     {
                                         "searchable": false
                                     } // Kolom Status Jentik
-                                ]
+                                ],
+                                "language": {
+                                    "emptyTable": "Tidak ada data admin",
+                                    "zeroRecords": "Tidak ada data admin yang sesuai dengan pencarian",
+                                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                                    "infoEmpty": "Menampilkan 0 sampai 0 dari 0 data",
+                                    "infoFiltered": "(disaring dari _MAX_ data keseluruhan)",
+                                    "lengthMenu": "Tampilkan _MENU_ data per halaman",
+                                    "search": "Cari:",
+                                    "paginate": {
+                                        "first": "Pertama",
+                                        "last": "Terakhir",
+                                        "next": "next",
+                                        "previous": "previous"
+                                    }
+                                }
                             });
                             $('#example_filter label').contents().filter(function() {
                                 return this.nodeType === 3;
@@ -327,14 +345,22 @@ if ($_SESSION['role'] !== 'super_admin') {
                                         },
                                         success: function(response) {
                                             if (response.success) {
-                                                Swal.fire('Berhasil!', 'Admin berhasil dihapus', 'success');
-                                                // Hapus baris tabel dari halaman
-                                                $(rowElement).closest('tr').remove();
+                                                Swal.fire({
+                                                    title: 'Berhasil!',
+                                                    text: 'Admin berhasil dihapus',
+                                                    icon: 'success',
+                                                }).then(() => {
+                                                    // Hapus baris tabel dari halaman
+                                                    $(rowElement).closest('tr').remove();
+                                                    updateRowNumbers();
 
-                                                updateRowNumbers();
+                                                    // Merefresh halaman
+                                                    location.reload();
+                                                });
                                             } else {
                                                 Swal.fire('Uppss🙊🙉', 'Gagal menghapus admin', 'error');
                                             }
+
                                         },
                                         error: function() {
                                             Swal.fire('Error', 'Terjadi kesalahan pada server', 'error');

@@ -24,7 +24,7 @@ if (!isset($_SESSION['username'])) {
             $response = array('success' => true);
         } catch (PDOException $e) {
             // Tangani kesalahan jika terjadi
-            $response = array('success' => false, 'message' => 'Gagal menghapus laporan: ' . $e->getMessage());
+            $response = array('success' => false, 'message' => 'Gagal menghapus data: ' . $e->getMessage());
         }
 
         header('Content-Type: application/json');

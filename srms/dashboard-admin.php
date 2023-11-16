@@ -104,30 +104,13 @@ if ($_SESSION['role'] !== 'super_admin') {
                                             <span class="number counter">
                                                 <?php echo htmlentities($totalAdmin); ?>
                                             </span><br>
-                                            <span class="name">Admin</span>
+                                            <span class="name">Admin Kader</span>
                                             <span class="bg-icon"><i class="fa fa-user"></i></span>
                                         </a>
                                         <!-- /.dashboard-stat -->
                                     </div>
 
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%;">
-                                        <a class="dashboard-stat bg-light" href="data-user.php"> <!-- Ganti bg-success menjadi bg-danger -->
-                                            <?php
-                                            $sql = "SELECT COUNT(*) as total FROM user"; // Menghitung jumlah baris dalam tabel user_mobile
-                                            $query = $dbh->prepare($sql);
-                                            $query->execute();
-                                            $result = $query->fetch(PDO::FETCH_ASSOC);
-                                            $totalUserMobile = $result['total'];
-                                            ?>
-
-                                            <span class="number counter">
-                                                <?php echo htmlentities($totalUserMobile); ?>
-                                            </span><br>
-                                            <span class="name">User Mobile</span>
-                                            <span class="bg-icon"><i class="fa fa-users"></i></span>
-                                        </a>
-                                        <!-- /.dashboard-stat -->
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </section>

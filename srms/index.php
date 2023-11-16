@@ -42,8 +42,26 @@
                             <button type="submit" class="input-submit">Login</button>
                         </div>
                         <div class="forgot">
-                            <a href="lupa-password.php">Lupa password?</a>
+                            <a href="#" onclick="showConfirmation()">Lupa password?</a>
                         </div>
+
+                        <script>
+                            function showConfirmation() {
+                                Swal.fire({
+                                    title: 'Konfirmasi',
+                                    html: '<p style="font-size: 20px;">Apakah Anda yakin lupa password?</p><p style="font-size: 12px; margin-top: 10px; color: red;">(Hanya untuk admin kader)</p>',
+                                    icon: 'question',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Ya',
+                                    cancelButtonText: 'Tidak',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = 'lupa-password.php';
+                                    }
+                                });
+                            }
+                        </script>
+
                     </div>
                     <?php include 'login.php' ?>
                 </form>

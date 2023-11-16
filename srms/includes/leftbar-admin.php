@@ -32,18 +32,15 @@ function shortenName($full_name)
           <a href="data-admin.php"><i class="fa fa-user"></i> <span>Data Admin Kader</span>
           </a>
         </li>
-        <?php
-        if ($_SESSION['username'] === 'superadmin') {
-          echo '<li>
+        <!-- <?php
+              if ($_SESSION['username'] === 'superadmin') {
+                echo '<li>
                                                   <a href="data-admin-desa.php"><i class="fa fa-user"></i> <span>Data Admin Desa</span>
                                                 </a>
                                               </li>';
-        }
-        ?>
-        <li>
-          <a href="data-user.php"><i class="fa fa-users"></i> <span>Data User Mobile</span>
-          </a>
-        </li>
+              }
+              ?> -->
+        
       </ul>
     </div>
     <!-- /.sidebar-nav -->

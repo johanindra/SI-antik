@@ -302,7 +302,21 @@ if ($_SESSION['role'] !== 'admin') {
                         {
                             "searchable": false
                         } // detail
-                    ]
+                    ],
+                    "language": {
+                        "zeroRecords": "Tidak ada hasil pemantauan yang sesuai dengan pencarian",
+                        "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                        "infoEmpty": "Menampilkan 0 sampai 0 dari 0 data",
+                        "infoFiltered": "(disaring dari _MAX_ data keseluruhan)",
+                        "lengthMenu": "Tampilkan _MENU_ data per halaman",
+                        "search": "Cari:",
+                        "paginate": {
+                            "first": "Pertama",
+                            "last": "Terakhir",
+                            "next": "next",
+                            "previous": "previous"
+                        }
+                    }
                 });
                 $('#example_filter label').contents().filter(function() {
                     return this.nodeType === 3;

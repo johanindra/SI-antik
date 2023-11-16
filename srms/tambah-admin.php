@@ -21,49 +21,99 @@ if ($_SESSION['role'] !== 'super_admin') {
     exit;
 } else {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        // Pastikan data yang diterima tidak kosong
-        if (!empty($_POST['nik']) && !empty($_POST['nama_lengkap']) && !empty($_POST['username']) && !empty($_POST['password'])) {
-            // Tangkap data dari formulir
-            $nik = $_POST['nik'];
-            $nama_lengkap = $_POST['nama_lengkap'];
-            $username = $_POST['username'];
-            $password = $_POST['password'];
+        // Tangkap data dari formulir
+        $nik = $_POST['nik'];
+        $nama_lengkap = $_POST['nama_lengkap'];
+        $username = $_POST['username'];
+        $password = $_POST['password'];
 
-            // Validasi NIK hanya dapat dimasukkan angka dan harus 16 digit
-            if (!preg_match('/^[0-9]{16}$/', $nik)) {
-                // Jika NIK tidak sesuai, kirim respons error ke klien
+        // Validasi NIK hanya dapat dimasukkan angka dan harus 16 digit
+        if (!preg_match('/^[0-9]{16}$/', $nik)) {
+            // Jika NIK tidak sesuai, kirim respons error ke klien
+            $response['success'] = false;
+            $response['message'] = "NIK harus terdiri dari 16 digit angka.";
+            // Encode respons dalam format JSON
+            echo json_encode($response);
+            // Keluar dari skrip
+            exit();
+        }
+
+        // Validasi nama lengkap (tidak mengandung karakter khusus) hanya dapat mengandung huruf, angka, dan spasi
+        if (!preg_match('/^[a-zA-Z0-9\s]+$/', $nama_lengkap)) {
+            $response['success'] = false;
+            $response['message'] = "Nama lengkap tidak boleh menggunakan karakter khusus.";
+            echo json_encode($response);
+            exit();
+        }
+
+        // Validasi panjang username (minimal 4 karakter, maksimal 8 karakter) dan tidak mengandung spasi
+        if (strlen($username) < 4 || strlen($username) > 8) {
+            $response['success'] = false;
+            $response['message'] = "Username harus terdiri dari 4 hingga 8 karakter.";
+            echo json_encode($response);
+            exit();
+        }
+
+        // Validasi username tidak mengandung spasi
+        if (strpos($username, ' ') !== false) {
+            $response['success'] = false;
+            $response['message'] = "Username tidak boleh mengandung spasi.";
+            echo json_encode($response);
+            exit();
+        }
+        
+        // Validasi username tidak mengandung karakter khusus
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $username)) {
+            $response['success'] = false;
+            $response['message'] = "Username tidak boleh menggunakan karakter khusus.";
+            echo json_encode($response);
+            exit();
+        }
+
+        // Validasi panjang password (minimal 6 karakter, maksimal 12 karakter) dan tidak mengandung spasi
+        if (strlen($password) < 6 || strlen($password) > 12) {
+            $response['success'] = false;
+            $response['message'] = "Password harus terdiri dari 6 hingga 12 karakter.";
+            echo json_encode($response);
+            exit();
+        }
+
+        // Validasi password tidak mengandung spasi
+        if (strpos($password, ' ') !== false) {
+            $response['success'] = false;
+            $response['message'] = "Password tidak boleh mengandung spasi.";
+            echo json_encode($response);
+            exit();
+        }
+
+
+        // Cek apakah tabel admin kosong
+        $checkEmpty = "SELECT COUNT(*) as count FROM admin";
+        $stmtCheckEmpty = $dbh->prepare($checkEmpty);
+        $stmtCheckEmpty->execute();
+        $rowCount = $stmtCheckEmpty->fetchColumn();
+
+        if ($rowCount == 0) {
+            // Jika tabel admin kosong, langsung masukkan admin baru tanpa memeriksa NIK dan username
+            $sql = "INSERT INTO admin (nik, nama_lengkap, username, password, tanggal_masuk) VALUES (:nik, :nama_lengkap, :username, :password, NOW())";
+            $query = $dbh->prepare($sql);
+
+            // Hash password sebelum disimpan ke database
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $query->bindParam(':nik', $nik, PDO::PARAM_STR);
+            $query->bindParam(':nama_lengkap', $nama_lengkap, PDO::PARAM_STR);
+            $query->bindParam(':username', $username, PDO::PARAM_STR);
+            $query->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
+
+            if ($query->execute()) {
+                // Jika penyimpanan sukses, kirim respons sukses ke klien
+                $response['success'] = true;
+            } else {
+                // Jika terjadi kesalahan, kirim respons error ke klien
                 $response['success'] = false;
-                $response['message'] = "NIK harus terdiri dari 16 digit angka.";
-                // Encode respons dalam format JSON
-                echo json_encode($response);
-                // Keluar dari skrip
-                exit();
             }
-
-            // Validasi nama lengkap (tidak mengandung karakter khusus) hanya dapat mengandung huruf, angka, dan spasi
-            if (!preg_match('/^[a-zA-Z0-9\s]+$/', $nama_lengkap)) {
-                $response['success'] = false;
-                $response['message'] = "Nama lengkap tidak boleh menggunakan karakter khusus.";
-                echo json_encode($response);
-                exit();
-            }
-
-            // Validasi panjang username (minimal 4 karakter, maksimal 8 karakter)
-            if (strlen($username) < 4 || strlen($username) > 8) {
-                $response['success'] = false;
-                $response['message'] = "Username harus terdiri dari 4 hingga 8 karakter.";
-                echo json_encode($response);
-                exit();
-            }
-
-            // Validasi panjang password (minimal 6 karakter, maksimal 12 karakter)
-            if (strlen($password) < 6 || strlen($password) > 12) {
-                $response['success'] = false;
-                $response['message'] = "Password harus terdiri dari 6 hingga 12 karakter.";
-                echo json_encode($response);
-                exit();
-            }
-
+        } else {
+            // Jika tabel admin tidak kosong, lanjutkan dengan pemeriksaan yang ada
             // Cek apakah NIK sudah ada di database
             $cekNIK = "SELECT * FROM admin WHERE nik = :nik";
             $stmtNIK = $dbh->prepare($cekNIK);
@@ -85,7 +135,7 @@ if ($_SESSION['role'] !== 'super_admin') {
                 $response['success'] = false;
                 $response['message'] = "Username sudah digunakan. Silakan pilih username lain.";
             } else {
-                // Lakukan operasi penyimpanan ke database
+                // Jika semua pemeriksaan berhasil, lanjutkan dengan penyisipan
                 $sql = "INSERT INTO admin (nik, nama_lengkap, username, password, tanggal_masuk) VALUES (:nik, :nama_lengkap, :username, :password, NOW())";
                 $query = $dbh->prepare($sql);
 
@@ -98,23 +148,19 @@ if ($_SESSION['role'] !== 'super_admin') {
                 $query->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
 
                 if ($query->execute()) {
-                    // Jika penyimpanan sukses, kirim respons sukses ke klien
+                    // Jika penyisipan sukses, kirim respons sukses ke klien
                     $response['success'] = true;
                 } else {
                     // Jika terjadi kesalahan, kirim respons error ke klien
                     $response['success'] = false;
                 }
             }
-        } else {
-            // Jika ada data yang kosong, kirim respons error ke klien
-            $response['success'] = false;
-            $response['message'] = "Data tidak lengkap";
         }
 
         // Encode respons dalam format JSON
         echo json_encode($response);
     } else {
-        // Jika tidak ada metode POST, kirim respons error ke klien
+        // Jika bukan metode POST, kirim respons error ke klien
         $response['success'] = false;
         $response['message'] = "Metode tidak diizinkan";
         echo json_encode($response);
