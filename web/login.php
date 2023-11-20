@@ -66,15 +66,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Tampilkan pesan kesalahan
     echo '<script>';
+    // echo 'Swal.fire({
+    //             title: "Uppss",
+    //             text: "' . $errorMessage . '",
+    //             icon: "error",
+    //             confirmButtonText: "OK"
+    //         }).then((result) => {
+    //             if (result.isConfirmed) {
+    //                 window.location.href = "index.php";
+    //             }
+    //         });';
     echo 'Swal.fire({
-                title: "Uppss🙊🙉",
-                text: "' . $errorMessage . '",
-                icon: "error",
-                confirmButtonText: "OK"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "index.php";
-                }
-            });';
+        title: "Uppss",
+        text: "' . $errorMessage . '",
+        icon: "error",
+        confirmButtonText: "OK"
+    });';
+
     echo '</script>';
 }

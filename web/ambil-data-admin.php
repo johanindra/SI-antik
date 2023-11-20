@@ -3,7 +3,7 @@
 
 include('../server/koneksi.php');
 
-$sql = "SELECT id_admin, nik, nama_lengkap, username, tanggal_update_password FROM admin";
+$sql = "SELECT id_admin, nik, nama_lengkap, username, tanggal_update_password FROM tabel_admin";
 $query = $dbh->prepare($sql);
 $query->execute();
 $results = $query->fetchAll(PDO::FETCH_OBJ);

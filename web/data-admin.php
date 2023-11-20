@@ -209,7 +209,7 @@ if ($_SESSION['role'] !== 'super_admin') {
                                                         </thead>
                                                         <tbody>
                                                             <?php
-                                                            $sql = "SELECT id_admin,nik,nama_lengkap, username, tanggal_masuk, tanggal_update_password FROM admin";
+                                                            $sql = "SELECT id_admin, nik, nama_lengkap, username, tanggal_masuk, tanggal_update_password FROM tabel_admin WHERE role = 'admin'";
                                                             $query = $dbh->prepare($sql);
                                                             $query->execute();
                                                             $results = $query->fetchAll(PDO::FETCH_OBJ);
@@ -229,9 +229,9 @@ if ($_SESSION['role'] !== 'super_admin') {
                                                                             <!-- <a href="detail-laporan.php?NIK=<?php echo htmlentities($result->id_admin); ?>">
                                                                                 <img src="btn-edit.png" alt="Detail" title="Detail" class="btn-edit-img">
                                                                             </a> -->
-                                                                            <!-- <a href="edit-admin.php?id=<?php echo htmlentities($result->id_admin); ?>" title="Edit Data">
+                                                                            <a href="edit-admin.php?id=<?php echo htmlentities($result->id_admin); ?>" title="Edit Data">
                                                                                 <img src="img/btn-edit.png" alt="Edit Data" class="btn-edit-img">
-                                                                            </a> -->
+                                                                            </a>
                                                                             <a href="#" onclick="confirmDelete('<?php echo htmlentities($result->id_admin); ?>', this)" title="Hapus Data">
                                                                                 <img src="img/btn-delet.png" alt="Hapus Data" class="btn-delete-img"></a>
                                                                         </td>
@@ -358,7 +358,7 @@ if ($_SESSION['role'] !== 'super_admin') {
                                                     location.reload();
                                                 });
                                             } else {
-                                                Swal.fire('Uppss🙊🙉', 'Gagal menghapus admin', 'error');
+                                                Swal.fire('Error', 'Gagal menghapus admin', 'error');
                                             }
 
                                         },
@@ -394,7 +394,7 @@ if ($_SESSION['role'] !== 'super_admin') {
                                 // Kirim data ke server menggunakan AJAX
                                 $.ajax({
                                     type: 'POST',
-                                    url: 'tambah-admin.php',
+                                    url: 'tambah-admin-baru.php',
                                     data: formData,
                                     dataType: 'json',
                                     success: function(response) {
@@ -412,13 +412,13 @@ if ($_SESSION['role'] !== 'super_admin') {
                                             // Jika gagal, tampilkan pesan error
                                             if (response.message === "NIK sudah terdaftar") {
                                                 // Tampilkan pesan spesifik jika NIK sudah ada
-                                                Swal.fire('Uppss🙊🙉', 'NIK sudah terdaftar. Silakan masukkan NIK yang lain.', 'error');
+                                                Swal.fire('Uppss', 'NIK sudah terdaftar. Silakan masukkan NIK yang lain.', 'error');
                                             } else if (response.message === "Username sudah digunakan") {
                                                 // Tampilkan pesan spesifik jika username sudah ada
-                                                Swal.fire('Uppss🙊🙉', 'Username sudah ada. Silakan pilih username lain.', 'error');
+                                                Swal.fire('Uppss', 'Username sudah ada. Silakan pilih username lain.', 'error');
                                             } else {
                                                 // Tampilkan pesan error umum
-                                                Swal.fire('Uppss🙊🙉', response.message, 'error');
+                                                Swal.fire('Peringatan!', response.message, 'warning');
                                             }
                                         }
                                     },

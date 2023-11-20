@@ -75,14 +75,15 @@
             $confirmedPassword = $_POST['logPasswordkonfirm'];
 
             // Validasi apakah NIK ada dalam tabel admin
-            $stmtNIK = $dbh->prepare("SELECT nik FROM admin WHERE nik = :nik");
+            $stmtNIK = $dbh->prepare("SELECT nik FROM tabel_admin WHERE nik = :nik AND role = 'admin'");
             $stmtNIK->bindParam(':nik', $nik);
             $stmtNIK->execute();
 
             if ($stmtNIK->rowCount() > 0) {
               // NIK valid, periksa apakah nama pengguna ada dalam tabel admin
-              $stmt = $dbh->prepare("SELECT nik FROM admin WHERE username = :username");
+              $stmt = $dbh->prepare("SELECT nik FROM tabel_admin WHERE username = :username AND role = 'admin' AND nik = :nik");
               $stmt->bindParam(':username', $username);
+              $stmt->bindParam(':nik', $nik);
               $stmt->execute();
 
               if ($stmt->rowCount() > 0) {
@@ -93,11 +94,22 @@
                   $errorMessage = "Password Baru harus memiliki panjang antara 6 hingga 12 karakter.";
                   echo '<script>';
                   echo 'Swal.fire({
-                        title: "Uppss🙊🙉",
+                        title: "Peringatan!",
                         text: "' . $errorMessage . '",
-                        icon: "error",
+                        icon: "warning",
                         confirmButtonText: "OK"
                     });';
+                  echo '</script>';
+                } elseif (strpos($newPassword, ' ') !== false) {
+                  // Validasi apakah password baru mengandung spasi
+                  $errorMessage = "Password Baru tidak boleh mengandung spasi.";
+                  echo '<script>';
+                  echo 'Swal.fire({
+                          title: "Peringatan!",
+                          text: "' . $errorMessage . '",
+                          icon: "warning",
+                          confirmButtonText: "OK"
+                      });';
                   echo '</script>';
                 } else {
                   // Password sesuai dengan persyaratan, lanjutkan dengan validasi lainnya
@@ -106,7 +118,7 @@
                     $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
                     // Perbarui password dan tanggal_update_password
-                    $updateSql = "UPDATE admin SET password = :password, tanggal_update_password = NOW() WHERE username = :username";
+                    $updateSql = "UPDATE tabel_admin SET password = :password, tanggal_update_password = NOW() WHERE username = :username";
                     $updateStmt = $dbh->prepare($updateSql);
                     $updateStmt->bindParam(':password', $hashedPassword);
                     $updateStmt->bindParam(':username', $username);
@@ -131,7 +143,7 @@
                       $errorMessage = "Gagal Update Password: " . $updateStmt->errorInfo()[2];
                       echo '<script>';
                       echo 'Swal.fire({
-                                title: "Uppss🙊🙉",
+                                title: "Gagal!",
                                 text: "' . $errorMessage . '",
                                 icon: "error",
                                 confirmButtonText: "OK"
@@ -143,9 +155,9 @@
                     echo '<script>';
                     echo 'console.log("Error:", "' . $errorMessage . '");';
                     echo 'Swal.fire({
-                            title: "Uppss🙊🙉",
+                            title: "Peringatan",
                             text: "' . $errorMessage . '",
-                            icon: "error",
+                            icon: "warning",
                             confirmButtonText: "OK"
                         });';
                     echo '</script>';
@@ -155,18 +167,18 @@
                 $errorMessage = "Username salah!";
                 echo '<script>';
                 echo 'Swal.fire({
-                    title: "Uppss🙊🙉",
-                    text: "' . $errorMessage . '",
-                    icon: "error",
-                    confirmButtonText: "OK"
-                });';
+                title: "Uppss",
+                text: "' . $errorMessage . '",
+                icon: "error",
+                confirmButtonText: "OK"
+            });';
                 echo '</script>';
               }
             } else {
-              $errorMessage = "NIK tidak terdaftar!";
+              $errorMessage = "NIK tidak terdaftar sebagai admin kader!";
               echo '<script>';
               echo 'Swal.fire({
-                title: "Uppss🙊🙉",
+                title: "Uppss",
                 text: "' . $errorMessage . '",
                 icon: "error",
                 confirmButtonText: "OK"
@@ -175,6 +187,7 @@
             }
           }
           ?>
+
 
         </form>
       </div>
@@ -204,9 +217,9 @@
 
       if (inputNIK.length < 16 || inputNIK.length > 16) {
         Swal.fire({
-          title: 'Uppss🙊🙉',
+          title: 'Peringatan!',
           text: 'Masukkan NIK 16 digit angka.',
-          icon: 'error',
+          icon: 'warning',
           confirmButtonText: 'OK',
         });
         event.preventDefault();
@@ -216,9 +229,9 @@
       // Validasi panjang password baru
       if (inputPassword.length < 6 || inputPassword.length > 12) {
         Swal.fire({
-          title: 'Uppss🙊🙉',
+          title: 'Peringatan!',
           text: 'Password Baru harus memiliki panjang antara 6 hingga 12 karakter.',
-          icon: 'error',
+          icon: 'warning',
           confirmButtonText: 'OK',
         });
         return false;

@@ -26,7 +26,7 @@ if ($_SESSION['role'] !== 'super_admin') {
 
         try {
             // Lakukan penghapusan dari tabel admin
-            $query = "DELETE FROM admin WHERE id_admin = :adminId";
+            $query = "DELETE FROM tabel_admin WHERE id_admin = :adminId";
             $stmt = $dbh->prepare($query);
             $stmt->bindParam(':adminId', $adminId, PDO::PARAM_INT);
             $stmt->execute();

@@ -5,46 +5,34 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 include('../server/koneksi.php');
 
+// Periksa apakah pengguna sudah login
+if (!isset($_SESSION['username'])) {
+    echo '<script>
+            alert("Anda belum login. Silakan login terlebih dahulu.");
+            window.location.href = "index.php";
+          </script>';
+    exit;
+}
+
+// Periksa apakah pengguna adalah admin
+if ($_SESSION['role'] !== 'super_admin') {
+    echo '<script>
+            alert("Anda tidak memiliki izin untuk mengakses halaman ini.");
+            window.history.back();
+          </script>';
+    exit;
+}
+
 $length = isset($_SESSION['alogin']) ? strlen($_SESSION['alogin']) : 0;
 
 $NIK = isset($_GET['id']) ? $_GET['id'] : '';
 
-$sql = "SELECT * FROM admin  WHERE id_admin = :NIK";
+$sql = "SELECT * FROM tabel_admin  WHERE id_admin = :NIK";
 $query = $dbh->prepare($sql);
 $query->bindParam(':NIK', $NIK, PDO::PARAM_STR);
 $query->execute();
 $result = $query->fetch(PDO::FETCH_OBJ);
 
-if ($isAdminLoggedIn) {
-    if (isset($_POST['submit'])) {
-        // Assuming 'nama_lengkap' and 'username' are the fields to be updated
-        $newNamaLengkap = $_POST['nama_lengkap'];
-        $newUsername = $_POST['username'];
-
-        // Update the admin information in the database
-        if (updateStatusJentik($dbh, $NIK, $newNamaLengkap, $newUsername)) {
-            echo '<script>';
-            echo 'Swal.fire({
-                        icon: "success",
-                        title: "Berhasil!",
-                        text: "Informasi admin berhasil diperbarui.",
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = "laporan-masuk.php";
-                        }
-                    });';
-            echo '</script>';
-        } else {
-            echo '<script>';
-            echo 'Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: "Gagal memperbarui informasi admin.",
-                        });';
-            echo '</script>';
-        }
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -93,15 +81,15 @@ if ($isAdminLoggedIn) {
                     <div class="container-fluid">
                         <div class="row page-title-div">
                             <div class="col-md-6">
-                                <h2 class="title">Edit data Admin</h2>
+                                <h2 class="title">Edit Data Admin</h2>
                             </div>
                         </div>
                         <div class="row breadcrumb-div">
                             <div class="col-md-6">
                                 <ul class="breadcrumb">
-                                    <li><a href="dashboard.php"><i class="fa fa-home"></i> Home</a></li>
-                                    <li><a href="data-admin.php"> Data admin</a></li>
-                                    <li> Edit admin</li>
+                                    <li><a href="dashboard-admin.php"><i class="fa fa-home"></i> Home</a></li>
+                                    <li><a href="data-admin.php"> Data Admin Kader</a></li>
+                                    <li> Edit Admin</li>
                                 </ul>
                             </div>
                         </div>
@@ -113,18 +101,20 @@ if ($isAdminLoggedIn) {
                                     <div class="panel">
                                         <div class="panel-heading">
                                             <div class="panel-title">
-                                                <h5>Edit Admin</h5>
+                                                <h5>Data Admin kader</h5>
                                             </div>
                                         </div>
                                         <div class="panel-body p-20">
                                             <?php if ($query->rowCount() > 0) { ?>
                                                 <table class="table table-bordered">
-                                                    <tr>
-                                                        <th>NIK</th>
-                                                        <td><?php echo htmlentities($result->nik); ?></td>
-                                                    </tr>
                                                     <!-- Formulir Pengeditan -->
                                                     <form method="post" action="">
+                                                        <tr>
+                                                            <th>NIK</th>
+                                                            <td colspan="2">
+                                                                <input type="text" name="NIK" value="<?php echo htmlentities($result->nik); ?>" class="form-control">
+                                                            </td>
+                                                        </tr>
                                                         <tr>
                                                             <th>Nama Lengkap</th>
                                                             <td colspan="2">
@@ -139,20 +129,26 @@ if ($isAdminLoggedIn) {
                                                         </tr>
                                                         <!-- Kolom-kolom lainnya yang ingin diubah -->
 
-                                                        <tr>
-                                                            <th>Tanggal Masuk</th>
-                                                            <td colspan="2"><?php echo htmlentities($result->tanggal_masuk); ?></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Tanggal Update Password</th>
-                                                            <td colspan="2"><?php echo htmlentities($result->tanggal_update_password); ?></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan="3" class="text-right">
-                                                                <input type="submit" name="submit" value="Simpan Perubahan" class="btn btn-primary">
-                                                            </td>
-                                                        </tr>
                                                     </form>
+                                                    <tr>
+                                                        <th>Tanggal Masuk</th>
+                                                        <td colspan="2"><?php echo htmlentities($result->tanggal_masuk); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Tanggal Update Password</th>
+                                                        <td colspan="2"><?php echo isset($result->tanggal_update_password) ? htmlentities($result->tanggal_update_password) : '-'; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="3" class="text-right">
+                                                            <?php
+                                                            if ($result->tanggal_update_password === null) {
+                                                                echo '<input type="button" name="editPassword" value="Edit Password" class="btn btn-success" onclick="editPassword()">';
+                                                            }
+                                                            ?>
+                                                            <input type="submit" name="submit" value="Simpan Perubahan" class="btn btn-primary">
+                                                        </td>
+                                                    </tr>
+
                                                 </table>
                                             <?php } else { ?>
                                                 <div class="alert alert-danger">

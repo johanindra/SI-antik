@@ -95,7 +95,7 @@ if ($_SESSION['role'] !== 'super_admin') {
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%;">
                                         <a class="dashboard-stat bg-light" href="data-admin.php"> <!-- Ganti bg-warning menjadi bg-primary -->
                                             <?php
-                                            $sql = "SELECT COUNT(*) as total FROM admin"; // Menghitung jumlah baris dalam tabel admin
+                                            $sql = "SELECT COUNT(*) as total FROM tabel_admin WHERE role = 'admin'"; // Menghitung jumlah baris dalam tabel admin
                                             $query = $dbh->prepare($sql);
                                             $query->execute();
                                             $result = $query->fetch(PDO::FETCH_ASSOC);
