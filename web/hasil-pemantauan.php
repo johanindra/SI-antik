@@ -139,7 +139,34 @@ if ($_SESSION['role'] !== 'admin') {
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="panel-title">
-                                                        <h5>Data Hasil Pemantauan Jentik Nyamuk</h5>
+                                                        <h5>Data Hasil Pemantauan Jentik Nyamuk <?php
+                                                                                                switch ($_SESSION['tugas']) {
+                                                                                                    case "desa_bulusari":
+                                                                                                        echo "di desa Bulusari";
+                                                                                                        break;
+                                                                                                    case "dusun_pojok":
+                                                                                                        echo "di dusun Pojok";
+                                                                                                        break;
+                                                                                                    case "dusun_bulusari_utara":
+                                                                                                        echo "di dusun Bulusari Utara";
+                                                                                                        break;
+                                                                                                    case "dusun_bulusari_selatan":
+                                                                                                        echo "di dusun Bulusari Selatan";
+                                                                                                        break;
+                                                                                                    case "dusun_selang":
+                                                                                                        echo "di dusun Selang";
+                                                                                                        break;
+                                                                                                    case "dusun_gunung_butak":
+                                                                                                        echo "di dusun Gunung Butak";
+                                                                                                        break;
+                                                                                                    case "dusun_sawur":
+                                                                                                        echo "di dusun Sawur";
+                                                                                                        break;
+                                                                                                    default:
+                                                                                                        echo htmlentities($_SESSION['tugas']);
+                                                                                                }
+                                                                                                ?></h5>
+                                                        </h5>
                                                     </div>
                                                 </div>
                                             </div>
@@ -183,6 +210,7 @@ if ($_SESSION['role'] !== 'admin') {
                                                         <th>NIK</th>
                                                         <th>Nama Lengkap</th>
                                                         <th>RT/RW</th>
+                                                        <th>No. Rumah</th>
                                                         <th>Tanggal Laporan</th>
                                                         <th>Tanggal Pemantauan</th>
                                                         <th>Status Jentik</th>
@@ -195,13 +223,31 @@ if ($_SESSION['role'] !== 'admin') {
                                                     $filterMonth = isset($_POST['filter_month']) ? $_POST['filter_month'] : $currentMonth;
                                                     $filterYear = isset($_POST['filter_year']) ? $_POST['filter_year'] : $currentYear;
 
+                                                    $tugas = isset($_SESSION['tugas']) ? $_SESSION['tugas'] : '';
+
                                                     // Query SQL untuk mengambil data jika status kosong dan sesuai dengan filter
-                                                    $sql = "SELECT id_laporan, laporan.nik_user, laporan.tanggal_laporan, laporan.tanggal_pemantauan, laporan.status, user.nama_user, user.rt_rw 
+                                                    $sql = "SELECT id_laporan, laporan.nik_user, laporan.tanggal_laporan, laporan.tanggal_pemantauan, laporan.status, user.nama_user, user.rt_rw, user.no_rumah
                                                     FROM laporan 
                                                     INNER JOIN user ON laporan.nik_user = user.nik_user 
                                                     WHERE laporan.status IS NOT NULL AND laporan.tanggal_pemantauan IS NOT NULL
                                                     AND MONTH(laporan.tanggal_laporan) = $filterMonth 
                                                     AND YEAR(laporan.tanggal_laporan) = $filterYear";
+
+                                                    // Menambahkan kondisi berdasarkan tugas dan dusun_pojok, dusun_bulusari_utara, dusun_bulusari_selatan
+                                                    if ($tugas === 'dusun_pojok') {
+                                                        $sql .= " AND (user.rt_rw = '01/01' OR user.rt_rw = '02/01' OR user.rt_rw = '03/01' OR user.rt_rw = '04/01' OR user.rt_rw = '05/01' OR user.rt_rw = '06/01' OR user.rt_rw = '07/01')";
+                                                    } elseif ($tugas === 'dusun_bulusari_utara') {
+                                                        $sql .= " AND (user.rt_rw = '01/02' OR user.rt_rw = '02/02' OR user.rt_rw = '03/02' OR user.rt_rw = '04/02' OR user.rt_rw = '05/02' OR user.rt_rw = '06/02' OR user.rt_rw = '07/02' OR user.rt_rw = '08/01' OR user.rt_rw = '09/02')";
+                                                    } elseif ($tugas === 'dusun_bulusari_selatan') {
+                                                        $sql .= " AND (user.rt_rw = '01/03' OR user.rt_rw = '02/03' OR user.rt_rw = '03/03' OR user.rt_rw = '04/03' OR user.rt_rw = '05/03' OR user.rt_rw = '06/03' OR user.rt_rw = '07/03' OR user.rt_rw = '08/03' OR user.rt_rw = '09/03' OR user.rt_rw = '10/03' OR user.rt_rw = '11/03' OR user.rt_rw = '12/03' OR user.rt_rw = '13/03')";
+                                                    } elseif ($tugas === 'dusun_selang') {
+                                                        $sql .= " AND (user.rt_rw = '01/04' OR user.rt_rw = '02/04' OR user.rt_rw = '03/04' OR user.rt_rw = '04/04')";
+                                                    } elseif ($tugas === 'dusun_sawur') {
+                                                        $sql .= " AND (user.rt_rw = '01/05' OR user.rt_rw = '02/05' OR user.rt_rw = '03/05' OR user.rt_rw = '04/05' OR user.rt_rw = '05/05' OR user.rt_rw = '06/05' OR user.rt_rw = '07/05' OR user.rt_rw = '08/05')";
+                                                    } elseif ($tugas === 'dusun_gunung_butak') {
+                                                        $sql .= " AND (user.rt_rw = '01/06' OR user.rt_rw = '02/06' OR user.rt_rw = '03/06' OR user.rt_rw = '04/06' OR user.rt_rw = '05/06' OR user.rt_rw = '06/06' OR user.rt_rw = '07/06' OR user.rt_rw = '08/06' OR user.rt_rw = '09/06')";
+                                                    } elseif ($tugas === 'desa_bulusari') {
+                                                    }
 
                                                     $query = $dbh->prepare($sql);
                                                     $query->execute();
@@ -214,6 +260,7 @@ if ($_SESSION['role'] !== 'admin') {
                                                                 <td><?php echo htmlentities($result->nik_user); ?></td>
                                                                 <td><?php echo htmlentities($result->nama_user); ?></td>
                                                                 <td><?php echo htmlentities($result->rt_rw); ?></td>
+                                                                <td><?php echo htmlentities($result->no_rumah); ?></td>
                                                                 <td><?php echo htmlentities(date('d F Y', strtotime($result->tanggal_laporan))); ?></td>
                                                                 <td><?php echo htmlentities(date('d F Y', strtotime($result->tanggal_pemantauan))); ?></td>
                                                                 <td><?php
@@ -292,6 +339,9 @@ if ($_SESSION['role'] !== 'admin') {
                         }, // Kolom RT/RW
                         {
                             "searchable": false
+                        }, // Kolom Nama Lengkap
+                        {
+                            "searchable": false
                         }, // Kolom Tanggal Laporan
                         {
                             "searchable": false
@@ -352,7 +402,7 @@ if ($_SESSION['role'] !== 'admin') {
 
                 // Tambahkan data tabel
                 printContent += '<table border="1" cellspacing="0" width="100%">';
-                printContent += '<thead style="text-align: left;"><tr><th>No</th><th>NIK</th><th>Nama Lengkap</th><th>RT/RW</th><th>Tanggal Laporan</th><th>Tanggal Pemantauan</th><th>Status Jentik</th></tr></thead>';
+                printContent += '<thead style="text-align: left;"><tr><th>No</th><th>NIK</th><th>Nama Lengkap</th><th>RT/RW</th><th>No. RUmah</th><th>Tanggal Laporan</th><th>Tanggal Pemantauan</th><th>Status Jentik</th></tr></thead>';
                 printContent += '<tbody>';
 
                 // Ambil semua baris dari tabel
@@ -372,7 +422,7 @@ if ($_SESSION['role'] !== 'admin') {
                     // });
                     cells.forEach(function(cell, cellIndex) {
                         // Jika bukan kolom "Detail", tambahkan isi sel ke konten preview
-                        if (cellIndex !== 6) {
+                        if (cellIndex !== 7) {
                             printContent += '<td>' + cell.innerText + '</td>';
                         }
                     });
@@ -436,7 +486,7 @@ if ($_SESSION['role'] !== 'admin') {
                 previewContent += '<h3 style="text-align:center; margin-top:20px;">Data Hasil Pemantauan Jentik<br>Desa Bulusari Kecamatan Tarokan<br>Pada bulan ' + '<?php echo date("F", mktime(0, 0, 0, $filterMonth, 1)); ?>' + ' tahun <?php echo $filterYear; ?></h3>';
 
                 previewContent += '<table border="1" cellspacing="0" width="100%">';
-                previewContent += '<thead style="text-align: left;"><tr><th>No</th><th>NIK</th><th>Nama Lengkap</th><th>RT/RW</th><th>Tanggal Laporan</th><th>Tanggal Pemantauan</th><th>Status Jentik</th></tr></thead>';
+                previewContent += '<thead style="text-align: left;"><tr><th>No</th><th>NIK</th><th>Nama Lengkap</th><th>RT/RW</th><th>No. RUmah</th><th>Tanggal Laporan</th><th>Tanggal Pemantauan</th><th>Status Jentik</th></tr></thead>';
                 previewContent += '<tbody>';
 
                 var rows = document.querySelectorAll('#example tbody tr');
@@ -449,7 +499,7 @@ if ($_SESSION['role'] !== 'admin') {
 
                     cells.forEach(function(cell, cellIndex) {
                         // Jika bukan kolom "Detail", tambahkan isi sel ke konten preview
-                        if (cellIndex !== 6) {
+                        if (cellIndex !== 7) {
                             previewContent += '<td>' + cell.innerText + '</td>';
                         }
                     });

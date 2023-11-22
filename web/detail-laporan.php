@@ -43,8 +43,9 @@ function updateStatusJentik($dbh, $NIK, $status_jentik, $result)
     $existingResult = $checkQuery->fetch(PDO::FETCH_OBJ);
 
     if ($existingResult) {
-        $updateSql = "UPDATE laporan SET status = :status_jentik, tanggal_pemantauan = NOW() WHERE id_laporan = :NIK";
+        $updateSql = "UPDATE laporan SET status = :status_jentik, tanggal_pemantauan = NOW(), id_admin = :ID WHERE id_laporan = :NIK";
         $updateQuery = $dbh->prepare($updateSql);
+        $updateQuery->bindParam(':ID', $_SESSION['id_admin'], PDO::PARAM_INT);
         $updateQuery->bindParam(':NIK', $NIK, PDO::PARAM_STR);
         $updateQuery->bindParam(':status_jentik', $status_jentik, PDO::PARAM_INT);
         $updateQuery->execute();

@@ -166,10 +166,6 @@ if ($_SESSION['role'] !== 'super_admin') {
                                                                         <label for="nama_lengkap">Nama Lengkap:</label>
                                                                         <input type="text" class="form-control" id="nama_lengkap" name="nama_lengkap" title="Masukkan Nama Lengkap" required>
                                                                     </div>
-                                                                    <!-- <div class="form-group">
-                                                                        <label for="username">Username:</label>
-                                                                        <input type="text" class="form-control" id="username" name="username" title="username minimal 4 karakter" required>
-                                                                    </div> -->
                                                                     <div class="form-group">
                                                                         <label for="username">Username:</label>
                                                                         <input type="text" class="form-control" id="username" name="username" title="username minimal 4 karakter" required minlength="4" maxlength="8" oninput="validateUsername(event)" />
@@ -180,12 +176,19 @@ if ($_SESSION['role'] !== 'super_admin') {
                                                                         <input type="password" class="form-control" id="password" name="password" title="password minimal 6 karakter" required minlength="6" maxlength="12" oninput="validatePassword(event)" />
                                                                         <span id="passwordMessage" style="color: red; font-size: 12px;"></span>
                                                                     </div>
-
-
-                                                                    <!-- <div class="form-group">
-                                                                        <label for="password">Password:</label>
-                                                                        <input type="password" class="form-control" id="password" name="password" title="password minimal 6 karakter" required>
-                                                                    </div> -->
+                                                                    <div class="form-group">
+                                                                        <label for="desa">Tempat Tugas Kader:</label>
+                                                                        <select class="form-control" id="tugas" name="tugas" required>
+                                                                            <option value="" disabled selected>Pilih Tempat Tugas Kader</option>
+                                                                            <option value="desa_bulusari">Desa Bulusari</option>
+                                                                            <option value="dusun_pojok">Dusun Pojok</option>
+                                                                            <option value="dusun_bulusari_utara">Dusun Bulusari Utara</option>
+                                                                            <option value="dusun_bulusari_selatan">Dusun Bulusari Selatan</option>
+                                                                            <option value="dusun_selang">Dusun Selang</option>
+                                                                            <option value="dusun_sawur">Dusun Sawur</option>
+                                                                            <option value="dusun_gunung_butak">Dusun Gunung Butak</option>
+                                                                        </select>
+                                                                    </div>
                                                                     <button type="submit" class="btn btn-primary" name="submit">Simpan</button>
                                                                 </form>
                                                             </div>
@@ -202,6 +205,7 @@ if ($_SESSION['role'] !== 'super_admin') {
                                                                 <th>NIK</th>
                                                                 <th>Nama Lengkap</th>
                                                                 <th>Username</th>
+                                                                <th>Tempat Tugas</th>
                                                                 <th>Tanggal Daftar</th>
                                                                 <th>Tanggal Update Password</th>
                                                                 <th>Action</th>
@@ -209,7 +213,7 @@ if ($_SESSION['role'] !== 'super_admin') {
                                                         </thead>
                                                         <tbody>
                                                             <?php
-                                                            $sql = "SELECT id_admin, nik, nama_lengkap, username, tanggal_masuk, tanggal_update_password FROM tabel_admin WHERE role = 'admin'";
+                                                            $sql = "SELECT id_admin, nik, nama_lengkap, username, tanggal_masuk, tanggal_update_password, tugas FROM tabel_admin WHERE role = 'admin'";
                                                             $query = $dbh->prepare($sql);
                                                             $query->execute();
                                                             $results = $query->fetchAll(PDO::FETCH_OBJ);
@@ -222,16 +226,46 @@ if ($_SESSION['role'] !== 'super_admin') {
                                                                         <td><?php echo htmlentities($result->nik); ?></td>
                                                                         <td><?php echo htmlentities($result->nama_lengkap); ?></td>
                                                                         <td><?php echo htmlentities($result->username); ?></td>
+                                                                        <td>
+                                                                            <?php
+                                                                            switch ($result->tugas) {
+                                                                                case "desa_bulusari":
+                                                                                    echo "Desa Bulusari";
+                                                                                    break;
+                                                                                case "dusun_pojok":
+                                                                                    echo "Dusun Pojok";
+                                                                                    break;
+                                                                                case "dusun_bulusari_utara":
+                                                                                    echo "Dusun Bulusari Utara";
+                                                                                    break;
+                                                                                case "dusun_bulusari_selatan":
+                                                                                    echo "Dusun Bulusari Selatan";
+                                                                                    break;
+                                                                                case "dusun_selang":
+                                                                                    echo "Dusun Selang";
+                                                                                    break;
+                                                                                case "dusun_gunung_butak":
+                                                                                    echo "Dusun Gunung Butak";
+                                                                                    break;
+                                                                                case "dusun_sawur":
+                                                                                    echo "Dusun Sawur";
+                                                                                    break;
+                                                                                default:
+                                                                                    echo htmlentities($result->tugas);
+                                                                            }
+                                                                            ?>
+                                                                        </td>
                                                                         <td><?php echo htmlentities($result->tanggal_masuk); ?></td>
                                                                         <!-- <td><?php echo htmlentities($result->tanggal_update_password); ?></td> -->
                                                                         <td><?php echo $result->tanggal_update_password ? htmlentities($result->tanggal_update_password) : '-'; ?></td>
+                                                                        <!-- <td><?php echo htmlentities($result->tugas); ?></td> -->
                                                                         <td style="text-align: center;">
                                                                             <!-- <a href="detail-laporan.php?NIK=<?php echo htmlentities($result->id_admin); ?>">
                                                                                 <img src="btn-edit.png" alt="Detail" title="Detail" class="btn-edit-img">
                                                                             </a> -->
-                                                                            <a href="edit-admin.php?id=<?php echo htmlentities($result->id_admin); ?>" title="Edit Data">
+                                                                            <!-- <a href="edit-admin.php?id=<?php echo htmlentities($result->id_admin); ?>" title="Edit Data">
                                                                                 <img src="img/btn-edit.png" alt="Edit Data" class="btn-edit-img">
-                                                                            </a>
+                                                                            </a> -->
                                                                             <a href="#" onclick="confirmDelete('<?php echo htmlentities($result->id_admin); ?>', this)" title="Hapus Data">
                                                                                 <img src="img/btn-delet.png" alt="Hapus Data" class="btn-delete-img"></a>
                                                                         </td>
@@ -292,6 +326,9 @@ if ($_SESSION['role'] !== 'super_admin') {
                                     {
                                         "searchable": false
                                     }, // Kolom Tanggal Pemantauan
+                                    {
+                                        "searchable": false
+                                    }, // Kolom Tugas
                                     {
                                         "searchable": false
                                     } // Kolom Status Jentik

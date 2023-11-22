@@ -141,7 +141,33 @@ if ($_SESSION['role'] !== 'admin') {
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="panel-title">
-                                                        <h5>Data Laporan Jentik Nyamuk</h5>
+                                                        <h5>Data Laporan Jentik Nyamuk <?php
+                                                                                        switch ($_SESSION['tugas']) {
+                                                                                            case "desa_bulusari":
+                                                                                                echo "di desa Bulusari";
+                                                                                                break;
+                                                                                            case "dusun_pojok":
+                                                                                                echo "di dusun Pojok";
+                                                                                                break;
+                                                                                            case "dusun_bulusari_utara":
+                                                                                                echo "di dusun Bulusari Utara";
+                                                                                                break;
+                                                                                            case "dusun_bulusari_selatan":
+                                                                                                echo "di dusun Bulusari Selatan";
+                                                                                                break;
+                                                                                            case "dusun_selang":
+                                                                                                echo "di dusun Selang";
+                                                                                                break;
+                                                                                            case "dusun_gunung_butak":
+                                                                                                echo "di dusun Gunung Butak";
+                                                                                                break;
+                                                                                            case "dusun_sawur":
+                                                                                                echo "di dusun Sawur";
+                                                                                                break;
+                                                                                            default:
+                                                                                                echo htmlentities($_SESSION['tugas']);
+                                                                                        }
+                                                                                        ?></h5>
                                                     </div>
                                                 </div>
                                             </div>
@@ -196,13 +222,37 @@ if ($_SESSION['role'] !== 'admin') {
                                                     $filterMonth = isset($_POST['filter_month']) ? $_POST['filter_month'] : $currentMonth;
                                                     $filterYear = isset($_POST['filter_year']) ? $_POST['filter_year'] : $currentYear;
 
-                                                    // Query SQL untuk mengambil data jika status kosong dan sesuai dengan filter
+                                                    // Mendapatkan tugas dari session
+                                                    $tugas = isset($_SESSION['tugas']) ? $_SESSION['tugas'] : '';
+
+                                                    // Query SQL untuk mengambil data jika status kosong dan sesuai dengan filter serta tugas dan kondisi dusun_pojok
                                                     $sql = "SELECT id_laporan, laporan.nik_user, laporan.tanggal_laporan, user.nama_user, user.rt_rw 
-                                                        FROM laporan 
-                                                        INNER JOIN user ON laporan.nik_user = user.nik_user 
-                                                        WHERE laporan.status IS NULL 
-                                                        AND MONTH(laporan.tanggal_laporan) = $filterMonth 
-                                                        AND YEAR(laporan.tanggal_laporan) = $filterYear";
+                                                            FROM laporan 
+                                                            INNER JOIN user ON laporan.nik_user = user.nik_user 
+                                                            WHERE laporan.status IS NULL 
+                                                            AND MONTH(laporan.tanggal_laporan) = $filterMonth 
+                                                            AND YEAR(laporan.tanggal_laporan) = $filterYear";
+
+                                                    // Menambahkan kondisi berdasarkan tugas dan dusun_pojok, dusun_bulusari_utara, dusun_bulusari_selatan
+                                                    if ($tugas === 'dusun_pojok') {
+                                                        $sql .= " AND (user.rt_rw = '01/01' OR user.rt_rw = '02/01' OR user.rt_rw = '03/01' OR user.rt_rw = '04/01' OR user.rt_rw = '05/01' OR user.rt_rw = '06/01' OR user.rt_rw = '07/01')";
+                                                    } elseif ($tugas === 'dusun_bulusari_utara') {
+                                                        $sql .= " AND (user.rt_rw = '01/02' OR user.rt_rw = '02/02' OR user.rt_rw = '03/02' OR user.rt_rw = '04/02' OR user.rt_rw = '05/02' OR user.rt_rw = '06/02' OR user.rt_rw = '07/02' OR user.rt_rw = '08/01' OR user.rt_rw = '09/02')";
+                                                    } elseif ($tugas === 'dusun_bulusari_selatan') {
+                                                        $sql .= " AND (user.rt_rw = '01/03' OR user.rt_rw = '02/03' OR user.rt_rw = '03/03' OR user.rt_rw = '04/03' OR user.rt_rw = '05/03' OR user.rt_rw = '06/03' OR user.rt_rw = '07/03' OR user.rt_rw = '08/03' OR user.rt_rw = '09/03' OR user.rt_rw = '10/03' OR user.rt_rw = '11/03' OR user.rt_rw = '12/03' OR user.rt_rw = '13/03')";
+                                                    } elseif ($tugas === 'dusun_selang') {
+                                                        $sql .= " AND (user.rt_rw = '01/04' OR user.rt_rw = '02/04' OR user.rt_rw = '03/04' OR user.rt_rw = '04/04')";
+                                                    } elseif ($tugas === 'dusun_sawur') {
+                                                        $sql .= " AND (user.rt_rw = '01/05' OR user.rt_rw = '02/05' OR user.rt_rw = '03/05' OR user.rt_rw = '04/05' OR user.rt_rw = '05/05' OR user.rt_rw = '06/05' OR user.rt_rw = '07/05' OR user.rt_rw = '08/05')";
+                                                    } elseif ($tugas === 'dusun_gunung_butak') {
+                                                        $sql .= " AND (user.rt_rw = '01/06' OR user.rt_rw = '02/06' OR user.rt_rw = '03/06' OR user.rt_rw = '04/06' OR user.rt_rw = '05/06' OR user.rt_rw = '06/06' OR user.rt_rw = '07/06' OR user.rt_rw = '08/06' OR user.rt_rw = '09/06')";
+                                                    } elseif ($tugas === 'desa_bulusari') {
+                                                    } else {
+                                                        // Tugas tidak sesuai dengan yang didefinisikan
+                                                        echo '<tr><td colspan="6" class="text-center">Tidak ada data laporan masuk</td></tr>';
+                                                        exit; // Keluar dari skrip jika tugas tidak valid
+                                                    }
+
 
                                                     $query = $dbh->prepare($sql);
                                                     $query->execute();
@@ -219,13 +269,9 @@ if ($_SESSION['role'] !== 'admin') {
                                                                 <td><?php echo htmlentities(date('d F Y', strtotime($result->tanggal_laporan))); ?></td>
                                                                 <td style="text-align: center;">
                                                                     <a href="detail-laporan.php?id=<?php echo htmlentities($result->id_laporan); ?>">
-                                                                        <!-- <img src="img/View.png" alt="Detail" title="Detail Laporan" class="btn-edit-img"> -->
                                                                         <button class="btn btn-sm" style="background-color: #FFBD59; color: #fff;" alt="Detail" title="Lihat detail laporan">Lihat</button>
                                                                     </a>
-                                                                    <!-- <button class="btn btn-sm btn-danger" onclick="confirmDelete('<?php echo htmlentities($result->id_laporan); ?>');" alt="Hapus" title="Hapus laporan">Hapus</button> -->
                                                                 </td>
-
-
                                                             </tr>
                                                     <?php $cnt = $cnt + 1;
                                                         }
@@ -233,6 +279,7 @@ if ($_SESSION['role'] !== 'admin') {
                                                         echo '<tr><td colspan="6" class="text-center">Tidak ada data laporan masuk</td></tr>';
                                                     }
                                                     ?>
+
 
                                                 </tbody>
                                             </table>

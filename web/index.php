@@ -63,7 +63,7 @@
                         </script>
 
                     </div>
-                    <?php include 'login-baru.php' ?>
+                    <?php include 'login.php' ?>
                 </form>
             </div>
         </div>

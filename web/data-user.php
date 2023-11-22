@@ -121,7 +121,34 @@ if ($_SESSION['role'] !== 'admin') {
                                         <div class="panel">
                                             <div class="panel-heading">
                                                 <div class="panel-title">
-                                                    <h5>Tabel Data User Mobile</h5>
+                                                    <h5>Tabel Data User Mobile Si-antik <?php
+                                                                                        switch ($_SESSION['tugas']) {
+                                                                                            case "desa_bulusari":
+                                                                                                echo "desa Bulusari";
+                                                                                                break;
+                                                                                            case "dusun_pojok":
+                                                                                                echo "dusun Pojok";
+                                                                                                break;
+                                                                                            case "dusun_bulusari_utara":
+                                                                                                echo "dusun Bulusari Utara";
+                                                                                                break;
+                                                                                            case "dusun_bulusari_selatan":
+                                                                                                echo "dusun Bulusari Selatan";
+                                                                                                break;
+                                                                                            case "dusun_selang":
+                                                                                                echo "dusun Selang";
+                                                                                                break;
+                                                                                            case "dusun_gunung_butak":
+                                                                                                echo "dusun Gunung Butak";
+                                                                                                break;
+                                                                                            case "dusun_sawur":
+                                                                                                echo "dusun Sawur";
+                                                                                                break;
+                                                                                            default:
+                                                                                                echo htmlentities($_SESSION['tugas']);
+                                                                                        }
+                                                                                        ?></h5>
+                                                    </h5>
                                                 </div>
                                             </div>
                                             <div class="panel-body p-20">
@@ -141,7 +168,24 @@ if ($_SESSION['role'] !== 'admin') {
                                                         </thead>
                                                         <tbody>
                                                             <?php
+                                                            $tugas = isset($_SESSION['tugas']) ? $_SESSION['tugas'] : '';
                                                             $sql = "SELECT nik_user, nama_user, rt_rw, no_rumah, password_user, created_at FROM user";
+                                                            // Menambahkan kondisi berdasarkan tugas dan dusun_pojok, dusun_bulusari_utara, dusun_bulusari_selatan
+                                                            if ($tugas === 'dusun_pojok') {
+                                                                $sql .= " WHERE (rt_rw = '01/01' OR rt_rw = '02/01' OR rt_rw = '03/01' OR rt_rw = '04/01' OR rt_rw = '05/01' OR rt_rw = '06/01' OR rt_rw = '07/01')";
+                                                            } elseif ($tugas === 'dusun_bulusari_utara') {
+                                                                $sql .= " WHERE (rt_rw = '01/02' OR rt_rw = '02/02' OR rt_rw = '03/02' OR rt_rw = '04/02' OR rt_rw = '05/02' OR rt_rw = '06/02' OR rt_rw = '07/02' OR rt_rw = '08/01' OR rt_rw = '09/02')";
+                                                            } elseif ($tugas === 'dusun_bulusari_selatan') {
+                                                                $sql .= " WHERE (rt_rw = '01/03' OR rt_rw = '02/03' OR rt_rw = '03/03' OR rt_rw = '04/03' OR rt_rw = '05/03' OR rt_rw = '06/03' OR rt_rw = '07/03' OR rt_rw = '08/03' OR rt_rw = '09/03' OR rt_rw = '10/03' OR rt_rw = '11/03' OR rt_rw = '12/03' OR rt_rw = '13/03')";
+                                                            } elseif ($tugas === 'dusun_selang') {
+                                                                $sql .= " WHERE (rt_rw = '01/04' OR rt_rw = '02/04' OR rt_rw = '03/04' OR rt_rw = '04/04')";
+                                                            } elseif ($tugas === 'dusun_sawur') {
+                                                                $sql .= " WHERE (rt_rw = '01/05' OR rt_rw = '02/05' OR rt_rw = '03/05' OR rt_rw = '04/05' OR rt_rw = '05/05' OR rt_rw = '06/05' OR rt_rw = '07/05' OR rt_rw = '08/05')";
+                                                            } elseif ($tugas === 'dusun_gunung_butak') {
+                                                                $sql .= " WHERE (rt_rw = '01/06' OR rt_rw = '02/06' OR rt_rw = '03/06' OR rt_rw = '04/06' OR rt_rw = '05/06' OR rt_rw = '06/06' OR rt_rw = '07/06' OR rt_rw = '08/06' OR rt_rw = '09/06')";
+                                                            } elseif ($tugas === 'desa_bulusari') {
+                                                                // Kondisi untuk desa_bulusari, jika diperlukan
+                                                            }
                                                             $query = $dbh->prepare($sql);
                                                             $query->execute();
                                                             $results = $query->fetchAll(PDO::FETCH_OBJ);
@@ -157,6 +201,9 @@ if ($_SESSION['role'] !== 'admin') {
                                                                         <td><?php echo htmlentities($result->no_rumah); ?></td>
                                                                         <td><?php echo htmlentities($result->created_at); ?></td>
                                                                         <td style="text-align: center;">
+                                                                            <a href="#">
+                                                                                <img src="img/btn-edit.png" alt="Edit Data" class="btn-edit-img">
+                                                                            </a>
                                                                             <a href="#" onclick="confirmDelete('<?php echo htmlentities($result->nik_user); ?>', this)" title="Hapus Data">
                                                                                 <img src="img/btn-delet.png" alt="Hapus Data" class="btn-delete-img"></a>
                                                                         </td>

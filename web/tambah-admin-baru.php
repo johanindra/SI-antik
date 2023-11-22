@@ -23,6 +23,7 @@ if ($_SESSION['role'] !== 'super_admin') {
         $nama_lengkap = $_POST['nama_lengkap'];
         $username = $_POST['username'];
         $password = $_POST['password'];
+        $tugas = $_POST['tugas'];
 
         if (!preg_match('/^[0-9]{16}$/', $nik)) {
             $response['success'] = false;
@@ -51,7 +52,7 @@ if ($_SESSION['role'] !== 'super_admin') {
             echo json_encode($response);
             exit();
         }
-        
+
         if (!preg_match('/^[a-zA-Z0-9]+$/', $username)) {
             $response['success'] = false;
             $response['message'] = "Username tidak boleh menggunakan karakter khusus.";
@@ -72,6 +73,12 @@ if ($_SESSION['role'] !== 'super_admin') {
             echo json_encode($response);
             exit();
         }
+        if ($tugas == "") {
+            $response['success'] = false;
+            $response['message'] = "Silakan pilih Tempat Tugas Kader.";
+            echo json_encode($response);
+            exit();
+        }
 
         $checkEmpty = "SELECT COUNT(*) as count FROM tabel_admin";
         $stmtCheckEmpty = $dbh->prepare($checkEmpty);
@@ -80,7 +87,7 @@ if ($_SESSION['role'] !== 'super_admin') {
 
         if ($rowCount == 0) {
             // Jika tabel admin kosong, langsung masukkan admin baru dengan role 'admin'
-            $sql = "INSERT INTO tabel_admin (nik, nama_lengkap, username, password, tanggal_masuk, role) VALUES (:nik, :nama_lengkap, :username, :password, NOW(), 'admin')";
+            $sql = "INSERT INTO tabel_admin (nik, nama_lengkap, username, password, tanggal_masuk, role, tugas) VALUES (:nik, :nama_lengkap, :username, :password, NOW(), 'admin' :tugas)";
             $query = $dbh->prepare($sql);
 
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -88,6 +95,7 @@ if ($_SESSION['role'] !== 'super_admin') {
             $query->bindParam(':nama_lengkap', $nama_lengkap, PDO::PARAM_STR);
             $query->bindParam(':username', $username, PDO::PARAM_STR);
             $query->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
+            $query->bindParam(':tugas', $tugas, PDO::PARAM_STR);
 
             if ($query->execute()) {
                 $response['success'] = true;
@@ -113,7 +121,7 @@ if ($_SESSION['role'] !== 'super_admin') {
                 $response['success'] = false;
                 $response['message'] = "Username sudah digunakan. Silakan pilih username lain.";
             } else {
-                $sql = "INSERT INTO tabel_admin (nik, nama_lengkap, username, password, tanggal_masuk, role) VALUES (:nik, :nama_lengkap, :username, :password, NOW(), 'admin')";
+                $sql = "INSERT INTO tabel_admin (nik, nama_lengkap, username, password, tanggal_masuk, role, tugas) VALUES (:nik, :nama_lengkap, :username, :password, NOW(), 'admin', :tugas)";
                 $query = $dbh->prepare($sql);
 
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -122,6 +130,7 @@ if ($_SESSION['role'] !== 'super_admin') {
                 $query->bindParam(':nama_lengkap', $nama_lengkap, PDO::PARAM_STR);
                 $query->bindParam(':username', $username, PDO::PARAM_STR);
                 $query->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
+                $query->bindParam(':tugas', $tugas, PDO::PARAM_STR);
 
                 if ($query->execute()) {
                     $response['success'] = true;
@@ -138,4 +147,3 @@ if ($_SESSION['role'] !== 'super_admin') {
         echo json_encode($response);
     }
 }
-?>

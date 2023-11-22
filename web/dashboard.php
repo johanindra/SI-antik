@@ -94,9 +94,32 @@ if ($_SESSION['role'] !== 'admin') {
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%;">
                                         <a class="dashboard-stat bg-light" href="laporan-masuk.php">
                                             <?php
-                                            // Kueri untuk menghitung total laporan masuk per bulan
-                                            $sql = "SELECT COUNT(*) as total FROM laporan WHERE status IS NULL";
+                                            // Dapatkan nilai tugas dari sesi
+                                            $tugas = isset($_SESSION['tugas']) ? $_SESSION['tugas'] : '';
 
+                                            // Kueri untuk menghitung total laporan masuk per bulan
+                                            $sql = "SELECT COUNT(*) as total FROM laporan 
+                                                    INNER JOIN user ON laporan.nik_user = user.nik_user 
+                                                    WHERE laporan.status IS NULL";
+
+                                            if ($tugas === 'dusun_pojok') {
+                                                $sql .= " AND (user.rt_rw = '01/01' OR user.rt_rw = '02/01' OR user.rt_rw = '03/01' OR user.rt_rw = '04/01' OR user.rt_rw = '05/01' OR user.rt_rw = '06/01' OR user.rt_rw = '07/01')";
+                                            } elseif ($tugas === 'dusun_bulusari_utara') {
+                                                $sql .= " AND (user.rt_rw = '01/02' OR user.rt_rw = '02/02' OR user.rt_rw = '03/02' OR user.rt_rw = '04/02' OR user.rt_rw = '05/02' OR user.rt_rw = '06/02' OR user.rt_rw = '07/02' OR user.rt_rw = '08/01' OR user.rt_rw = '09/02')";
+                                            } elseif ($tugas === 'dusun_bulusari_selatan') {
+                                                $sql .= " AND (user.rt_rw = '01/03' OR user.rt_rw = '02/03' OR user.rt_rw = '03/03' OR user.rt_rw = '04/03' OR user.rt_rw = '05/03' OR user.rt_rw = '06/03' OR user.rt_rw = '07/03' OR user.rt_rw = '08/03' OR user.rt_rw = '09/03' OR user.rt_rw = '10/03' OR user.rt_rw = '11/03' OR user.rt_rw = '12/03' OR user.rt_rw = '13/03')";
+                                            } elseif ($tugas === 'dusun_selang') {
+                                                $sql .= " AND (user.rt_rw = '01/04' OR user.rt_rw = '02/04' OR user.rt_rw = '03/04' OR user.rt_rw = '04/04')";
+                                            } elseif ($tugas === 'dusun_sawur') {
+                                                $sql .= " AND (user.rt_rw = '01/05' OR user.rt_rw = '02/05' OR user.rt_rw = '03/05' OR user.rt_rw = '04/05' OR user.rt_rw = '05/05' OR user.rt_rw = '06/05' OR user.rt_rw = '07/05' OR user.rt_rw = '08/05')";
+                                            } elseif ($tugas === 'dusun_gunung_butak') {
+                                                $sql .= " AND (user.rt_rw = '01/06' OR user.rt_rw = '02/06' OR user.rt_rw = '03/06' OR user.rt_rw = '04/06' OR user.rt_rw = '05/06' OR user.rt_rw = '06/06' OR user.rt_rw = '07/06' OR user.rt_rw = '08/06' OR user.rt_rw = '09/06')";
+                                            } elseif ($tugas === 'desa_bulusari') {
+                                            } else {
+                                                // Tugas tidak sesuai dengan yang didefinisikan
+                                                echo '<tr><td colspan="6" class="text-center">Tidak ada data laporan masuk</td></tr>';
+                                                exit; // Keluar dari skrip jika tugas tidak valid
+                                            }
                                             // Tambahkan filter berdasarkan bulan dan tahun
                                             $sql .= " AND MONTH(tanggal_laporan) = :filterMonth AND YEAR(tanggal_laporan) = :filterYear";
 
@@ -113,8 +136,36 @@ if ($_SESSION['role'] !== 'admin') {
                                             <span class="number counter">
                                                 <?php echo htmlentities($totalLaporanMasuk); ?>
                                             </span><br>
-                                            <span class="name"><small>Laporan Masuk Bulan <?php echo date("F Y", mktime(0, 0, 0, $filterMonth, 1, $filterYear)); ?></small></span>
+                                            <span class="name"><small>Laporan Masuk Bulan <?php echo date("F Y", mktime(0, 0, 0, $filterMonth, 1, $filterYear)); ?><br></small></span>
                                             <span class="bg-icon"><i class="fa fa-envelope"></i></span>
+                                            <?php
+                                            switch ($_SESSION['tugas']) {
+                                                case "desa_bulusari":
+                                                    echo "di desa Bulusari";
+                                                    break;
+                                                case "dusun_pojok":
+                                                    echo "di dusun Pojok";
+                                                    break;
+                                                case "dusun_bulusari_utara":
+                                                    echo "di dusun Bulusari Utara";
+                                                    break;
+                                                case "dusun_bulusari_selatan":
+                                                    echo "di dusun Bulusari Selatan";
+                                                    break;
+                                                case "dusun_selang":
+                                                    echo "di dusun Selang";
+                                                    break;
+                                                case "dusun_gunung_butak":
+                                                    echo "di dusun Gunung Butak";
+                                                    break;
+                                                case "dusun_sawur":
+                                                    echo "di dusun Sawur";
+                                                    break;
+                                                default:
+                                                    echo htmlentities($_SESSION['tugas']);
+                                            }
+                                            ?>
+
                                         </a>
 
                                         <!-- /.dashboard-stat -->
@@ -123,9 +174,30 @@ if ($_SESSION['role'] !== 'admin') {
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="margin-top:1%;">
                                         <a class="dashboard-stat bg-light" href="hasil-pemantauan.php">
                                             <?php
+                                            $tugas = isset($_SESSION['tugas']) ? $_SESSION['tugas'] : '';
                                             // Kueri untuk menghitung total hasil pemantauan per bulan
-                                            $sql = "SELECT COUNT(*) as total FROM laporan WHERE status IS NOT NULL";
+                                            $sql = "SELECT COUNT(*) as total FROM laporan 
+                                                    INNER JOIN user ON laporan.nik_user = user.nik_user 
+                                                    WHERE status IS NOT NULL";
 
+                                            if ($tugas === 'dusun_pojok') {
+                                                $sql .= " AND (user.rt_rw = '01/01' OR user.rt_rw = '02/01' OR user.rt_rw = '03/01' OR user.rt_rw = '04/01' OR user.rt_rw = '05/01' OR user.rt_rw = '06/01' OR user.rt_rw = '07/01')";
+                                            } elseif ($tugas === 'dusun_bulusari_utara') {
+                                                $sql .= " AND (user.rt_rw = '01/02' OR user.rt_rw = '02/02' OR user.rt_rw = '03/02' OR user.rt_rw = '04/02' OR user.rt_rw = '05/02' OR user.rt_rw = '06/02' OR user.rt_rw = '07/02' OR user.rt_rw = '08/01' OR user.rt_rw = '09/02')";
+                                            } elseif ($tugas === 'dusun_bulusari_selatan') {
+                                                $sql .= " AND (user.rt_rw = '01/03' OR user.rt_rw = '02/03' OR user.rt_rw = '03/03' OR user.rt_rw = '04/03' OR user.rt_rw = '05/03' OR user.rt_rw = '06/03' OR user.rt_rw = '07/03' OR user.rt_rw = '08/03' OR user.rt_rw = '09/03' OR user.rt_rw = '10/03' OR user.rt_rw = '11/03' OR user.rt_rw = '12/03' OR user.rt_rw = '13/03')";
+                                            } elseif ($tugas === 'dusun_selang') {
+                                                $sql .= " AND (user.rt_rw = '01/04' OR user.rt_rw = '02/04' OR user.rt_rw = '03/04' OR user.rt_rw = '04/04')";
+                                            } elseif ($tugas === 'dusun_sawur') {
+                                                $sql .= " AND (user.rt_rw = '01/05' OR user.rt_rw = '02/05' OR user.rt_rw = '03/05' OR user.rt_rw = '04/05' OR user.rt_rw = '05/05' OR user.rt_rw = '06/05' OR user.rt_rw = '07/05' OR user.rt_rw = '08/05')";
+                                            } elseif ($tugas === 'dusun_gunung_butak') {
+                                                $sql .= " AND (user.rt_rw = '01/06' OR user.rt_rw = '02/06' OR user.rt_rw = '03/06' OR user.rt_rw = '04/06' OR user.rt_rw = '05/06' OR user.rt_rw = '06/06' OR user.rt_rw = '07/06' OR user.rt_rw = '08/06' OR user.rt_rw = '09/06')";
+                                            } elseif ($tugas === 'desa_bulusari') {
+                                            } else {
+                                                // Tugas tidak sesuai dengan yang didefinisikan
+                                                echo '<tr><td colspan="6" class="text-center">Tidak ada data laporan masuk</td></tr>';
+                                                exit; // Keluar dari skrip jika tugas tidak valid
+                                            }
                                             // Tambahkan filter berdasarkan bulan dan tahun
                                             $sql .= " AND MONTH(tanggal_pemantauan) = :filterMonth AND YEAR(tanggal_pemantauan) = :filterYear";
 
@@ -143,8 +215,36 @@ if ($_SESSION['role'] !== 'admin') {
                                             <span class="number counter">
                                                 <?php echo htmlentities($totalHasilPemantauan); ?>
                                             </span><br>
-                                            <span class="name"><small>Hasil Pemantauan Bulan <?php echo date("F Y", mktime(0, 0, 0, $filterMonth, 1, $filterYear)); ?></small></span>
+                                            <span class="name"><small>Hasil Pemantauan Bulan <?php echo date("F Y", mktime(0, 0, 0, $filterMonth, 1, $filterYear)); ?><br></small></span>
                                             <span class="bg-icon"><i class="fa fa-file-text"></i></span>
+                                            <?php
+                                            switch ($_SESSION['tugas']) {
+                                                case "desa_bulusari":
+                                                    echo "di desa Bulusari";
+                                                    break;
+                                                case "dusun_pojok":
+                                                    echo "di dusun Pojok";
+                                                    break;
+                                                case "dusun_bulusari_utara":
+                                                    echo "di dusun Bulusari Utara";
+                                                    break;
+                                                case "dusun_bulusari_selatan":
+                                                    echo "di dusun Bulusari Selatan";
+                                                    break;
+                                                case "dusun_selang":
+                                                    echo "di dusun Selang";
+                                                    break;
+                                                case "dusun_gunung_butak":
+                                                    echo "di dusun Gunung Butak";
+                                                    break;
+                                                case "dusun_sawur":
+                                                    echo "di dusun Sawur";
+                                                    break;
+                                                default:
+                                                    echo htmlentities($_SESSION['tugas']);
+                                            }
+                                            ?>
+
                                         </a>
 
                                         <!-- /.dashboard-stat -->
