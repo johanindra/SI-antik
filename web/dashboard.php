@@ -137,37 +137,41 @@ if ($_SESSION['role'] !== 'admin') {
                                                 <?php echo htmlentities($totalLaporanMasuk); ?>
                                             </span><br>
                                             <span class="name"><small>Laporan Masuk Bulan <?php echo date("F Y", mktime(0, 0, 0, $filterMonth, 1, $filterYear)); ?><br></small></span>
+                                            <!-- <div style=" margin-top: 15px; padding: 5px 10px 0px 10px"> -->
+                                            <!-- <marquee style="" onmouseover="this.stop();" onmouseout="this.start();">
+                                                <small style="margin-top: 0; margin-bottom: 0">Laporan Masuk Bulan <?php echo date("F Y", mktime(0, 0, 0, $filterMonth, 1, $filterYear)); ?><br></small>
+                                            </marquee> -->
+                                            <!--            -->
+                                            <!-- </div> -->
                                             <span class="bg-icon"><i class="fa fa-envelope"></i></span>
                                             <?php
                                             switch ($_SESSION['tugas']) {
                                                 case "desa_bulusari":
-                                                    echo "di desa Bulusari";
+                                                    echo "Desa Bulusari";
                                                     break;
                                                 case "dusun_pojok":
-                                                    echo "di dusun Pojok";
+                                                    echo "Dusun Pojok";
                                                     break;
                                                 case "dusun_bulusari_utara":
-                                                    echo "di dusun Bulusari Utara";
+                                                    echo "Dusun Bulusari Utara";
                                                     break;
                                                 case "dusun_bulusari_selatan":
-                                                    echo "di dusun Bulusari Selatan";
+                                                    echo "Dusun Bulusari Selatan";
                                                     break;
                                                 case "dusun_selang":
-                                                    echo "di dusun Selang";
+                                                    echo "Dusun Selang";
                                                     break;
                                                 case "dusun_gunung_butak":
-                                                    echo "di dusun Gunung Butak";
+                                                    echo "Dusun Gunung Butak";
                                                     break;
                                                 case "dusun_sawur":
-                                                    echo "di dusun Sawur";
+                                                    echo "Dusun Sawur";
                                                     break;
                                                 default:
                                                     echo htmlentities($_SESSION['tugas']);
                                             }
                                             ?>
-
                                         </a>
-
                                         <!-- /.dashboard-stat -->
                                     </div>
                                     <!-- hasil pemantauan -->
@@ -220,33 +224,31 @@ if ($_SESSION['role'] !== 'admin') {
                                             <?php
                                             switch ($_SESSION['tugas']) {
                                                 case "desa_bulusari":
-                                                    echo "di desa Bulusari";
+                                                    echo "Desa Bulusari";
                                                     break;
                                                 case "dusun_pojok":
-                                                    echo "di dusun Pojok";
+                                                    echo "Dusun Pojok";
                                                     break;
                                                 case "dusun_bulusari_utara":
-                                                    echo "di dusun Bulusari Utara";
+                                                    echo "Dusun Bulusari Utara";
                                                     break;
                                                 case "dusun_bulusari_selatan":
-                                                    echo "di dusun Bulusari Selatan";
+                                                    echo "Dusun Bulusari Selatan";
                                                     break;
                                                 case "dusun_selang":
-                                                    echo "di dusun Selang";
+                                                    echo "Dusun Selang";
                                                     break;
                                                 case "dusun_gunung_butak":
-                                                    echo "di dusun Gunung Butak";
+                                                    echo "Dusun Gunung Butak";
                                                     break;
                                                 case "dusun_sawur":
-                                                    echo "di dusun Sawur";
+                                                    echo "Dusun Sawur";
                                                     break;
                                                 default:
                                                     echo htmlentities($_SESSION['tugas']);
                                             }
                                             ?>
-
                                         </a>
-
                                         <!-- /.dashboard-stat -->
                                     </div>
                                 </div>

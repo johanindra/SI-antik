@@ -201,7 +201,7 @@ if ($_SESSION['role'] !== 'admin') {
                                                                         <td><?php echo htmlentities($result->no_rumah); ?></td>
                                                                         <td><?php echo htmlentities($result->created_at); ?></td>
                                                                         <td style="text-align: center;">
-                                                                            <a href="#">
+                                                                            <a href="#" title="Edit Data">
                                                                                 <img src="img/btn-edit.png" alt="Edit Data" class="btn-edit-img">
                                                                             </a>
                                                                             <a href="#" onclick="confirmDelete('<?php echo htmlentities($result->nik_user); ?>', this)" title="Hapus Data">

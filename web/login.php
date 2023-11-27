@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $errorMessage = "Password salah!";
         }
     } else {
-        $errorMessage = "Admin tidak terdaftar!";
+        $errorMessage = "Username dan password salah!";
     }
 
     echo '<script>';
