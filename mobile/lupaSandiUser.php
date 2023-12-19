@@ -10,7 +10,7 @@ $db = "jumantik";
 // Ambil data yang dikirim dari aplikasi Android
 $nik_user = $_POST['nik_user'];
 $nama_user = $_POST['nama_user'];
-$new_password = $_POST['new_password'];
+$new_password = md5($_POST['new_password']);
 
 // Buat koneksi ke database
 $conn = new mysqli($host, $user, $pass, $db);

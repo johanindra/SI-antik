@@ -38,11 +38,11 @@ if (isset($_POST['nik_user'])) {
             $row = $result->fetch_assoc();
             $status = $row['status'];
 
-            if ($status == 1) {
+            if ($status == '1') {
                 $response = array("status" => "sudah_lapor_positif");
-            } else if ($status == 0) {
+            } else if ($status == '0') {
                 $response = array("status" => "sudah_lapor_negatif");
-            } else {
+            } else if ($status == NULL){
                 $response = array("status" => "sudah_lapor_belum");
             }
         } else {

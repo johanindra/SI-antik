@@ -1,9 +1,9 @@
 <?php
 
-$host='localhost';
-$user='root';
-$pass='';
-$database='jumantik';
+$host = '103.247.11.134';
+$user = 'tifz1761_root';
+$pass = 'tifnganjuk321';
+$database = 'tifz1761_jumantik';
 
 // cek koneksi
 $connect = mysqli_connect($host, $user, $pass);
@@ -18,5 +18,3 @@ if ($connect) {
 } else {
     echo 'Mysql NOT-CONNECT';
 }
-
-?>

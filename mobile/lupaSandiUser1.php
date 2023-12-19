@@ -5,11 +5,12 @@ header("Content-Type: application/json");
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "test_siantik";
+$db = "jumantik";
 
 // Ambil data yang dikirim dari aplikasi Android
 $nik_user = $_POST['nik_user'];
-$new_password = $_POST['new_password'];
+$nama_user = $_POST['nama_user'];
+$new_password = md5($_POST['new_password']);
 
 // Buat koneksi ke database
 $conn = new mysqli($host, $user, $pass, $db);
@@ -19,18 +20,40 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Query untuk mereset kata sandi pengguna
-$sql = "UPDATE user SET password_user = '$new_password' WHERE nik_user = '$nik_user'";
+// Verifikasi NIK dan nama pengguna
+$sql = "SELECT * FROM user WHERE nik_user = '$nik_user'";
+$result = $conn->query($sql);
 
-if ($conn->query($sql) === TRUE) {
-    // Reset kata sandi berhasil
-    $response['status'] = 'success';
-    $response['message'] = 'Password reset successfully';
-    echo json_encode($response);
+if ($result->num_rows > 0) {
+    // Jika NIK ditemukan, lanjutkan untuk memeriksa nama pengguna
+    $sql = "SELECT * FROM user WHERE nik_user = '$nik_user' AND nama_user = '$nama_user'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        // Jika NIK dan nama pengguna sesuai, reset kata sandi
+        $sql = "UPDATE user SET password_user = '$new_password' WHERE nik_user = '$nik_user'";
+
+        if ($conn->query($sql) === TRUE) {
+            // Kata sandi berhasil direset
+            $response['status'] = 'success';
+            $response['message'] = 'berhasil mengubah sandi';
+            echo json_encode($response);
+        } else {
+            // Gagal mereset kata sandi
+            $response['status'] = 'error';
+            $response['message'] = 'gagal mengubah sandi';
+            echo json_encode($response);
+        }
+    } else {
+        // Nama pengguna tidak sesuai
+        $response['status'] = 'error';
+        $response['message'] = 'nama tidak ditemukan';
+        echo json_encode($response);
+    }
 } else {
-    // Gagal mereset kata sandi
+    // NIK tidak ditemukan
     $response['status'] = 'error';
-    $response['message'] = 'Password reset failed';
+    $response['message'] = 'NIK tidak valid';
     echo json_encode($response);
 }
 

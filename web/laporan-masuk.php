@@ -195,7 +195,7 @@ if ($_SESSION['role'] !== 'admin') {
                                                             ?>
                                                         </select>
                                                         <input type="submit" name="lihat" value="Lihat" class="btn btn-primary"><br>
-                                                        <small>Filter untuk melihat hasil pemantauan</small>
+                                                        <small>Filter untuk melihat laporan masuk</small>
                                                     </form>
                                                 </div>
                                             </div>

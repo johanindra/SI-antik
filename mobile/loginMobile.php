@@ -12,7 +12,7 @@ header("Content-Type: application/json");
 
         // post request
         $email = $_POST['nama_user'];
-        $password = $_POST['password_user'];
+        $password = md5($_POST['password_user']);
 
         // get data user
         $sql = "SELECT * FROM user  WHERE nama_user = '$email'   LIMIT 1";

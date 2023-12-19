@@ -81,11 +81,40 @@ if ($_SESSION['role'] !== 'admin') {
                                 <div class="col-sm-6">
                                     <h2 class="title">Dashboard</h2>
                                 </div>
-                                <!-- /.col-sm-6 -->
-                            </div>
-                            <!-- /.row -->
+                                <div class="col-sm-6 text-right">
+                                    <button type="button" id="infoButton" style="background: none; border: none; cursor: pointer;">
+                                        <img src="img/info.png" alt="Info Icon" style="max-height: 50px;">
+                                    </button>
+                                </div>
 
+                            </div>
                         </div>
+                        <!-- Tambahkan SweetAlert -->
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+                        <script>
+                            // Menangani klik pada tombol info
+                            document.getElementById('infoButton').addEventListener('click', function() {
+                                // Informasi Dusun, RT/RW
+                                var infoMessage = `
+                                RW 01 'Dusun Pojok'<br>
+                                RW 02 'Dusun Bulusari Utara'<br>
+                                RW 03 'Dusun Bulusari Selatan'<br>
+                                RW 04 'Dusun Selang'<br>
+                                RW 05 'Dusun Sawur'<br>
+                                RW 06 'Dusun Gunung Butak'
+          `;
+
+                                // Tampilkan popup info menggunakan SweetAlert
+                                Swal.fire({
+                                    title: 'Informasi Dusun',
+                                    html: infoMessage,
+                                    icon: 'info',
+                                    confirmButtonText: 'Tutup'
+                                });
+                            });
+                        </script>
+
                         <!-- /.container-fluid -->
 
                         <section class="section">

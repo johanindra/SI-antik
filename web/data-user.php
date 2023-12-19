@@ -152,6 +152,35 @@ if ($_SESSION['role'] !== 'admin') {
                                                 </div>
                                             </div>
                                             <div class="panel-body p-20">
+                                                <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="editUserModalLabel">Edit Data Pengguna Mobile Si-antik</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <!-- Konten Formulir Edit User -->
+                                                                <form id="editForm" onsubmit="updateUser(event)">
+                                                                    <div class="form-group">
+                                                                        <label for="editNik">NIK:</label>
+                                                                        <input type="text" class="form-control" id="editNik" name="editNik" readonly>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="nik">Edit NIK:</label>
+                                                                        <input type="text" class="form-control" id="nik" name="nik" title="Masukkan NIK" required minlength="16" maxlength="16" oninput="validateNIK(event)" />
+                                                                        <span id="angkaMessage" style="color: red; font-size: 12px;"></span>
+                                                                    </div>
+                                                                    <!-- Tambahkan bidang yang dapat diedit lainnya sesuai kebutuhan -->
+                                                                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="table-responsive">
                                                     <table id="example" class="display table table-striped table-bordered" cellspacing="0" width="100%">
                                                         <!-- Tabel Anda di sini -->
@@ -201,7 +230,7 @@ if ($_SESSION['role'] !== 'admin') {
                                                                         <td><?php echo htmlentities($result->no_rumah); ?></td>
                                                                         <td><?php echo htmlentities($result->created_at); ?></td>
                                                                         <td style="text-align: center;">
-                                                                            <a href="#" title="Edit Data">
+                                                                            <a href="#" onclick="openEditModal('<?php echo htmlentities($result->nik_user); ?>')" title="Edit Data">
                                                                                 <img src="img/btn-edit.png" alt="Edit Data" class="btn-edit-img">
                                                                             </a>
                                                                             <a href="#" onclick="confirmDelete('<?php echo htmlentities($result->nik_user); ?>', this)" title="Hapus Data">
@@ -339,6 +368,81 @@ if ($_SESSION['role'] !== 'admin') {
                             nomorUrutElements.each(function(index) {
                                 $(this).text(index + 1);
                             });
+                        }
+
+                        function openEditModal(nik) {
+                            // Dapatkan modal
+                            var modal = document.getElementById("editUserModal");
+
+                            // Atur nilai NIK dalam formulir
+                            document.getElementById("editNik").value = nik;
+
+                            // Tampilkan modal
+                            $(modal).modal('show');
+                        }
+
+
+                        function updateUser(event) {
+                            event.preventDefault(); // Mencegah formulir dikirim secara default
+
+                            // Dapatkan nilai NIK dan nilai baru yang dimasukkan oleh pengguna
+                            var nik = document.getElementById("editNik").value;
+                            var newNik = document.getElementById("nik").value;
+
+                            // Lakukan pengiriman data ke server dengan AJAX
+                            $.ajax({
+                                type: 'POST',
+                                url: 'edit-user.php', // Ganti 'edit-user.php' sesuai dengan skrip server Anda
+                                data: {
+                                    nik_user: nik,
+                                    new_nik_user: newNik
+                                    // Anda dapat menambahkan data lain yang ingin Anda perbarui di sini
+                                },
+                                success: function(response) {
+                                    if (response.success) {
+                                        Swal.fire('Uppss', 'Gagal memperbarui data pengguna', 'error');
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Berhasil!',
+                                            text: 'Data pengguna berhasil diperbarui',
+                                            icon: 'success',
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                // Sembunyikan modal setelah berhasil diperbarui
+                                                $('#editUserModal').modal('hide');
+                                                // Refresh halaman
+                                                location.reload();
+                                            }
+                                        });
+                                    }
+                                },
+                                error: function() {
+                                    Swal.fire('Error', 'Terjadi kesalahan pada server', 'error');
+                                }
+                            });
+                        }
+
+
+                        function validateNIK(event) {
+                            // Mengambil nilai input
+                            let input = event.target.value;
+
+                            // Menghilangkan karakter selain angka
+                            input = input.replace(/\D/g, '');
+
+                            // Memastikan panjang antara 12 hingga 20 angka
+                            input = input.substring(0, 16);
+
+                            // Mengupdate nilai input
+                            event.target.value = input;
+
+                            // Menampilkan pesan jika terdapat karakter selain angka
+                            const angkaMessage = document.getElementById('angkaMessage');
+                            if (/[^0-9]/.test(input) || input.length < 16 || input.length > 16) {
+                                angkaMessage.textContent = 'Hanya bisa memasukkan NIK (16 digit angka)';
+                            } else {
+                                angkaMessage.textContent = '';
+                            }
                         }
                     </script>
     </body>

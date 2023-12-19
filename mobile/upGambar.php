@@ -3,7 +3,7 @@
 $servername = "localhost"; // Ganti dengan host database Anda
 $username = "root"; // Ganti dengan username database Anda
 $password = ""; // Ganti dengan password database Anda
-$dbname = "test_siantik"; // Ganti dengan nama database Anda
+$dbname = "jumantik"; // Ganti dengan nama database Anda
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -25,9 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // $ServerURL = "http://192.168.1.13:8080/test_siantik/mobile/$ImagePath";
 
-    $imgPath = $ImagePath;
+    $imgPath = "/".$ImagePath;
 
-    $InsertSQL = "INSERT INTO laporan (nik_user, foto, deskripsi, tanggal_laporan) VALUES ('$nik_user', '$ServerURL', '$Deskripsi', NOW())";
+    $InsertSQL = "INSERT INTO laporan (nik_user, foto, deskripsi, tanggal_laporan) VALUES ('$nik_user', '$imgPath', '$Deskripsi', NOW())";
 
     if (mysqli_query($conn, $InsertSQL)) {
         file_put_contents($ImagePath, base64_decode($ImageData));
